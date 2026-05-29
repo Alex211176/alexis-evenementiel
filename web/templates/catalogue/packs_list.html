@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap: 24px;">
+        <div>
+            <h1>Catalogue — Packs</h1>
+            <p class="subtitle">Formules tarifaires avec héritage</p>
+        </div>
+        <div>
+            <a href="{{ url_for('catalogue.pack_new') }}" class="btn btn-primary">+ Nouveau pack</a>
+        </div>
+    </div>
+</header>
+
+<div class="cat-tabs">
+    <a class="cat-tab" href="{{ url_for('catalogue.equipements_list') }}">Équipements</a>
+    <a class="cat-tab active" href="{{ url_for('catalogue.packs_list') }}">Packs</a>
+    <a class="cat-tab" href="{{ url_for('catalogue.prestations_list') }}">Prestations</a>
+</div>
+
+{% for cat, packs in groupes.items() %}
+<section class="cat-section">
+    <h2 class="cat-heading">{{ label_categorie(cat) }} <span class="muted">({{ packs|length }})</span></h2>
+
+    <table class="events-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Hérite de</th>
+                <th>Prix pack</th>
+                <th>Valeur à la carte</th>
+                <th>Économie</th>
+                <th class="col-actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in packs %}
+            <tr>
+                <td>
+                    <strong>{{ p.nom }}</strong><br>
+                    <small class="muted">{{ p.description }}</small>
+                </td>
+                <td>{% if p.extends %}<span class="tag">{{ p.extends }}</span>{% else %}—{% endif %}</td>
+                <td class="mono">{{ p.prix_ttc }} €</td>
+                <td class="mono">
+                    {% if p._valeur_carte is not none %}{{ "%.0f"|format(p._valeur_carte) }} €{% else %}—{% endif %}
+                </td>
+                <td>
+                    {% if p._valeur_carte and p._valeur_carte > 0 %}
+                        {% set eco = p._valeur_carte - p.prix_ttc %}
+                        {% set eco_pct = (eco / p._valeur_carte * 100)|round(0, 'floor') %}
+                        {% if eco > 0 %}
+                            <span class="tag tag-outdoor">−{{ "%.0f"|format(eco) }} € ({{ eco_pct|int }}%)</span>
+                        {% elif eco < 0 %}
+                            <span class="tag" style="background:var(--rule-soft); color:var(--ink-muted)">+{{ "%.0f"|format(-eco) }} €</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="col-actions">
+                    <a href="{{ url_for('catalogue.pack_edit', pack_id=p.id) }}" class="btn btn-sm">Éditer</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>Événements</h1>
+    <p class="subtitle">{{ events | length }} fiche{% if events|length > 1 %}s{% endif %} disponible{% if events|length > 1 %}s{% endif %}</p>
+</header>
+
+{% if events %}
+<table class="events-table">
+    <thead>
+        <tr>
+            <th>Référence</th>
+            <th>Événement</th>
+            <th>Lieu</th>
+            <th>Mode</th>
+            <th class="col-actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for ev in events %}
+        <tr>
+            <td class="mono">{{ ev.reference }}</td>
+            <td><strong>{{ ev.name }}</strong><br><small class="muted">{{ ev.filename }}</small></td>
+            <td>{{ ev.location }}</td>
+            <td>
+                {% if ev.outdoor %}
+                    <span class="tag tag-outdoor">Extérieur</span>
+                {% else %}
+                    <span class="tag tag-indoor">Intérieur</span>
+                {% endif %}
+            </td>
+            <td class="col-actions">
+                <a class="btn btn-sm" href="{{ url_for('event_preview', filename=ev.filename) }}">Aperçu</a>
+                <a class="btn btn-sm" href="{{ url_for('event_edit', filename=ev.filename) }}">Éditer</a>
+                <a class="btn btn-sm btn-primary" href="{{ url_for('event_pdf', filename=ev.filename) }}">PDF</a>
+                <form action="{{ url_for('event_delete', filename=ev.filename) }}" method="post" class="inline-form"
+                      onsubmit="return confirm('Supprimer {{ ev.filename }} ?');">
+                    <button class="btn btn-sm btn-danger">×</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty">
+    <p>Aucun événement pour l'instant.</p>
+    <a class="btn btn-primary" href="{{ url_for('event_new') }}">Créer le premier événement</a>
+</div>
+{% endif %}
+
+{% endblock %}

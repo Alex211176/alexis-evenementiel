@@ -1,0 +1,124 @@
+{
+    "_doc": "Paramètres persistants du prestataire. Édités via l'UI /parametres/. Fusionnés automatiquement avec chaque JSON d'événement.",
+    "prestataire": {
+        "nom": "Alexis Arokiassamy",
+        "nom_commercial": "Alexis Événementiel 81",
+        "tagline": "Prestations Techniques · Animations Événementielles",
+        "sous_titre": "Sonorisation · Lumière · Animation DJ · Bingo Disco",
+        "regime": "Auto-entrepreneur",
+        "siret": "804 541 431 00016",
+        "ape": "9329Z",
+        "ville": "Albi, Occitanie",
+        "adresse": "78 Place du Souvenir, 81430 Mouzieys-Teulet",
+        "telephone": "06 18 85 58 92",
+        "email": "alexis.arokiassamy@gmail.com",
+        "site_web": null,
+        "tva_mention": "TVA non applicable, art. 293 B du CGI",
+        "brand": {
+            "logo_file": null,
+            "accent_color": "#B45309",
+            "accent_soft": "#FEF3C7"
+        },
+        "fonts": {
+            "custom": false,
+            "display_name": null,
+            "display_file": null,
+            "display_format": "woff2",
+            "body_name": null,
+            "body_file": null,
+            "body_format": "woff2"
+        },
+        "assurance": {
+            "type": "RC Professionnelle",
+            "compagnie": "Crédit Mutuel",
+            "contrat": "I8 4056040"
+        }
+    },
+    "electricite": {
+        "nb_prises": 4,
+        "amperage": 16,
+        "voltage": 220,
+        "puissance_kw": "4,5"
+    },
+    "personnel": {
+        "effectif": "1 technicien-animateur (le prestataire lui-même), polyvalent sur la régie son, lumière et l'animation",
+        "interlocuteur": "Alexis Arokiassamy",
+        "seuil_repas_h": 5
+    },
+    "logistique": {
+        "montage_h": "4 heures",
+        "demontage_h": "2 h 30",
+        "regie_dim": "5 m × 3 m",
+        "nb_tables": 2
+    },
+    "deplacement": {
+        "rayon_max_km": 200,
+        "ville_base": "Albi",
+        "bareme": [
+            {
+                "min_km": 0,
+                "max_km": 50,
+                "tarif": 0,
+                "label": "Gratuit (0-50 km)"
+            },
+            {
+                "min_km": 50,
+                "max_km": 100,
+                "tarif": 50,
+                "label": "50 € (50-100 km)"
+            },
+            {
+                "min_km": 100,
+                "max_km": 150,
+                "tarif": 100,
+                "label": "100 € (100-150 km)"
+            },
+            {
+                "min_km": 150,
+                "max_km": 200,
+                "tarif": 150,
+                "label": "150 € (150-200 km)"
+            }
+        ]
+    },
+    "intemperies": {
+        "delai_validation_h": 48,
+        "barnum_dim": "5 m × 3 m"
+    },
+    "annulation": {
+        "bareme": [
+            {
+                "delai": "Plus de 30 jours avant l'événement",
+                "montant": "Rétention de l'acompte initial",
+                "surbrillance": false
+            },
+            {
+                "delai": "Entre 30 jours et 72 heures avant l'événement",
+                "montant": "50 % du montant TTC du devis",
+                "surbrillance": true
+            },
+            {
+                "delai": "Moins de 72 heures ou sur site",
+                "montant": "100 % du montant TTC du devis",
+                "surbrillance": true
+            }
+        ]
+    },
+    "devis": {
+        "_doc": "Paramètres par défaut du module devis. Surchargeable par devis.",
+        "acompte_pct": 30,
+        "validite_jours": 30,
+        "delai_paiement_solde": "Le jour de la prestation",
+        "iban": null,
+        "bic": null,
+        "banque": null,
+        "mention_signature": "Bon pour accord — précédé de la mention manuscrite \"Lu et approuvé\"",
+        "message_accompagnement_template": "Bonjour {client_prenom},\n\nSuite à notre échange, je vous transmets le devis pour votre événement « {event_name} » prévu le {event_date}.\n\nVous trouverez tous les détails dans le document joint. Le devis est valable {validite_jours} jours. Pour le valider, il vous suffit de me retourner ce devis signé ou de cliquer sur le lien de signature en ligne.\n\nJe reste à votre disposition pour toute question.\n\nBien cordialement,\n{prestataire_nom}\n{prestataire_telephone}\n{prestataire_email}",
+        "conditions_generales": [
+            "Le devis est valable {validite_jours} jours à compter de sa date d'émission.",
+            "Un acompte de {acompte_pct}% est demandé à la signature pour confirmer la réservation de la date.",
+            "Le solde est dû le jour de la prestation.",
+            "En cas d'annulation, le barème ci-dessous s'applique."
+        ]
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "document": {
+        "reference": "FT-2026-001",
+        "date_emission": "19/05/2026"
+    },
+    "event": {
+        "name": "Animation Bingodisco & Musicale Comité des fêtes de Saint-Sulpice-La-Pointe",
+        "location": "Saint-Sulpice-La-Pointe, 81370",
+        "outdoor": true,
+        "horaire_fin": "02h00"
+    },
+    "client": {
+        "prenom": "",
+        "nom": "",
+        "email": "",
+        "telephone": "",
+        "adresse": "",
+        "entreprise": "",
+        "siret": ""
+    },
+    "mode_composition": "catalogue",
+    "pack_id": "essentiel",
+    "supplements": [
+        {
+            "id": "chauvet-geyser-t6",
+            "quantite": 2
+        },
+        {
+            "id": "bose-f1-systeme",
+            "quantite": 1
+        }
+    ],
+    "retraits": {
+        "equipements": [
+            "martin-magnum-2500",
+            "chauvet-h9-set",
+            "bose-l1"
+        ],
+        "prestations": [
+            "animation-dj-soiree-complete",
+            "reunions-preparation-3",
+            "captation-video-classique"
+        ]
+    },
+    "bilan_override": false,
+    "prises_override": false
+}

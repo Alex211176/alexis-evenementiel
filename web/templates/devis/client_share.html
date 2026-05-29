@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", -apple-system, sans-serif;
+            margin: 0;
+            background: #F8FAFC;
+            color: #0F172A;
+        }
+        .client-banner {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .banner-info { font-size: 13px; color: #475569; }
+        .banner-info strong { color: #0F172A; }
+        .banner-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #E2E8F0;
+            background: white;
+            color: #0F172A;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn:hover { background: #F1F5F9; }
+        .btn-primary {
+            background: #B45309;
+            color: white;
+            border-color: #B45309;
+        }
+        .btn-primary:hover { background: #92400E; }
+        .statut-pill {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .statut-brouillon { background: #F1F5F9; color: #64748B; }
+        .statut-envoye { background: #FEF3C7; color: #B45309; }
+        .statut-accepte { background: #DCFCE7; color: #166534; }
+        .statut-refuse { background: #FEE2E2; color: #B91C1C; }
+
+        .devis-container {
+            max-width: 920px;
+            margin: 28px auto;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            padding: 32px 36px;
+        }
+        .flashes { padding: 28px 28px 0; max-width: 920px; margin: 0 auto; }
+        .flash {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-size: 13.5px;
+        }
+        .flash-success { background: #DCFCE7; color: #166534; border-left: 3px solid #166534; }
+        .flash-error   { background: #FEE2E2; color: #B91C1C; border-left: 3px solid #B91C1C; }
+        .flash-info    { background: #DBEAFE; color: #1E40AF; border-left: 3px solid #1E40AF; }
+
+        @media (max-width: 700px) {
+            .client-banner { flex-direction: column; gap: 10px; align-items: stretch; }
+            .banner-actions { justify-content: center; }
+            .devis-container { padding: 18px; margin: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="client-banner">
+    <div class="banner-info">
+        <strong>{{ prestataire.nom_commercial or prestataire.nom }}</strong>
+        — Devis pour {{ client.prenom or "" }} {{ client.nom or "" }}
+        <span class="statut-pill statut-{{ statut }}">{{ statut|capitalize }}</span>
+    </div>
+    <div class="banner-actions">
+        {% if statut == "envoye" %}
+            <a href="{{ url_for('devis.sign', token=token) }}" class="btn btn-primary">✍️ Signer le devis</a>
+        {% endif %}
+        {# Note : pas de bouton PDF côté client pour l'instant, ils peuvent imprimer la page si besoin #}
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flashes">
+        {% for category, msg in messages %}
+            <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="devis-container">
+    {{ devis_html | safe }}
+</div>
+
+</body>
+</html>

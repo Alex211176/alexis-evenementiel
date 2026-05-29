@@ -1,0 +1,694 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>{% if filename %}Édition · <span class="mono">{{ filename }}</span>{% else %}Nouvel événement{% endif %}</h1>
+    <p class="subtitle">Renseigne les champs spécifiques à cet événement. Les paramètres prestataire sont fusionnés automatiquement.</p>
+</header>
+
+<form action="{{ url_for('event_save') }}" method="post" class="event-form">
+    <input type="hidden" name="filename" value="{{ filename or '' }}">
+
+    <fieldset>
+        <legend>Document</legend>
+        <div class="grid-two">
+            <label>
+                Référence
+                <input type="text" name="reference" value="{{ data.document.reference }}" required placeholder="FT-2026-0042">
+            </label>
+            <label>
+                Date d'émission
+                <input type="text" name="date_emission" value="{{ data.document.date_emission }}" placeholder="JJ/MM/AAAA">
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Événement</legend>
+        <label>
+            Nom de l'événement
+            <input type="text" name="event_name" value="{{ data.event.name }}" required placeholder="Mariage Dupont, Soirée Acme, ...">
+        </label>
+        <label>
+            Lieu
+            <input type="text" name="event_location" value="{{ data.event.location }}" required placeholder="Domaine de la Roseraie, Gaillac (81)">
+        </label>
+        <div class="grid-two">
+            <label>
+                Horaire de fin
+                <input type="text" name="event_horaire_fin" value="{{ data.event.horaire_fin or '' }}" placeholder="02 h 00">
+            </label>
+            <label class="checkbox-row">
+                <input type="checkbox" name="event_outdoor" {% if data.event.outdoor %}checked{% endif %}>
+                <span>Configuration extérieure (active la section intempéries)</span>
+            </label>
+        </div>
+    </fieldset>
+
+    <!-- ====================== CLIENT ====================== -->
+    <fieldset>
+        <legend>Client <small>(nom + email obligatoires pour générer un devis)</small></legend>
+        <div class="grid-two">
+            <label>
+                Prénom
+                <input type="text" name="client_prenom" value="{{ data.client.prenom if data.client else '' }}" placeholder="Marie">
+            </label>
+            <label>
+                Nom *
+                <input type="text" name="client_nom" value="{{ data.client.nom if data.client else '' }}" placeholder="Dupont">
+            </label>
+        </div>
+        <div class="grid-two">
+            <label>
+                Email *
+                <input type="email" name="client_email" value="{{ data.client.email if data.client else '' }}" placeholder="marie.dupont@example.com">
+            </label>
+            <label>
+                Téléphone
+                <input type="tel" name="client_telephone" value="{{ data.client.telephone if data.client else '' }}" placeholder="06 12 34 56 78">
+            </label>
+        </div>
+        <label>
+            Adresse postale
+            <input type="text" name="client_adresse" value="{{ data.client.adresse if data.client else '' }}" placeholder="12 rue des Lilas, 81000 Albi">
+        </label>
+        <div class="grid-two">
+            <label>
+                Entreprise / Organisation (si applicable)
+                <input type="text" name="client_entreprise" value="{{ data.client.entreprise if data.client else '' }}" placeholder="ACME SARL">
+            </label>
+            <label>
+                SIRET client (si pro)
+                <input type="text" name="client_siret" value="{{ data.client.siret if data.client else '' }}" placeholder="123 456 789 00012">
+            </label>
+        </div>
+    </fieldset>
+
+    <!-- ====================== COMPOSITION ====================== -->
+    <fieldset>
+        <legend>Composition de la prestation</legend>
+
+        <div class="mode-toggle">
+            <label class="mode-btn">
+                <input type="radio" name="mode_composition" value="catalogue"
+                       {% if data.mode_composition != 'manuel' %}checked{% endif %}
+                       onchange="updateMode()">
+                <span>📦 Depuis le catalogue (recommandé)</span>
+            </label>
+            <label class="mode-btn">
+                <input type="radio" name="mode_composition" value="manuel"
+                       {% if data.mode_composition == 'manuel' %}checked{% endif %}
+                       onchange="updateMode()">
+                <span>✍️ Saisie manuelle</span>
+            </label>
+        </div>
+
+        <!-- MODE CATALOGUE -->
+        <div id="mode-catalogue" class="mode-section">
+            <label>
+                Pack du catalogue
+                <select name="pack_id" id="pack-select" onchange="onPackChange()">
+                    <option value="">— Aucun pack (suppléments seulement) —</option>
+                    {% for cat, packs in packs_par_cat.items() %}
+                        <optgroup label="{{ cat }}">
+                        {% for p in packs %}
+                            <option value="{{ p.id }}" {% if data.pack_id == p.id %}selected{% endif %}>
+                                {{ p.nom }} — {{ p.prix_ttc }} €
+                            </option>
+                        {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </label>
+            <div id="pack-summary" class="pack-summary"
+                 data-retraits='{{ (data.retraits or {"equipements": [], "prestations": []}) | tojson }}'></div>
+            <div id="retraits-list" style="display:none"></div>
+
+            <h3 class="subhead">Suppléments à la carte</h3>
+            <p class="form-help">Ajoute du matériel ou des prestations en plus du pack.</p>
+
+            <div id="supplements-list" class="supplements-list"
+                 data-supplements='{{ (data.supplements or []) | tojson }}'>
+                {# Les suppléments sont reconstruits en JS au chargement pour utiliser
+                   les contraintes de stock et de paliers de chaque équipement #}
+            </div>
+
+            <div class="add-supplement">
+                <select id="add-supp-select">
+                    <option value="">— Ajouter un équipement —</option>
+                    {% for cat, eqs in equipements_par_cat.items() %}
+                        <optgroup label="{{ cat }}">
+                        {% for eq in eqs %}
+                            <option value="{{ eq.id }}" data-nom="{{ eq.nom }}">{{ eq.nom }}</option>
+                        {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-sm" onclick="addSupplement()">+ Ajouter</button>
+            </div>
+        </div>
+
+        <!-- MODE MANUEL -->
+        <div id="mode-manuel" class="mode-section" style="display:none">
+            <p class="form-help">Saisis directement la liste matériel ligne par ligne, par bucket.</p>
+            <label>
+                Sonorisation & vidéo
+                <textarea name="materiel_son" rows="4" placeholder="1× Bose F1 système complet&#10;1× Denon SC Live 4">{% if data.materiel_manuel and data.materiel_manuel.son_video %}{{ data.materiel_manuel.son_video | join('\n') }}{% endif %}</textarea>
+            </label>
+            <label>
+                Lumière & atmosphère
+                <textarea name="materiel_lum" rows="4" placeholder="2× Chauvet GigBar Move + ILS&#10;2× Chauvet Colorband T3BT">{% if data.materiel_manuel and data.materiel_manuel.lumiere %}{{ data.materiel_manuel.lumiere | join('\n') }}{% endif %}</textarea>
+            </label>
+            <label>
+                Divers
+                <textarea name="materiel_div" rows="3" placeholder="1× EcoFlow Station énergétique">{% if data.materiel_manuel and data.materiel_manuel.divers %}{{ data.materiel_manuel.divers | join('\n') }}{% endif %}</textarea>
+            </label>
+        </div>
+    </fieldset>
+
+    <!-- ====================== BILAN ====================== -->
+    <fieldset>
+        <legend>Bilan technique <small>(calculé automatiquement à partir du catalogue)</small></legend>
+        <div class="bilan-box" id="bilan-auto">
+            <div class="bilan-item">
+                <span class="bilan-label">Puissance crête</span>
+                <span class="bilan-value" id="bilan-puissance">—</span>
+            </div>
+            <div class="bilan-item">
+                <span class="bilan-label">Poids total <em>(interne)</em></span>
+                <span class="bilan-value" id="bilan-poids">—</span>
+            </div>
+            <div class="bilan-item">
+                <span class="bilan-label">Prises 16 A nécessaires <em>(calc.)</em></span>
+                <span class="bilan-value" id="bilan-prises">—</span>
+            </div>
+        </div>
+
+        <label class="checkbox-row">
+            <input type="checkbox" name="bilan_override" id="bilan-override-cb" {% if data.bilan_override %}checked{% endif %} onchange="updateBilanOverride()">
+            <span>Surcharger manuellement la puissance électrique</span>
+        </label>
+        <div id="bilan-manuel" style="display:none">
+            <label>
+                Puissance crête manuelle (en kW, ex: "4,5")
+                <input type="text" name="puissance_manuelle" value="{{ data.puissance_manuelle or '' }}" placeholder="4,5">
+            </label>
+        </div>
+
+        <label class="checkbox-row">
+            <input type="checkbox" name="prises_override" id="prises-override-cb" {% if data.prises_override %}checked{% endif %} onchange="updatePrisesOverride()">
+            <span>Surcharger manuellement le nombre de prises</span>
+        </label>
+        <div id="prises-manuel" style="display:none">
+            <label>
+                Nombre de prises 16 A
+                <input type="number" min="1" max="20" name="nb_prises_manuel" value="{% if data.prises_override and data.electricite %}{{ data.electricite.nb_prises }}{% endif %}" placeholder="4">
+            </label>
+        </div>
+    </fieldset>
+
+    <!-- ====================== DEVIS ====================== -->
+    <fieldset>
+        <legend>Paramètres du devis <small>(facultatif — valeurs par défaut depuis /parametres)</small></legend>
+        <div class="grid-two">
+            <label>
+                Prix proposé au client (€)
+                <input type="text" name="devis_prix_propose" value="{{ data.devis.prix_propose if data.devis else '' }}" placeholder="Laisser vide = prix catalogue">
+                <small class="muted">Si défini : la remise commerciale apparaîtra sur le devis</small>
+            </label>
+            <label>
+                Acompte (% sur le total)
+                <input type="number" min="0" max="100" name="devis_acompte_pct" value="{{ data.devis.acompte_pct if data.devis else '' }}" placeholder="30">
+            </label>
+        </div>
+        <label>
+            Validité du devis (jours)
+            <input type="number" min="1" max="365" name="devis_validite_jours" value="{{ data.devis.validite_jours if data.devis else '' }}" placeholder="30">
+        </label>
+        {% if data.devis and data.devis.statut %}
+        <div style="margin-top:14px;padding:10px 14px;background:var(--rule-soft);border-radius:4px;font-size:13px">
+            Statut actuel : <strong>{{ data.devis.statut|capitalize }}</strong>
+            {% if data.devis.reference %} · Réf. <code>{{ data.devis.reference }}</code>{% endif %}
+        </div>
+        {% endif %}
+    </fieldset>
+
+    <div class="form-actions">
+        <a href="{{ url_for('index') }}" class="btn">Annuler</a>
+        <button type="submit" class="btn btn-primary">Sauvegarder & prévisualiser</button>
+    </div>
+</form>
+
+<!-- Données du catalogue pour JS -->
+<script id="catalogue-data" type="application/json">
+{{ catalogue_json | safe }}
+</script>
+
+<script>
+const CATALOGUE = JSON.parse(document.getElementById('catalogue-data').textContent);
+let supplementIndex = {{ (data.supplements or []) | length }};
+
+// État local des retraits (initialisé depuis les données sauvegardées)
+const retraitsDataAttr = document.getElementById('pack-summary').dataset.retraits;
+let currentRetraits = { equipements: [], prestations: [] };
+try {
+    const r = JSON.parse(retraitsDataAttr || '{}');
+    if (r.equipements) currentRetraits.equipements = [...r.equipements];
+    if (r.prestations) currentRetraits.prestations = [...r.prestations];
+} catch (e) {
+    console.error('Erreur parsing retraits:', e);
+}
+
+function updateMode() {
+    const mode = document.querySelector('input[name="mode_composition"]:checked').value;
+    document.getElementById('mode-catalogue').style.display = (mode === 'catalogue') ? '' : 'none';
+    document.getElementById('mode-manuel').style.display = (mode === 'manuel') ? '' : 'none';
+    recomputeBilan();
+}
+
+// Mapping catégorie → label affichable, et ordre d'affichage
+const CAT_LABELS = {
+    'son': 'Son',
+    'regie': 'Régie DJ',
+    'video': 'Vidéo',
+    'lumiere': 'Lumière',
+    'effet': 'Effets atmosphériques',
+    'photo': 'Photo / Photobooth',
+    'energie': 'Énergie',
+    'divers': 'Divers',
+    'autre': 'Autre',
+};
+const CAT_ORDER = ['son', 'regie', 'video', 'lumiere', 'effet', 'photo', 'energie', 'divers', 'autre'];
+
+function onPackChange() {
+    const packId = document.getElementById('pack-select').value;
+    const summary = document.getElementById('pack-summary');
+    if (!packId) {
+        summary.innerHTML = '';
+        document.getElementById('retraits-list').innerHTML = '';
+    } else {
+        const pack = CATALOGUE.packs[packId];
+        if (pack) {
+            // Récupère les retraits déjà sauvegardés
+            const retraitsEq = new Set(currentRetraits.equipements || []);
+            const retraitsPr = new Set(currentRetraits.prestations || []);
+
+            // Groupe les équipements par catégorie
+            const parCat = {};
+            for (const ligne of pack.composition_complete.equipements) {
+                const eq = CATALOGUE.equipements[ligne.id];
+                if (!eq) continue;
+                const cat = eq.categorie || 'autre';
+                if (!parCat[cat]) parCat[cat] = [];
+                parCat[cat].push({ ...ligne, nom: eq.nom });
+            }
+
+            let detailHtml = '';
+            for (const cat of CAT_ORDER) {
+                if (!parCat[cat]) continue;
+                detailHtml += `<div class="pack-cat-group">`;
+                detailHtml += `<div class="pack-cat-label">${CAT_LABELS[cat] || cat}</div>`;
+                detailHtml += `<ul class="pack-cat-items">`;
+                for (const item of parCat[cat]) {
+                    const isRetire = retraitsEq.has(item.id);
+                    const css = isRetire ? 'pack-item retire' : 'pack-item';
+                    const btn = isRetire
+                        ? `<button type="button" class="btn-pack-restore" onclick="restoreItem('eq','${item.id}')" title="Restaurer">↩</button>`
+                        : `<button type="button" class="btn-pack-remove" onclick="removeItem('eq','${item.id}')" title="Retirer du pack">×</button>`;
+                    detailHtml += `<li class="${css}"><span>${item.quantite}× ${item.nom}</span>${btn}</li>`;
+                }
+                detailHtml += `</ul></div>`;
+            }
+
+            // Prestations
+            let prestaHtml = '';
+            if (pack.composition_complete.prestations.length > 0) {
+                prestaHtml += `<div class="pack-cat-group">`;
+                prestaHtml += `<div class="pack-cat-label">Prestations incluses</div>`;
+                prestaHtml += `<ul class="pack-cat-items">`;
+                for (const p of pack.composition_complete.prestations) {
+                    const nom = (CATALOGUE.prestations && CATALOGUE.prestations[p.id])
+                        ? CATALOGUE.prestations[p.id].nom : p.id;
+                    const isRetire = retraitsPr.has(p.id);
+                    const css = isRetire ? 'pack-item retire' : 'pack-item';
+                    const qteLabel = p.quantite > 1 ? ' × ' + p.quantite : '';
+                    const btn = isRetire
+                        ? `<button type="button" class="btn-pack-restore" onclick="restoreItem('pr','${p.id}')" title="Restaurer">↩</button>`
+                        : `<button type="button" class="btn-pack-remove" onclick="removeItem('pr','${p.id}')" title="Retirer du pack">×</button>`;
+                    prestaHtml += `<li class="${css}"><span>${nom}${qteLabel}</span>${btn}</li>`;
+                }
+                prestaHtml += `</ul></div>`;
+            }
+
+            const heritageHtml = (pack.chaine_heritage.length > 1)
+                ? `<div class="pack-heritage">Hérite de : <span class="mono">${pack.chaine_heritage.slice(0, -1).join(' → ')}</span></div>`
+                : '';
+
+            summary.innerHTML = `
+                <div class="pack-summary-content">
+                    <div class="pack-summary-head">
+                        <strong>${pack.nom}</strong> — ${pack.prix_ttc} €
+                    </div>
+                    ${heritageHtml}
+                    <div class="pack-detail">
+                        ${detailHtml}
+                        ${prestaHtml}
+                    </div>
+                </div>`;
+
+            // Rebuilds the hidden retrait fields
+            updateRetraitFields();
+        }
+    }
+    recomputeBilan();
+}
+
+function removeItem(type, id) {
+    if (type === 'eq') {
+        if (!currentRetraits.equipements.includes(id)) currentRetraits.equipements.push(id);
+    } else {
+        if (!currentRetraits.prestations.includes(id)) currentRetraits.prestations.push(id);
+    }
+    onPackChange();
+}
+
+function restoreItem(type, id) {
+    if (type === 'eq') {
+        currentRetraits.equipements = currentRetraits.equipements.filter(x => x !== id);
+    } else {
+        currentRetraits.prestations = currentRetraits.prestations.filter(x => x !== id);
+    }
+    onPackChange();
+}
+
+function updateRetraitFields() {
+    const container = document.getElementById('retraits-list');
+    container.innerHTML = '';
+    let idx = 0;
+    for (const id of currentRetraits.equipements) {
+        container.innerHTML += `<input type="hidden" name="retrait_eq_${idx}" value="${id}">`;
+        idx++;
+    }
+    idx = 0;
+    for (const id of currentRetraits.prestations) {
+        container.innerHTML += `<input type="hidden" name="retrait_pr_${idx}" value="${id}">`;
+        idx++;
+    }
+}
+
+function addSupplement(idForced, qteForced) {
+    const sel = document.getElementById('add-supp-select');
+    const id = idForced || sel.value;
+    if (!id) return;
+    const eq = CATALOGUE.equipements[id];
+    if (!eq) return;
+
+    const nom = eq.nom || id;
+    const stockMax = eq.quantite_possedee || 1;
+    const uniteLabel = (eq.vente && eq.vente.unite_label) || 'unité';
+    const qteDefault = qteForced || 1;
+
+    // Construit le champ quantité selon le mode de vente
+    let qteFieldHtml = '';
+    const vente = eq.vente || {};
+    const qa = vente.quantites_autorisees || { type: 'libre' };
+
+    if (qa.type === 'unique') {
+        qteFieldHtml = `<span class="supp-qte-fixed">1 ${uniteLabel}</span>
+            <input type="hidden" name="supp_qte_${supplementIndex}" value="1">`;
+    } else if (qa.type === 'valeurs_fixes') {
+        const valeurs = qa.valeur || [];
+        let opts = '';
+        for (const v of valeurs) {
+            if (v <= stockMax) {
+                const sel_attr = (v === qteDefault) ? ' selected' : '';
+                opts += `<option value="${v}"${sel_attr}>${v}</option>`;
+            }
+        }
+        qteFieldHtml = `<select name="supp_qte_${supplementIndex}" class="supp-qte" onchange="recomputeBilan()">${opts}</select>`;
+    } else {
+        qteFieldHtml = `<input type="number" min="1" max="${stockMax}" name="supp_qte_${supplementIndex}" value="${qteDefault}" class="supp-qte" onchange="recomputeBilan()">`;
+    }
+
+    const div = document.createElement('div');
+    div.className = 'supplement-row';
+    div.dataset.id = id;
+    div.innerHTML = `
+        <span class="supp-name">${nom}</span>
+        <span class="supp-stock">stock : ${stockMax} ${stockMax > 1 ? uniteLabel + 's' : uniteLabel}</span>
+        ${qteFieldHtml}
+        <input type="hidden" name="supp_id_${supplementIndex}" value="${id}">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeSupplement(this)">×</button>
+    `;
+    document.getElementById('supplements-list').appendChild(div);
+    supplementIndex++;
+    if (!idForced) sel.value = '';
+    recomputeBilan();
+}
+
+function restoreSupplementsFromData() {
+    const container = document.getElementById('supplements-list');
+    const dataAttr = container.dataset.supplements;
+    if (!dataAttr) return;
+    try {
+        const supps = JSON.parse(dataAttr);
+        for (const s of supps) {
+            addSupplement(s.id, s.quantite);
+        }
+    } catch (e) {
+        console.error('Erreur restoration suppléments:', e);
+    }
+}
+
+function removeSupplement(btn) {
+    btn.closest('.supplement-row').remove();
+    recomputeBilan();
+}
+
+/**
+ * Calcule, pour chaque équipement du select "Ajouter un équipement",
+ * le stock restant en tenant compte du pack (moins retraits) et des suppléments déjà saisis.
+ * Grise et désactive les options épuisées.
+ */
+function refreshSelectAvailability() {
+    const sel = document.getElementById('add-supp-select');
+    if (!sel) return;
+
+    const mode = document.querySelector('input[name="mode_composition"]:checked').value;
+    if (mode !== 'catalogue') return;
+
+    // 1. Construit le map des quantités utilisées par équipement
+    const utilises = {};
+    const packId = document.getElementById('pack-select').value;
+    const retraitsEq = new Set(currentRetraits.equipements || []);
+
+    if (packId && CATALOGUE.packs[packId]) {
+        for (const l of CATALOGUE.packs[packId].composition_complete.equipements) {
+            if (retraitsEq.has(l.id)) continue;  // l'item retiré ne consomme plus
+            utilises[l.id] = (utilises[l.id] || 0) + l.quantite;
+        }
+    }
+
+    document.querySelectorAll('.supplement-row').forEach(row => {
+        const id = row.dataset.id;
+        const qte = parseInt(row.querySelector('.supp-qte').value) || 1;
+        utilises[id] = (utilises[id] || 0) + qte;
+    });
+
+    // 2. Met à jour chaque option du select
+    sel.querySelectorAll('option').forEach(opt => {
+        const id = opt.value;
+        if (!id) return;  // placeholder
+        const eq = CATALOGUE.equipements[id];
+        if (!eq) return;
+
+        const stockTotal = eq.quantite_possedee || 1;
+        const consomme = utilises[id] || 0;
+        const restant = stockTotal - consomme;
+
+        // Récupère le nom de base (sans suffixe "(épuisé)")
+        const nomBase = opt.dataset.nom || eq.nom || id;
+
+        if (restant <= 0) {
+            opt.textContent = `${nomBase} (épuisé)`;
+            opt.disabled = true;
+            opt.classList.add('option-epuise');
+        } else {
+            opt.textContent = nomBase;
+            opt.disabled = false;
+            opt.classList.remove('option-epuise');
+        }
+    });
+}
+
+function recomputeBilan() {
+    const mode = document.querySelector('input[name="mode_composition"]:checked').value;
+    if (mode === 'manuel') {
+        document.getElementById('bilan-puissance').textContent = 'mode manuel';
+        document.getElementById('bilan-poids').textContent = '—';
+        document.getElementById('bilan-prises').textContent = '—';
+        const prixBox = document.getElementById('prix-box');
+        if (prixBox) prixBox.style.display = 'none';
+        return;
+    }
+
+    const packId = document.getElementById('pack-select').value;
+    const lignes = {};
+    const retraitsEq = new Set(currentRetraits.equipements || []);
+
+    let prixPack = 0;
+    if (packId && CATALOGUE.packs[packId]) {
+        prixPack = CATALOGUE.packs[packId].prix_ttc || 0;
+        for (const l of CATALOGUE.packs[packId].composition_complete.equipements) {
+            if (retraitsEq.has(l.id)) continue;  // item retiré du pack
+            lignes[l.id] = (lignes[l.id] || 0) + l.quantite;
+        }
+    }
+
+    // Suppléments
+    let ajoutsTotal = 0;
+    document.querySelectorAll('.supplement-row').forEach(row => {
+        const id = row.dataset.id;
+        const qte = parseInt(row.querySelector('.supp-qte').value) || 1;
+        lignes[id] = (lignes[id] || 0) + qte;
+        // Calcul ajout prix (palier ou simple)
+        const eq = CATALOGUE.equipements[id];
+        if (eq) ajoutsTotal += computePrixCatalogue(eq, qte);
+    });
+
+    // Bilan technique
+    let puissance = 0, poids = 0;
+    for (const [id, qte] of Object.entries(lignes)) {
+        const eq = CATALOGUE.equipements[id];
+        if (!eq) continue;
+        const visible = eq.visible_dans || {};
+
+        const pw = eq.puissance_w_unitaire !== undefined
+            ? eq.puissance_w_unitaire * qte
+            : (eq.puissance_w || 0) * qte;
+        const pk = eq.poids_kg_unitaire !== undefined
+            ? eq.poids_kg_unitaire * qte
+            : (eq.poids_kg || 0) * qte;
+
+        if (visible.fiche_puissance !== false) puissance += pw;
+        poids += pk;
+    }
+
+    document.getElementById('bilan-puissance').textContent =
+        `${puissance.toFixed(0)} W (${(puissance / 1000).toFixed(2)} kW)`;
+    document.getElementById('bilan-poids').textContent = `${poids.toFixed(1)} kg`;
+
+    // Calcul nb prises (plancher 4)
+    const maxParPriseW = 16 * 220 * 0.80;
+    const plancher = 4;
+    let nbPrises = Math.ceil(puissance / maxParPriseW);
+    nbPrises = Math.max(plancher, nbPrises);
+    nbPrises = Math.min(8, nbPrises);
+    document.getElementById('bilan-prises').textContent = `${nbPrises} prise${nbPrises > 1 ? 's' : ''}`;
+
+    // Calcul du prix final avec règle de compensation
+    let retraitsBrut = 0;
+    for (const id of retraitsEq) {
+        if (!packId || !CATALOGUE.packs[packId]) continue;
+        const ligne = CATALOGUE.packs[packId].composition_complete.equipements.find(l => l.id === id);
+        if (!ligne) continue;
+        const eq = CATALOGUE.equipements[id];
+        if (eq) retraitsBrut += computePrixCatalogue(eq, ligne.quantite);
+    }
+    // Retraits prestations
+    for (const prId of (currentRetraits.prestations || [])) {
+        if (!packId || !CATALOGUE.packs[packId]) continue;
+        const ligne = CATALOGUE.packs[packId].composition_complete.prestations.find(l => l.id === prId);
+        if (!ligne) continue;
+        const pr = (CATALOGUE.prestations || {})[prId];
+        if (pr) retraitsBrut += (pr.prix || 0) * ligne.quantite;
+    }
+    const retraitsApplique = Math.min(retraitsBrut, ajoutsTotal);
+    const total = prixPack + ajoutsTotal - retraitsApplique;
+
+    // Met à jour le bloc prix (créé une fois)
+    updatePrixBox(prixPack, ajoutsTotal, retraitsBrut, retraitsApplique, total);
+
+    // Met à jour la disponibilité des options dans le select "Ajouter"
+    refreshSelectAvailability();
+}
+
+function computePrixCatalogue(eq, qte) {
+    // Recalcule le prix d'un équipement à une quantité donnée, en respectant les paliers
+    const vente = eq.vente || {};
+    const mode = vente.mode || 'forfaitaire';
+    if (mode === 'forfaitaire') return vente.prix_unitaire || 0;
+    if (mode === 'unitaire') return (vente.prix_unitaire || 0) * qte;
+    if (mode === 'tranches') {
+        const paliers = vente.paliers || [];
+        // Cherche le palier exact
+        for (const p of paliers) {
+            if (p.qte === qte) {
+                if (p.prix_forfait !== undefined) return p.prix_forfait;
+                if (p.prix_unitaire !== undefined) return p.prix_unitaire * qte;
+            }
+        }
+        // Sinon palier applicable
+        const sorted = [...paliers].sort((a,b) => a.qte - b.qte);
+        let applicable = null;
+        for (const p of sorted) {
+            if (p.qte <= qte) applicable = p; else break;
+        }
+        if (applicable) {
+            if (applicable.prix_forfait !== undefined) return applicable.prix_forfait;
+            if (applicable.prix_unitaire !== undefined) return applicable.prix_unitaire * qte;
+        }
+    }
+    return 0;
+}
+
+function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total) {
+    let box = document.getElementById('prix-box');
+    if (!box) {
+        // Crée le bloc si pas encore présent
+        const bilanFieldset = document.querySelector('#bilan-auto').closest('fieldset');
+        box = document.createElement('div');
+        box.id = 'prix-box';
+        box.className = 'prix-box';
+        bilanFieldset.appendChild(box);
+    }
+    box.style.display = '';
+    let html = `<div class="prix-line"><span>Pack</span><span class="mono">${pack.toFixed(0)} €</span></div>`;
+    if (ajouts > 0) {
+        html += `<div class="prix-line"><span>+ Suppléments</span><span class="mono">+${ajouts.toFixed(0)} €</span></div>`;
+    }
+    if (retraitsBrut > 0) {
+        if (retraitsApplique > 0) {
+            html += `<div class="prix-line prix-retrait"><span>− Retraits du pack</span><span class="mono">−${retraitsApplique.toFixed(0)} €</span></div>`;
+            if (retraitsBrut > retraitsApplique) {
+                html += `<div class="prix-line prix-info"><span>&nbsp;&nbsp;<em>Moins-value brute ${retraitsBrut.toFixed(0)} € plafonnée au montant des ajouts</em></span><span></span></div>`;
+            }
+        } else {
+            html += `<div class="prix-line prix-info"><span><em>Retraits sans ajouts — pas de moins-value (${retraitsBrut.toFixed(0)} € non déduits)</em></span><span></span></div>`;
+        }
+    }
+    html += `<div class="prix-line prix-total"><span><strong>Total TTC</strong></span><span class="mono"><strong>${total.toFixed(0)} €</strong></span></div>`;
+    box.innerHTML = html;
+}
+
+function updateBilanOverride() {
+    const checked = document.getElementById('bilan-override-cb').checked;
+    document.getElementById('bilan-manuel').style.display = checked ? '' : 'none';
+}
+
+function updatePrisesOverride() {
+    const checked = document.getElementById('prises-override-cb').checked;
+    document.getElementById('prises-manuel').style.display = checked ? '' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateMode();
+    restoreSupplementsFromData();
+    onPackChange();
+    updateBilanOverride();
+    updatePrisesOverride();
+    recomputeBilan();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,184 @@
+{
+    "_doc": "Prestations immatérielles : services facturés au temps, à la prestation, ou au forfait. Inclues dans les packs ou vendues à la carte.",
+    "_schema_version": "1.0",
+
+    "prestations": {
+
+        "animation-dj-3h": {
+            "nom": "Animation DJ — apéritif (≈ 3h)",
+            "categorie": "animation",
+            "description": "Animation DJ + apéritif, durée approximative 3 heures",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["dj", "aperitif"]
+        },
+
+        "animation-dj-soiree-complete": {
+            "nom": "Animation DJ — vin d'honneur à soirée (≈ 4h+)",
+            "categorie": "animation",
+            "description": "Animation DJ du vin d'honneur jusqu'à la fin de soirée",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["dj", "soiree_complete", "mariage"]
+        },
+
+        "reunions-preparation-3": {
+            "nom": "3 réunions de préparation",
+            "categorie": "service",
+            "description": "Réunion de contact, intermédiaire et finale pour préparer l'événement",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["preparation", "mariage"]
+        },
+
+        "playlist-personnalisee": {
+            "nom": "Playlist personnalisée & collaborative",
+            "categorie": "service",
+            "description": "Playlist sur-mesure, collaborative avec les mariés/invités",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["playlist"]
+        },
+
+        "captation-video-basique": {
+            "nom": "Captation vidéo basique",
+            "categorie": "captation",
+            "description": "Captation vidéo simple des moments clés (sans post-production complexe)",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["video", "captation"]
+        },
+
+        "captation-video-classique": {
+            "nom": "Captation vidéo classique (cérémonie + soirée)",
+            "categorie": "captation",
+            "description": "Captation cérémonie & soirée, montage professionnel",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["video", "captation", "mariage"]
+        },
+
+        "captation-video-360": {
+            "nom": "Captation vidéo 360° (Insta360)",
+            "categorie": "captation",
+            "description": "Captation immersive 360° pour version immersive",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["video", "captation_360", "immersion"]
+        },
+
+        "clip-resume-cinematique": {
+            "nom": "Clip vidéo résumé cinématique",
+            "categorie": "captation",
+            "description": "Clip vidéo résumé complet, moments clés sublimés par lumière, musique et effets",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["video", "cinematique"]
+        },
+
+        "pack-photo-soiree": {
+            "nom": "Pack Photo Soirée",
+            "categorie": "captation",
+            "description": "Moments clés de l'événement : apéritif, repas, soirée dansante. Pas de post-traitement.",
+            "prix": 150,
+            "unite_facturation": "forfait",
+            "tags": ["photo", "captation"]
+        },
+
+        "pack-photo-mariage": {
+            "nom": "Pack Photo Mariage",
+            "categorie": "captation",
+            "description": "Cérémonie, groupes et couples, post-traitement inclus",
+            "prix_min": 400,
+            "prix_max": 700,
+            "prix": 550,
+            "unite_facturation": "forfait",
+            "tags": ["photo", "mariage", "post_traitement"]
+        },
+
+        "pack-video-mariage": {
+            "nom": "Pack Vidéo Mariage",
+            "categorie": "captation",
+            "description": "Captation cérémonie & soirée, montage professionnel, version 360° pour immersion",
+            "prix_min": 400,
+            "prix_max": 700,
+            "prix": 550,
+            "unite_facturation": "forfait",
+            "tags": ["video", "mariage", "captation_360"]
+        },
+
+        "sculpture-ballons": {
+            "nom": "Sculpture sur ballons",
+            "categorie": "animation",
+            "description": "Animation sculpture sur ballons pour enfants",
+            "prix": 30,
+            "unite_facturation": "forfait",
+            "conditions": "Uniquement si moins de 10 enfants de moins de 10 ans",
+            "tags": ["enfants", "animation"]
+        },
+
+        "deplacement-50-100km": {
+            "nom": "Déplacement 50 à 100 km",
+            "categorie": "deplacement",
+            "description": "Forfait kilométrique pour déplacement entre 50 et 100 km d'Albi",
+            "prix": 50,
+            "unite_facturation": "forfait",
+            "tags": ["deplacement", "logistique"]
+        },
+
+        "deplacement-100-150km": {
+            "nom": "Déplacement 100 à 150 km",
+            "categorie": "deplacement",
+            "description": "Forfait kilométrique pour déplacement entre 100 et 150 km d'Albi",
+            "prix": 100,
+            "unite_facturation": "forfait",
+            "tags": ["deplacement", "logistique"]
+        },
+
+        "deplacement-150-200km": {
+            "nom": "Déplacement 150 à 200 km",
+            "categorie": "deplacement",
+            "description": "Forfait kilométrique pour déplacement entre 150 et 200 km d'Albi",
+            "prix": 150,
+            "unite_facturation": "forfait",
+            "tags": ["deplacement", "logistique"]
+        },
+
+        "impressions-photobooth-100": {
+            "nom": "100 impressions photobooth incluses",
+            "categorie": "consommable",
+            "description": "100 tirages 10×15 avec papier et encre",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["photobooth", "impressions"]
+        },
+
+        "impressions-photobooth-200": {
+            "nom": "200 impressions photobooth incluses",
+            "categorie": "consommable",
+            "description": "200 tirages 10×15 avec papier et encre",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["photobooth", "impressions"]
+        },
+
+        "impressions-photobooth-illimite": {
+            "nom": "Impressions photobooth illimitées",
+            "categorie": "consommable",
+            "description": "Tirages illimités sur la durée de la prestation (papier + encre couverts)",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["photobooth", "impressions", "illimite"]
+        },
+
+        "fond-photo-accessoires": {
+            "nom": "Fond photo + accessoires fun",
+            "categorie": "consommable",
+            "description": "Toile de fond photo et boîte d'accessoires fun (lunettes, chapeaux, etc.)",
+            "prix": 0,
+            "unite_facturation": "forfait",
+            "tags": ["photobooth", "accessoires"]
+        }
+
+    }
+}

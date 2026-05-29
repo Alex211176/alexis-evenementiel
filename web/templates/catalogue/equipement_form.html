@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>{% if equipement_id %}Édition · {{ equipement.nom }}{% else %}Nouvel équipement{% endif %}</h1>
+    <p class="subtitle">{% if equipement_id %}<span class="mono">{{ equipement_id }}</span>{% else %}L'id sera généré automatiquement à partir du nom{% endif %}</p>
+</header>
+
+<form action="{{ url_for('catalogue.equipement_save') }}" method="post" class="event-form">
+    <input type="hidden" name="equipement_id" value="{{ equipement_id or '' }}">
+
+    <fieldset>
+        <legend>Identité</legend>
+        <label>
+            Nom de l'équipement *
+            <input type="text" name="nom" value="{{ equipement.nom or '' }}" required>
+        </label>
+        <div class="grid-two">
+            <label>
+                Marque
+                <input type="text" name="marque" value="{{ equipement.marque or '' }}">
+            </label>
+            <label>
+                Modèle
+                <input type="text" name="modele" value="{{ equipement.modele or '' }}">
+            </label>
+        </div>
+        <label>
+            Catégorie
+            <select name="categorie">
+                {% for key, label in categories.items() %}
+                    <option value="{{ key }}" {% if equipement.categorie == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Sous-catégorie (libre)
+            <input type="text" name="sous_categorie" value="{{ equipement.sous_categorie or '' }}">
+        </label>
+        <label>
+            Description courte (affichée dans la carte catalogue)
+            <input type="text" name="description_courte" value="{{ equipement.description_courte or '' }}">
+        </label>
+        <label>
+            Description longue (optionnel)
+            <textarea name="description_longue" rows="3">{{ equipement.description_longue or '' }}</textarea>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Photo</legend>
+        <label>
+            Nom du fichier photo (à placer dans data/catalogue/photos/)
+            <input type="text" name="photo" value="{{ equipement.photo or '' }}" placeholder="ex: bose-f1-systeme.png">
+        </label>
+        {% if equipement.photo %}
+            <div style="margin-top:8px">
+                <img src="{{ url_for('catalogue.photo', filename=equipement.photo) }}"
+                     style="max-width: 200px; max-height: 200px; border:1px solid var(--rule); padding:8px; border-radius:4px"
+                     onerror="this.style.display='none'">
+            </div>
+        {% endif %}
+    </fieldset>
+
+    <fieldset>
+        <legend>Caractéristiques techniques</legend>
+        <div class="grid-two">
+            <label>
+                Puissance consommée (W)
+                <input type="number" step="0.1" name="puissance_w" value="{{ equipement.puissance_w or 0 }}">
+            </label>
+            <label>
+                Poids (kg)
+                <input type="number" step="0.1" name="poids_kg" value="{{ equipement.poids_kg or 0 }}">
+            </label>
+        </div>
+        <label>
+            Dimensions
+            <input type="text" name="dimensions" value="{{ equipement.dimensions or '' }}" placeholder="ex: 27 × 16 × 17 cm">
+        </label>
+        <label>
+            Connecteurs (séparés par des virgules)
+            <input type="text" name="connecteurs" value="{{ equipement.connecteurs | join(', ') if equipement.connecteurs else '' }}" placeholder="XLR, Jack 6.35, IEC">
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="dmx" {% if equipement.dmx %}checked{% endif %}>
+            <span>Compatible DMX</span>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Stock & disponibilité</legend>
+        <label>
+            Quantité possédée
+            <input type="number" min="1" name="quantite_possedee" value="{{ equipement.quantite_possedee or 1 }}">
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tarification & vente</legend>
+        <label>
+            Libellé de l'unité de vente
+            <input type="text" name="vente_unite_label" value="{{ equipement.vente.unite_label if equipement.vente else 'unité' }}" placeholder="unité, système, paire, set...">
+        </label>
+        <label>
+            Mode de vente
+            <select name="vente_mode" id="vente_mode" onchange="updateVenteMode()">
+                <option value="forfaitaire" {% if equipement.vente and equipement.vente.mode == 'forfaitaire' %}selected{% endif %}>Forfaitaire (prix fixe)</option>
+                <option value="unitaire" {% if equipement.vente and equipement.vente.mode == 'unitaire' %}selected{% endif %}>Unitaire (prix × quantité)</option>
+                <option value="tranches" {% if equipement.vente and equipement.vente.mode == 'tranches' %}selected{% endif %}>Tranches (paliers de quantité)</option>
+            </select>
+        </label>
+
+        <div id="vente_prix_simple">
+            <label>
+                Prix (€ HT)
+                <input type="number" step="0.01" name="vente_prix_unitaire" value="{{ equipement.vente.prix_unitaire if equipement.vente else 0 }}">
+            </label>
+        </div>
+
+        <div id="vente_paliers" style="display:none">
+            <label>
+                Paliers (format JSON, sera amélioré dans une UI future)
+                <textarea name="vente_paliers_json" rows="4" style="font-family:monospace">{{ equipement.vente.paliers | tojson if equipement.vente and equipement.vente.paliers else '[]' }}</textarea>
+                <small class="muted">Exemple : <code>[{"qte":1,"prix_forfait":50},{"qte":2,"prix_forfait":90}]</code></small>
+            </label>
+        </div>
+
+        <label>
+            Type de quantités autorisées
+            <select name="vente_qa_type" id="vente_qa_type" onchange="updateQAType()">
+                <option value="libre" {% if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'libre' %}selected{% endif %}>Libre (1 à stock max)</option>
+                <option value="unique" {% if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'unique' %}selected{% endif %}>Unique (1 seul)</option>
+                <option value="multiples_de" {% if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'multiples_de' %}selected{% endif %}>Multiples de N</option>
+                <option value="valeurs_fixes" {% if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'valeurs_fixes' %}selected{% endif %}>Valeurs fixes</option>
+            </select>
+        </label>
+
+        <div id="vente_qa_multiples_de" style="display:none">
+            <label>
+                Valeur du multiple
+                <input type="number" min="1" name="vente_qa_valeur_int" value="{{ equipement.vente.quantites_autorisees.valeur if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'multiples_de' else 1 }}">
+            </label>
+        </div>
+
+        <div id="vente_qa_valeurs_fixes" style="display:none">
+            <label>
+                Valeurs autorisées (séparées par des virgules)
+                <input type="text" name="vente_qa_valeurs" value="{% if equipement.vente and equipement.vente.quantites_autorisees and equipement.vente.quantites_autorisees.type == 'valeurs_fixes' %}{{ equipement.vente.quantites_autorisees.valeur | join(',') }}{% endif %}" placeholder="ex: 4, 8">
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Visibilité</legend>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_devis" {% if equipement.visible_dans is not defined or equipement.visible_dans.devis %}checked{% endif %}>
+            <span>Visible dans le devis (le client voit le prix)</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_fiche_materiel" {% if equipement.visible_dans is not defined or equipement.visible_dans.fiche_materiel %}checked{% endif %}>
+            <span>Visible dans la fiche technique (liste matériel)</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_fiche_puissance" {% if equipement.visible_dans is not defined or equipement.visible_dans.fiche_puissance %}checked{% endif %}>
+            <span>Comptabilisé dans le bilan de puissance électrique</span>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tags (recherche / filtrage)</legend>
+        <label>
+            Tags (séparés par des virgules)
+            <input type="text" name="tags" value="{{ equipement.tags | join(', ') if equipement.tags else '' }}" placeholder="mariage, exterieur_ok, piste_danse">
+        </label>
+    </fieldset>
+
+    <div class="form-actions">
+        <a href="{{ url_for('catalogue.equipements_list') }}" class="btn">Annuler</a>
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+    </div>
+</form>
+
+<script>
+function updateVenteMode() {
+    const mode = document.getElementById('vente_mode').value;
+    document.getElementById('vente_prix_simple').style.display =
+        (mode === 'forfaitaire' || mode === 'unitaire') ? '' : 'none';
+    document.getElementById('vente_paliers').style.display =
+        (mode === 'tranches') ? '' : 'none';
+}
+
+function updateQAType() {
+    const t = document.getElementById('vente_qa_type').value;
+    document.getElementById('vente_qa_multiples_de').style.display = (t === 'multiples_de') ? '' : 'none';
+    document.getElementById('vente_qa_valeurs_fixes').style.display = (t === 'valeurs_fixes') ? '' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateVenteMode();
+    updateQAType();
+});
+</script>
+
+{% endblock %}

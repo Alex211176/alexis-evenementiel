@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche Technique — {{ event.name }} · {{ prestataire.nom }}</title>
+
+    {# ============================================================ #}
+    {#  TYPOGRAPHIE                                                  #}
+    {#  - Si prestataire.fonts.custom est true, on charge la police  #}
+    {#    custom locale depuis static/fonts/                         #}
+    {#  - Sinon, on charge les Google Fonts par défaut               #}
+    {# ============================================================ #}
+    {% if prestataire.fonts and prestataire.fonts.custom %}
+        <style>
+            @font-face {
+                font-family: '{{ prestataire.fonts.display_name | default("CustomDisplay") }}';
+                src: url('{{ static_url }}/fonts/{{ prestataire.fonts.display_file }}') format('{{ prestataire.fonts.display_format | default("woff2") }}');
+                font-weight: 400 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            {% if prestataire.fonts.body_file %}
+            @font-face {
+                font-family: '{{ prestataire.fonts.body_name | default("CustomBody") }}';
+                src: url('{{ static_url }}/fonts/{{ prestataire.fonts.body_file }}') format('{{ prestataire.fonts.body_format | default("woff2") }}');
+                font-weight: 300 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            {% endif %}
+        </style>
+    {% else %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    {% endif %}
+
+    <style>
+        :root {
+            --ink: #0F172A;
+            --ink-soft: #334155;
+            --ink-muted: #64748B;
+            --rule: #E2E8F0;
+            --rule-soft: #F1F5F9;
+            --paper: #FFFFFF;
+            --paper-warm: #FAFAF7;
+            --accent: {{ prestataire.brand.accent_color | default("#B45309") }};
+            --accent-soft: {{ prestataire.brand.accent_soft | default("#FEF3C7") }};
+            --alert: #991B1B;
+            --alert-soft: #FEF2F2;
+
+            {% if prestataire.fonts and prestataire.fonts.custom %}
+            --font-display: '{{ prestataire.fonts.display_name | default("CustomDisplay") }}', 'Fraunces', Georgia, serif;
+            --font-body: '{{ prestataire.fonts.body_name | default(prestataire.fonts.display_name) | default("CustomBody") }}', 'IBM Plex Sans', system-ui, sans-serif;
+            {% else %}
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+            {% endif %}
+            --font-mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        body {
+            font-family: var(--font-body);
+            font-weight: 400;
+            color: var(--ink);
+            background-color: #E5E7EB;
+            line-height: 1.65;
+            padding: 48px 20px;
+            font-size: 14px;
+        }
+
+        .document {
+            max-width: 880px;
+            margin: 0 auto;
+            background: var(--paper);
+            padding: 64px 72px 56px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 32px rgba(15, 23, 42, 0.08);
+            position: relative;
+        }
+
+        .document::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 60%, var(--accent) 60%, var(--accent) 100%);
+        }
+
+        /* ===== EN-TÊTE ===== */
+        .header {
+            display: grid;
+            grid-template-columns: {% if prestataire.brand.logo_file %}auto 1fr auto{% else %}1fr auto{% endif %};
+            gap: 24px;
+            align-items: end;
+            padding-bottom: 28px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .header-logo {
+            max-height: 64px;
+            width: auto;
+            display: block;
+        }
+
+        .brand-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .brand-title {
+            font-family: var(--font-display);
+            font-size: 38px;
+            font-weight: 500;
+            line-height: 1.05;
+            letter-spacing: -0.015em;
+            color: var(--ink);
+        }
+
+        .brand-subtitle {
+            font-size: 13px;
+            color: var(--ink-muted);
+            font-weight: 400;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .doc-type { text-align: right; }
+
+        .doc-type-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--ink-muted);
+            margin-bottom: 6px;
+        }
+
+        .doc-type-value {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        /* ===== MÉTADONNÉES ===== */
+        .doc-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin-bottom: 40px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .doc-meta-item {
+            padding: 14px 16px 14px 0;
+            border-right: 1px solid var(--rule);
+        }
+
+        .doc-meta-item:last-child { border-right: none; padding-right: 0; }
+
+        .doc-meta-label {
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 9.5px;
+            margin-bottom: 4px;
+        }
+
+        .doc-meta-value { color: var(--ink); font-weight: 500; }
+
+        /* ===== SECTIONS ===== */
+        section { margin-bottom: 40px; }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .section-number {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        h3 {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--ink-muted);
+            margin-bottom: 12px;
+        }
+
+        .grid-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .grid-three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+
+        .card {
+            background-color: var(--paper-warm);
+            border: 1px solid var(--rule);
+            padding: 22px 24px;
+        }
+
+        p, li { font-size: 13.5px; color: var(--ink-soft); }
+        p + p { margin-top: 10px; }
+
+        ul { list-style-type: none; }
+
+        li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 10px;
+        }
+
+        li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 1px;
+            background-color: var(--accent);
+        }
+
+        li:last-child { margin-bottom: 0; }
+        strong { color: var(--ink); font-weight: 600; }
+        em { color: var(--ink-muted); font-style: italic; }
+
+        .callout {
+            background-color: var(--accent-soft);
+            border-left: 3px solid var(--accent);
+            padding: 16px 22px;
+            margin-bottom: 18px;
+        }
+
+        .callout p { color: #78350F; }
+
+        .alert {
+            background-color: var(--alert-soft);
+            border-left: 3px solid var(--alert);
+            padding: 16px 22px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--alert);
+            line-height: 1;
+        }
+
+        .alert p { color: #7F1D1D; font-weight: 500; }
+
+        .info-block {
+            font-size: 13.5px;
+            color: var(--ink-soft);
+            line-height: 1.9;
+        }
+
+        .info-block strong {
+            display: inline-block;
+            min-width: 110px;
+            color: var(--ink-muted);
+            font-weight: 500;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
+
+        thead th {
+            background-color: var(--ink);
+            color: var(--paper);
+            text-align: left;
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        thead th:last-child { text-align: right; }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink-soft);
+        }
+
+        tbody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background-color: var(--rule-soft); }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 2px solid var(--ink);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .footer-col h4 {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .footer-col p {
+            font-size: 12.5px;
+            color: var(--ink-soft);
+            line-height: 1.6;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--ink-muted);
+            font-style: italic;
+            padding-top: 20px;
+            border-top: 1px solid var(--rule);
+            font-family: var(--font-display);
+        }
+
+        @media print {
+            body { background-color: var(--paper); padding: 0; font-size: 11pt; }
+            .document { box-shadow: none; padding: 24px 32px; max-width: 100%; }
+            .document::before { display: none; }
+            section { page-break-inside: avoid; }
+            .footer { page-break-inside: avoid; }
+        }
+
+        @media (max-width: 720px) {
+            body { padding: 16px 8px; }
+            .document { padding: 32px 24px; }
+            .header { grid-template-columns: 1fr; }
+            .doc-type { text-align: left; }
+            .brand-title { font-size: 28px; }
+            .doc-meta { grid-template-columns: 1fr 1fr; }
+            .doc-meta-item { border-right: none; border-bottom: 1px solid var(--rule); padding: 12px 0; }
+            .grid-two-col { grid-template-columns: 1fr; }
+            .grid-three-col { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="document">
+
+    {# ============================================================ #}
+    {#  EN-TÊTE — logo conditionnel                                  #}
+    {# ============================================================ #}
+    <header class="header">
+        {% if prestataire.brand.logo_file %}
+            <img class="header-logo" src="{{ static_url }}/images/{{ prestataire.brand.logo_file }}" alt="Logo {{ prestataire.nom }}">
+        {% endif %}
+        <div>
+            <div class="brand-eyebrow">{{ prestataire.tagline }}</div>
+            <h1 class="brand-title">{{ prestataire.nom }}</h1>
+            <div class="brand-subtitle">{{ prestataire.sous_titre }}</div>
+        </div>
+        <div class="doc-type">
+            <div class="doc-type-label">Document</div>
+            <div class="doc-type-value">Fiche Technique<br>& Logistique</div>
+        </div>
+    </header>
+
+    <!-- MÉTADONNÉES -->
+    <div class="doc-meta">
+        <div class="doc-meta-item">
+            <div class="doc-meta-label">Référence</div>
+            <div class="doc-meta-value">{{ document.reference }}</div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="doc-meta-label">Émission</div>
+            <div class="doc-meta-value">{{ document.date_emission }}</div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="doc-meta-label">Événement</div>
+            <div class="doc-meta-value">{{ event.name }}</div>
+        </div>
+        <div class="doc-meta-item">
+            <div class="doc-meta-label">Lieu</div>
+            <div class="doc-meta-value">{{ event.location }}</div>
+        </div>
+    </div>
+
+    <!-- 1. CADRE LÉGAL -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">01</span>
+            <h2>Cadre légal & assurances</h2>
+        </div>
+        <div class="grid-two-col">
+            <div class="card">
+                <h3>Structure juridique</h3>
+                <div class="info-block">
+                    <p><strong>Entrepreneur</strong> {{ prestataire.nom }}</p>
+                    <p><strong>Régime</strong> {{ prestataire.regime }}</p>
+                    <p><strong>SIRET</strong> {{ prestataire.siret }}</p>
+                    <p><strong>Code APE</strong> {{ prestataire.ape }}</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Garanties civiles</h3>
+                <div class="info-block">
+                    <p><strong>Couverture</strong> {{ prestataire.assurance.type }}</p>
+                    <p><strong>Compagnie</strong> {{ prestataire.assurance.compagnie }}</p>
+                    <p><strong>Contrat N°</strong> {{ prestataire.assurance.contrat }}</p>
+                    <p style="margin-top: 6px;"><em>Attestation d'assurance valide remise sur simple demande.</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ALIMENTATION ÉLECTRIQUE -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">02</span>
+            <h2>Alimentation & puissances électriques</h2>
+        </div>
+        <div class="callout">
+            <p><strong>Demande technique :</strong> {{ electricite.nb_prises }} prises directes <strong>{{ electricite.amperage }} A / {{ electricite.voltage }} V</strong>, idéalement réparties sur des circuits distincts.</p>
+        </div>
+        <div class="card">
+            <h3>Spécifications globales</h3>
+            <ul>
+                <li><strong>Puissance crête estimée :</strong> ≈ {{ electricite.puissance_kw }} kW maximum. L'usage d'amplificateurs de classe D et d'un parc lumière exclusivement LED garantit une consommation maîtrisée, sans risque de surcharge.</li>
+                <li><strong>Conformité :</strong> raccordement obligatoire à une terre fonctionnelle, protection en amont par disjoncteurs différentiels 30 mA conformes aux normes ERP.</li>
+                <li><strong>Distribution secondaire :</strong> l'intégralité du câblage, des prolongateurs et des liaisons CE est fournie et déployée par le prestataire.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 3. MATÉRIEL -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">03</span>
+            <h2>Configuration matérielle</h2>
+        </div>
+        <div class="{% if materiel.divers %}grid-three-col{% else %}grid-two-col{% endif %}">
+            <div class="card">
+                <h3>Sonorisation & vidéo</h3>
+                <ul>
+                {% for item in materiel.son_video %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Lumière & atmosphère</h3>
+                <ul>
+                {% for item in materiel.lumiere %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% if materiel.divers %}
+            <div class="card">
+                <h3>Divers</h3>
+                <ul>
+                {% for item in materiel.divers %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- 4. PERSONNEL -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">04</span>
+            <h2>Personnel & interlocuteur</h2>
+        </div>
+        <div class="card">
+            <ul>
+                <li><strong>Effectif technique sur site :</strong> {{ personnel.effectif }}.</li>
+                <li><strong>Interlocuteur unique :</strong> {{ personnel.interlocuteur }}, joignable du montage au démontage.</li>
+                <li><strong>Restauration & boissons :</strong> pour toute prestation supérieure à {{ personnel.seuil_repas_h }} heures de présence sur site, la mise à disposition d'un repas chaud et de boissons non alcoolisées est demandée à l'organisateur.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 5. LOGISTIQUE -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">05</span>
+            <h2>Contraintes logistiques & horaires</h2>
+        </div>
+        <div class="card">
+            <ul>
+                <li><strong>Montage & balances :</strong> créneau d'accès impératif à la zone scénique de <strong>{{ logistique.montage_h }}</strong> avant l'ouverture des portes au public.</li>
+                <li><strong>Démontage :</strong> <strong>{{ logistique.demontage_h }}</strong> après la fin réglementaire de la diffusion sonore.</li>
+                <li><strong>Espace régie :</strong> surface plane, propre et stable de <strong>{{ logistique.regie_dim }} minimum</strong> au sol.</li>
+                <li><strong>Mobilier requis :</strong> fourniture par l'organisateur de {{ logistique.nb_tables }} tables solides et stables pour supporter la régie de contrôle.</li>
+                <li><strong>Accès technique :</strong> voie carrossable indispensable pour le déchargement de matériel lourd à proximité immédiate de la régie.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 6. DROITS DE DIFFUSION -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">06</span>
+            <h2>Droits de diffusion & nuisances sonores</h2>
+        </div>
+        <div class="card">
+            <ul>
+                <li><strong>SACEM / SPRÉ :</strong> la déclaration et le règlement des droits d'auteur et droits voisins relatifs à la diffusion musicale publique relèvent de la responsabilité de l'organisateur.</li>
+                <li><strong>Niveaux sonores :</strong> le prestataire s'engage à respecter les seuils légaux applicables au lieu (décret n°2017-1244 relatif à la prévention des risques liés aux sons amplifiés) et toute prescription locale (arrêté municipal ou préfectoral) communiquée préalablement.</li>
+                <li><strong>Horaires de fin :</strong> {% if event.horaire_fin %}fin de diffusion sonore prévue à <strong>{{ event.horaire_fin }}</strong>.{% else %}l'horaire réglementaire de fin de diffusion doit être communiqué au prestataire au moins 7 jours avant l'événement.{% endif %}</li>
+            </ul>
+        </div>
+    </section>
+
+    {% if event.outdoor %}
+    <!-- 7. INTEMPÉRIES -->
+    <section>
+        <div class="section-header">
+            <span class="section-number">07</span>
+            <h2>Dispositif extérieur — gestion des intempéries</h2>
+        </div>
+        <div class="alert">
+            <span class="alert-icon">!</span>
+            <p>Matériel technique sensible à l'humidité et au vent. Aucun compromis ne sera fait sur la sécurité électrique du public et du technicien.</p>
+        </div>
+        <div class="card" style="margin-bottom: 18px;">
+            <h3>Exigences techniques en extérieur</h3>
+            <p style="margin-bottom: 12px;">En cas de configuration en plein air, l'organisateur s'engage contractuellement à valider et déployer l'une des deux solutions suivantes au moins <strong>{{ intemperies.delai_validation_h }} heures avant l'événement</strong>, selon les bulletins de vigilance Météo-France :</p>
+            <ul>
+                <li><strong>Solution A — Repli intérieur :</strong> transfert de l'intégralité de la prestation dans une salle des fêtes ou un espace clos de secours mis à disposition par l'organisateur.</li>
+                <li><strong>Solution B — Barnum professionnel :</strong> fourniture d'une structure homologuée CTS, lestée et ancrée de manière réglementaire, d'une dimension minimale de <strong>{{ intemperies.barnum_dim }}</strong>, obligatoirement <strong>close sur 3 côtés</strong> pour parer les pluies obliques. Si le sol est instable (herbe, terre mouillée), un plancher ou un isolant lourd doit être installé sous la régie.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Clauses financières en cas d'annulation</h3>
+            <p style="margin-bottom: 10px;">Si l'événement ne peut être maintenu en extérieur pour cause de force majeure météorologique <em>et</em> qu'aucune solution de repli conforme n'a été déployée par l'organisateur, les barèmes contractuels d'indemnisation suivants s'appliquent :</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Délai de notification</th>
+                        <th>Montant dû au prestataire</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in annulation.bareme %}
+                    <tr>
+                        <td>{{ ligne.delai }}</td>
+                        <td>{% if ligne.surbrillance %}<strong>{{ ligne.montant }}</strong>{% else %}{{ ligne.montant }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p><em>À moins de 72 h, le planning est bloqué, les frais fixes de préparation sont engagés et les autres contrats potentiels ont été refusés. La prestation est juridiquement due en totalité.</em></p>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>{{ prestataire.nom }}<br>
+                {{ prestataire.ville }}<br>
+                {{ prestataire.telephone }}{% if prestataire.email %}<br>{{ prestataire.email }}{% endif %}</p>
+            </div>
+            <div class="footer-col">
+                <h4>Administratif</h4>
+                <p>SIRET {{ prestataire.siret }}<br>
+                Code APE {{ prestataire.ape }}<br>
+                {{ prestataire.tva_mention }}</p>
+            </div>
+            <div class="footer-col">
+                <h4>Conditions</h4>
+                <p>Document technique à valeur contractuelle, complémentaire au devis et aux CGV du prestataire.</p>
+            </div>
+        </div>
+        <div class="footer-note">
+            Fiche technique établie par {{ prestataire.nom }} — toute reproduction ou diffusion à des tiers requiert l'accord écrit du prestataire.
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,794 @@
+{
+    "_doc": "Catalogue équipements — base de données matériel d'Alexis Événementiel 81. Chaque entrée représente un équipement (ou un set indivisible) loué seul ou inclus dans un pack.",
+    "_schema_version": "1.0",
+    "equipements": {
+        "bose-f1-systeme": {
+            "nom": "Bose F1 (système complet)",
+            "marque": "Bose",
+            "modele": "F1 Model 812 + Subwoofer",
+            "categorie": "son",
+            "sous_categorie": "enceinte_line_array",
+            "description_courte": "Sonorisation pour plus de 100 personnes",
+            "description_longue": null,
+            "photo": "bose-f1-systeme.png",
+            "puissance_w": 800.0,
+            "poids_kg": 91.0,
+            "dimensions": null,
+            "dmx": false,
+            "connecteurs": [
+                "XLR",
+                "Jack 6.35",
+                "RCA"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "unite_label": "système",
+                "quantites_autorisees": {
+                    "type": "unique"
+                },
+                "prix_unitaire": 200.0
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "mariage",
+                "soiree_dansante",
+                "plus_100_personnes"
+            ]
+        },
+        "bose-l1": {
+            "nom": "Bose L1",
+            "marque": "Bose",
+            "modele": "L1",
+            "categorie": "son",
+            "sous_categorie": "enceinte_colonne",
+            "description_courte": "Sonorisation pour moins de 100 personnes",
+            "photo": "bose-l1.png",
+            "puissance_w": 250,
+            "poids_kg": 20,
+            "dmx": false,
+            "connecteurs": [
+                "XLR",
+                "Jack 6.35"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 150,
+                "unite_label": "système",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "moins_100_personnes",
+                "vin_honneur"
+            ]
+        },
+        "bose-s1": {
+            "nom": "Bose S1 Pro",
+            "marque": "Bose",
+            "modele": "S1 Pro",
+            "categorie": "son",
+            "sous_categorie": "enceinte_compacte",
+            "description_courte": "Sonorisation Mairie, Église, vin d'honneur (<50 pers.), fin de soirée",
+            "photo": "bose-s1.png",
+            "puissance_w": 200,
+            "poids_kg": 7,
+            "dmx": false,
+            "connecteurs": [
+                "XLR/Jack",
+                "Bluetooth"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 50,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "mairie",
+                "eglise",
+                "vin_honneur",
+                "moins_50_personnes",
+                "sur_batterie"
+            ]
+        },
+        "rcf-915": {
+            "nom": "RCF ART 915 (paire)",
+            "marque": "RCF",
+            "modele": "ART 915-A",
+            "categorie": "son",
+            "sous_categorie": "enceinte_active",
+            "description_courte": "Sonorisation vin d'honneur pour plus de 50 personnes",
+            "description_longue": "Paire d'enceintes actives 15\" avec pieds et câbles XLR.",
+            "photo": "rcf-915.png",
+            "puissance_w": 600,
+            "composition_technique": [
+                "2× RCF ART 915-A (300 W max chacune)",
+                "2× pieds d'enceinte",
+                "2× câbles XLR"
+            ],
+            "poids_kg": 40,
+            "dmx": false,
+            "connecteurs": [
+                "XLR",
+                "Jack 6.35"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 100,
+                "unite_label": "paire",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "vin_honneur",
+                "plus_50_personnes"
+            ]
+        },
+        "denon-sc-live-4": {
+            "nom": "Denon SC Live 4",
+            "marque": "Denon DJ",
+            "modele": "SC Live 4",
+            "categorie": "regie",
+            "sous_categorie": "controleur_dj",
+            "description_courte": "Régie DJ standalone 4 platines pour soirée dansante",
+            "photo": "denon-sc-live-4.png",
+            "puissance_w": 50,
+            "poids_kg": 6.5,
+            "dmx": false,
+            "connecteurs": [
+                "XLR",
+                "Jack 6.35",
+                "RCA",
+                "USB"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 50,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "soiree_dansante"
+            ]
+        },
+        "numark-mixstream-pro-go": {
+            "nom": "Numark Mixstream Pro Go",
+            "marque": "Numark",
+            "modele": "Mixstream Pro Go",
+            "categorie": "regie",
+            "sous_categorie": "controleur_dj",
+            "description_courte": "Régie DJ portable sur batterie pour vin d'honneur, cérémonies",
+            "photo": "numark-mixstream-pro-go.png",
+            "puissance_w": 30,
+            "poids_kg": 3.5,
+            "dmx": false,
+            "connecteurs": [
+                "XLR",
+                "RCA",
+                "USB",
+                "Bluetooth"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 50,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "vin_honneur",
+                "ceremonie",
+                "sur_batterie"
+            ]
+        },
+        "chauvet-gigbar-move-ils": {
+            "nom": "Chauvet GigBar Move + ILS",
+            "marque": "Chauvet DJ",
+            "modele": "GigBar Move + ILS",
+            "categorie": "lumiere",
+            "sous_categorie": "rampe_effets",
+            "description_courte": "Système 5-en-1 : moving heads, derbies, washes, laser, strobes",
+            "photo": "chauvet-gigbar-move-ils.png",
+            "puissance_w": 245,
+            "poids_kg": 10.7,
+            "dimensions": "110 × 14 × 45 cm",
+            "dmx": {
+                "nb_canaux": 50
+            },
+            "connecteurs": [
+                "XLR DMX",
+                "IEC"
+            ],
+            "vente": {
+                "mode": "tranches",
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "libre"
+                },
+                "paliers": [
+                    {
+                        "qte": 1,
+                        "prix_forfait": 50
+                    },
+                    {
+                        "qte": 2,
+                        "prix_forfait": 90
+                    }
+                ]
+            },
+            "quantite_possedee": 2,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "piste_danse",
+                "eclairage_ils"
+            ]
+        },
+        "chauvet-colorband-t3bt": {
+            "nom": "Chauvet Colorband T3BT",
+            "marque": "Chauvet DJ",
+            "modele": "Colorband T3BT",
+            "categorie": "lumiere",
+            "sous_categorie": "barre_led",
+            "description_courte": "Barre LED architecturale pour éclairage piste de danse",
+            "photo": "chauvet-colorband-t3bt.png",
+            "puissance_w": 37,
+            "poids_kg": 3,
+            "dimensions": "100 × 9,8 × 14 cm",
+            "dmx": {
+                "nb_canaux": 9
+            },
+            "connecteurs": [
+                "XLR DMX",
+                "IEC",
+                "Bluetooth"
+            ],
+            "vente": {
+                "mode": "tranches",
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "libre"
+                },
+                "paliers": [
+                    {
+                        "qte": 1,
+                        "prix_forfait": 30
+                    },
+                    {
+                        "qte": 2,
+                        "prix_forfait": 55
+                    }
+                ]
+            },
+            "quantite_possedee": 2,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "piste_danse",
+                "architectural"
+            ]
+        },
+        "chauvet-swarm-fx": {
+            "nom": "Chauvet Swarm FX",
+            "marque": "Chauvet DJ",
+            "modele": "Swarm FX",
+            "categorie": "lumiere",
+            "sous_categorie": "effet_multi",
+            "description_courte": "Effet multi-fonctions 5-en-1 pour piste de danse",
+            "photo": "chauvet-swarm-fx.png",
+            "puissance_w": 60,
+            "poids_kg": 3.5,
+            "dmx": {
+                "nb_canaux": 6
+            },
+            "connecteurs": [
+                "XLR DMX",
+                "IEC"
+            ],
+            "vente": {
+                "mode": "tranches",
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "libre"
+                },
+                "paliers": [
+                    {
+                        "qte": 1,
+                        "prix_forfait": 30
+                    },
+                    {
+                        "qte": 2,
+                        "prix_forfait": 55
+                    }
+                ]
+            },
+            "quantite_possedee": 2,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "piste_danse"
+            ]
+        },
+        "chauvet-h9-set": {
+            "nom": "Set de 4 PAR H9 (architectural)",
+            "marque": "Chauvet DJ",
+            "modele": "Freedom Par H9 IP — set de 4",
+            "categorie": "lumiere",
+            "sous_categorie": "par_led_batterie",
+            "description_courte": "Éclairage architectural sur batterie — 4 PARs LED autonomes",
+            "description_longue": "Set de 4 PAR LED Freedom H9 IP sur batterie autonome, idéal pour mise en valeur architecturale d'une salle. Tu disposes de 2 sets (= 8 PARs au total).",
+            "photo": "chauvet-h9-set-8.png",
+            "puissance_w": 320,
+            "poids_kg": 14.4,
+            "dimensions": "Set de 4 PARs",
+            "dmx": {
+                "nb_canaux": 23
+            },
+            "connecteurs": [
+                "XLR DMX",
+                "IEC (charge)"
+            ],
+            "vente": {
+                "mode": "tranches",
+                "unite_label": "set de 4",
+                "quantites_autorisees": {
+                    "type": "libre"
+                },
+                "paliers": [
+                    {
+                        "qte": 1,
+                        "prix_forfait": 90
+                    },
+                    {
+                        "qte": 2,
+                        "prix_forfait": 150
+                    }
+                ]
+            },
+            "quantite_possedee": 2,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "architectural",
+                "sur_batterie",
+                "sans_fil"
+            ]
+        },
+        "boule-facettes-spot": {
+            "nom": "Boule à facettes 50 cm + spot LED",
+            "marque": null,
+            "modele": null,
+            "categorie": "lumiere",
+            "sous_categorie": "effet_classique",
+            "description_courte": "Boule à facettes 50 cm motorisée avec spot LED dédié",
+            "photo": "boule-facettes-spot.png",
+            "puissance_w": 30,
+            "poids_kg": 6,
+            "dmx": false,
+            "connecteurs": [
+                "IEC"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 100,
+                "unite_label": "set",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "effet_classique",
+                "mariage"
+            ]
+        },
+        "martin-magnum-2500": {
+            "nom": "Martin Magnum 2500 (machine à brouillard)",
+            "marque": "Martin",
+            "modele": "Magnum 2500 Hazer",
+            "categorie": "effet",
+            "sous_categorie": "machine_brouillard",
+            "description_courte": "Machine à brouillard pour sublimer l'éclairage de la piste (inodore)",
+            "photo": "martin-magnum-2500.png",
+            "puissance_w": 1500,
+            "poids_kg": 19,
+            "dmx": {
+                "nb_canaux": 2
+            },
+            "connecteurs": [
+                "XLR DMX",
+                "IEC"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 50,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "effet",
+                "piste_danse",
+                "inodore"
+            ]
+        },
+        "ecoflow-station-energetique": {
+            "nom": "Station énergétique portable EcoFlow",
+            "marque": "EcoFlow",
+            "modele": "River 2 Pro",
+            "categorie": "energie",
+            "sous_categorie": "batterie_portable",
+            "description_courte": "Station portable pour s'affranchir de tout problème électrique",
+            "description_longue": "Permet de continuer la prestation même en cas de coupure secteur ou d'absence de prise à proximité.",
+            "photo": "ecoflow-station-energetique.png",
+            "puissance_w": 0,
+            "poids_kg": 7.8,
+            "dmx": false,
+            "connecteurs": [
+                "Schuko EU",
+                "USB-A",
+                "USB-C"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 50,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": false
+            },
+            "tags": [
+                "backup_energie",
+                "exterieur"
+            ]
+        },
+        "ecran-projection-150": {
+            "nom": "Écran de projection KIMEX 150\" + vidéoprojecteur EPSON UCF",
+            "marque": "KIMEX + EPSON",
+            "modele": "Écran 150\" + EPSON UCF",
+            "categorie": "video",
+            "sous_categorie": "projection",
+            "description_courte": "Écran géant + vidéoprojecteur ultra courte focale (photos, paroles, diaporamas)",
+            "description_longue": "Set complet écran 150\" sur cadre + vidéoprojecteur EPSON ultra courte focale. Idéal pour projection des photos du photobooth, chorégraphies, paroles, diaporamas.",
+            "photo": "ecran-kimex-150.png",
+            "puissance_w": 350,
+            "composition_technique": [
+                "1× écran KIMEX 150\" sur cadre",
+                "1× vidéoprojecteur EPSON ultra courte focale"
+            ],
+            "poids_kg": 35,
+            "dmx": false,
+            "connecteurs": [
+                "HDMI",
+                "IEC"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 250,
+                "unite_label": "ensemble",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "projection",
+                "diaporama",
+                "karaoke"
+            ]
+        },
+        "photobooth-canon-5d": {
+            "nom": "Photobooth Canon 5D Mark III",
+            "marque": "Canon",
+            "modele": "EOS 5D Mark III + setup photobooth",
+            "categorie": "photo",
+            "sous_categorie": "photobooth",
+            "description_courte": "Photobooth complet sur trépied, fond photo + accessoires fun",
+            "description_longue": "Setup photobooth professionnel : appareil Canon 5D Mark III, tablette de contrôle, trépied, fond photo, accessoires fun. Possibilité d'accessoires personnalisés en impression 3D.",
+            "photo": "photobooth-canon-5d.png",
+            "puissance_w": 30,
+            "poids_kg": 8,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 150,
+                "unite_label": "set",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": false,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "photobooth",
+                "interne_aux_packs"
+            ]
+        },
+        "mobile-booth": {
+            "nom": "Mobile Booth",
+            "marque": null,
+            "modele": "Rig photobooth mobile",
+            "categorie": "photo",
+            "sous_categorie": "photobooth_mobile",
+            "description_courte": "Rig mobile pour photobooth itinérant (smartphone + éclairage LED)",
+            "description_longue": "Concept unique : un photobooth qui circule entre les invités plutôt que statique. Indissociable d'un pack Photobooth Classic ou Illimité.",
+            "photo": "mobile-booth.png",
+            "puissance_w": 10,
+            "poids_kg": 1.5,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 100,
+                "unite_label": "set",
+                "quantites_autorisees": {
+                    "type": "unique"
+                },
+                "conditionnel": {
+                    "requiert": "any_of",
+                    "items": [
+                        "pack-photobooth-classic-100",
+                        "pack-photobooth-classic-200",
+                        "pack-photobooth-illimite"
+                    ]
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "photobooth",
+                "mobile",
+                "conditionnel"
+            ]
+        },
+        "imprimante-canon-selphy": {
+            "nom": "Imprimante Canon Selphy CP",
+            "marque": "Canon",
+            "modele": "Selphy CP",
+            "categorie": "photo",
+            "sous_categorie": "imprimante",
+            "description_courte": "Imprimante à sublimation thermique compacte",
+            "photo": "imprimante-canon-selphy.png",
+            "puissance_w": 60,
+            "poids_kg": 0.85,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 0,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": false,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "photobooth",
+                "interne_aux_packs"
+            ]
+        },
+        "imprimante-dnp": {
+            "nom": "Imprimante DNP DS620",
+            "marque": "DNP",
+            "modele": "DS620",
+            "categorie": "photo",
+            "sous_categorie": "imprimante_pro",
+            "description_courte": "Imprimante professionnelle à sublimation thermique grande capacité",
+            "photo": "imprimante-dnp.png",
+            "puissance_w": 350,
+            "poids_kg": 14,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 0,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": false,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "photobooth",
+                "pro",
+                "interne_aux_packs"
+            ]
+        },
+        "canon-r6-mark-ii": {
+            "nom": "Canon EOS R6 Mark II",
+            "marque": "Canon",
+            "modele": "EOS R6 Mark II",
+            "categorie": "photo",
+            "sous_categorie": "appareil_photo_pro",
+            "description_courte": "Appareil photo hybride plein format pour captation événementielle",
+            "photo": "canon-r6-mark-ii.png",
+            "puissance_w": 0,
+            "poids_kg": 0.67,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 0,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": false,
+                "fiche_materiel": true,
+                "fiche_puissance": false
+            },
+            "tags": [
+                "captation",
+                "photo_pro",
+                "interne_aux_packs"
+            ]
+        },
+        "insta360-x5": {
+            "nom": "Insta360 X5",
+            "marque": "Insta360",
+            "modele": "X5",
+            "categorie": "video",
+            "sous_categorie": "camera_360",
+            "description_courte": "Caméra 360° pour captation immersive",
+            "photo": "insta360-x5.png",
+            "puissance_w": 0,
+            "poids_kg": 0.2,
+            "vente": {
+                "mode": "forfaitaire",
+                "prix_unitaire": 0,
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                }
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": false,
+                "fiche_materiel": true,
+                "fiche_puissance": false
+            },
+            "tags": [
+                "captation_360",
+                "immersion",
+                "interne_aux_packs"
+            ]
+        },
+        "chauvet-geyser-t6": {
+            "nom": "Chauvet Geyser T6",
+            "marque": "Chauvet DJ",
+            "modele": "Geyser T6",
+            "categorie": "effet",
+            "sous_categorie": "machine_fumee_verticale",
+            "description_courte": "Machine à fumée verticale (effet pyrotechnique) avec 6 LEDs RGB",
+            "description_longue": "Effet pyrotechnique sans pyrotechnie : jet de fumée vertical à base d'eau, illuminé par 6 LEDs RGB tri-color. Compact, léger, parfait pour les prestations mobiles. Capteur de fluide avec arrêt automatique. Multiples options de contrôle (télécommande sans fil FCM, bouton manuel, controller WMS optionnel).",
+            "photo": "chauvet-geyser-t6.jpg",
+            "puissance_w": 830,
+            "poids_kg": 3.2,
+            "dimensions": "30,5 × 21 × 17,8 cm",
+            "dmx": false,
+            "connecteurs": [
+                "IEC",
+                "Télécommande FCM"
+            ],
+            "vente": {
+                "mode": "tranches",
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "libre"
+                },
+                "paliers": [
+                    {
+                        "qte": 1,
+                        "prix_forfait": 60
+                    },
+                    {
+                        "qte": 2,
+                        "prix_forfait": 100
+                    }
+                ]
+            },
+            "quantite_possedee": 2,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true
+            },
+            "tags": [
+                "effet",
+                "piste_danse",
+                "pyrotechnique_safe",
+                "machine_fumee",
+                "vertical"
+            ]
+        }
+    }
+}

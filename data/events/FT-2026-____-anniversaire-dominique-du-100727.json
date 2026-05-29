@@ -1,0 +1,45 @@
+{
+    "document": {
+        "reference": "FT-2026-____",
+        "date_emission": "29/05/2026"
+    },
+    "event": {
+        "name": "Anniversaire Dominique du 10/07/27",
+        "location": "Salle des fêtes des Farguettes, 81190",
+        "outdoor": false,
+        "horaire_fin": "03h00"
+    },
+    "client": {
+        "prenom": "Cyrielle",
+        "nom": "Cyrielle",
+        "email": "",
+        "telephone": "0621689373",
+        "adresse": "41 chemin du Batut 81400 Carmaux",
+        "entreprise": "",
+        "siret": ""
+    },
+    "mode_composition": "catalogue",
+    "pack_id": "full-soiree",
+    "supplements": [
+        {
+            "id": "photobooth-canon-5d",
+            "quantite": 1
+        },
+        {
+            "id": "imprimante-dnp",
+            "quantite": 1
+        },
+        {
+            "id": "canon-r6-mark-ii",
+            "quantite": 1
+        }
+    ],
+    "retraits": {
+        "equipements": [
+            "ecran-projection-150"
+        ],
+        "prestations": []
+    },
+    "bilan_override": false,
+    "prises_override": false
+}

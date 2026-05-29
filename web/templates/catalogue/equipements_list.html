@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap: 24px;">
+        <div>
+            <h1>Catalogue — Équipements</h1>
+            <p class="subtitle">{% set total = namespace(n=0) %}{% for g in groupes.values() %}{% set total.n = total.n + g|length %}{% endfor %}{{ total.n }} équipement(s) dans {{ groupes|length }} catégorie(s)</p>
+        </div>
+        <div>
+            <a href="{{ url_for('catalogue.equipement_new') }}" class="btn btn-primary">+ Nouvel équipement</a>
+        </div>
+    </div>
+</header>
+
+{# Onglets sous-section catalogue #}
+<div class="cat-tabs">
+    <a class="cat-tab active" href="{{ url_for('catalogue.equipements_list') }}">Équipements</a>
+    <a class="cat-tab" href="{{ url_for('catalogue.packs_list') }}">Packs</a>
+    <a class="cat-tab" href="{{ url_for('catalogue.prestations_list') }}">Prestations</a>
+</div>
+
+{% for cat, items in groupes.items() %}
+<section class="cat-section">
+    <h2 class="cat-heading">{{ label_categorie(cat) }} <span class="muted">({{ items|length }})</span></h2>
+
+    <div class="equip-grid">
+    {% for eq in items %}
+        <div class="equip-card">
+            <div class="equip-photo">
+                {% if eq.photo %}
+                    <img src="{{ url_for('catalogue.photo', filename=eq.photo) }}"
+                         alt="{{ eq.nom }}"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="equip-photo-fallback" style="display:none">📷</div>
+                {% else %}
+                    <div class="equip-photo-fallback">📷</div>
+                {% endif %}
+            </div>
+            <div class="equip-body">
+                <h3 class="equip-name">{{ eq.nom }}</h3>
+                {% if eq.description_courte %}
+                <p class="equip-desc">{{ eq.description_courte }}</p>
+                {% endif %}
+                <div class="equip-meta">
+                    {% if eq.vente and eq.vente.mode == 'forfaitaire' %}
+                        <span class="tag">{{ eq.vente.prix_unitaire }} €</span>
+                    {% elif eq.vente and eq.vente.mode == 'unitaire' %}
+                        <span class="tag">{{ eq.vente.prix_unitaire }} €/u</span>
+                    {% elif eq.vente and eq.vente.mode == 'tranches' %}
+                        <span class="tag">paliers</span>
+                    {% endif %}
+                    {% if eq.puissance_w %}
+                        <span class="tag tag-w">{{ eq.puissance_w }} W</span>
+                    {% endif %}
+                    <span class="tag tag-stock">stock {{ eq.quantite_possedee or 1 }}</span>
+                </div>
+            </div>
+            <div class="equip-actions">
+                <a href="{{ url_for('catalogue.equipement_edit', eq_id=eq.id) }}" class="btn btn-sm">Éditer</a>
+                <form action="{{ url_for('catalogue.equipement_delete', eq_id=eq.id) }}" method="post" class="inline-form"
+                      onsubmit="return confirm('Supprimer {{ eq.nom }} ?');">
+                    <button class="btn btn-sm btn-danger">×</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</section>
+{% endfor %}
+
+{% endblock %}

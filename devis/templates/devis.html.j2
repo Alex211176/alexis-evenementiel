@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis · {{ document.reference }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 22mm;
+        }
+        :root {
+            --ink: #0F172A;
+            --ink-muted: #475569;
+            --ink-soft: #64748B;
+            --rule: #E2E8F0;
+            --rule-soft: #F1F5F9;
+            --paper: #FFFFFF;
+            --paper-warm: #FDF6EC;
+            --accent: {{ prestataire.brand.accent_color or "#B45309" }};
+            --accent-soft: {{ prestataire.brand.accent_soft or "#FEF3C7" }};
+            --danger: #B91C1C;
+            --danger-soft: #FEE2E2;
+            --success: #166534;
+            --success-soft: #DCFCE7;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 11pt;
+            color: var(--ink);
+            line-height: 1.5;
+            margin: 0;
+            background: var(--paper);
+        }
+        .document { max-width: 100%; }
+
+        .header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 18px;
+            margin-bottom: 28px;
+        }
+        .header-left { flex: 1; }
+        .header-logo {
+            max-height: 60px;
+            max-width: 180px;
+            margin-bottom: 12px;
+        }
+        .brand-eyebrow {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .brand-title {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 22pt;
+            font-weight: 600;
+            margin: 4px 0 2px;
+            letter-spacing: -0.02em;
+        }
+        .brand-subtitle {
+            font-size: 10pt;
+            color: var(--ink-muted);
+        }
+        .doc-type {
+            text-align: right;
+            font-family: "Fraunces", Georgia, serif;
+            padding-left: 28px;
+        }
+        .doc-type-label {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-muted);
+        }
+        .doc-type-value {
+            font-size: 20pt;
+            font-weight: 600;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+        .doc-type-ref {
+            font-family: "Inter", monospace;
+            font-size: 10pt;
+            color: var(--ink-muted);
+            margin-top: 6px;
+            letter-spacing: 0.04em;
+        }
+
+        /* Bloc parties (émetteur / client) */
+        .parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 28px;
+        }
+        .partie {
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 16px 18px;
+        }
+        .partie-label {
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .partie-nom {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+        .partie-meta {
+            font-size: 9.5pt;
+            color: var(--ink-soft);
+            line-height: 1.5;
+        }
+        .partie-meta div {
+            margin-bottom: 1px;
+        }
+
+        /* Métadonnées événement */
+        .event-meta {
+            background: var(--paper-warm);
+            border-left: 3px solid var(--accent);
+            padding: 14px 18px;
+            margin-bottom: 28px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+        .event-meta-item .label {
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-muted);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .event-meta-item .value {
+            font-size: 11pt;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        /* Sections */
+        section { margin-bottom: 28px; page-break-inside: avoid; }
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--rule);
+        }
+        .section-number {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 9pt;
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+        }
+        section h2 {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 15pt;
+            font-weight: 600;
+            margin: 0;
+            color: var(--ink);
+        }
+
+        /* Tableau prestations */
+        .prestations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+        }
+        .prestations-table thead th {
+            background: var(--rule-soft);
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-muted);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--rule);
+        }
+        .prestations-table thead th.right { text-align: right; }
+        .prestations-table tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+            font-size: 10.5pt;
+        }
+        .prestations-table tbody td.right { text-align: right; }
+        .prestations-table tbody td.qte { text-align: center; color: var(--ink-muted); }
+        .prestations-table tbody td .item-title { font-weight: 500; color: var(--ink); }
+        .prestations-table tbody td .item-desc {
+            font-size: 9.5pt;
+            color: var(--ink-soft);
+            margin-top: 3px;
+            line-height: 1.5;
+        }
+        .prestations-table tbody td .item-tag {
+            display: inline-block;
+            font-size: 8.5pt;
+            background: var(--rule-soft);
+            color: var(--ink-muted);
+            padding: 1px 7px;
+            border-radius: 3px;
+            margin-left: 6px;
+            letter-spacing: 0.02em;
+            font-weight: 500;
+        }
+
+        .pack-row td {
+            background: var(--paper-warm);
+        }
+        .retrait-row td {
+            background: var(--rule-soft);
+            color: var(--danger);
+            font-size: 10pt;
+            font-style: italic;
+        }
+        .retrait-row td .item-title { color: var(--danger); }
+
+        /* Bloc totaux */
+        .totaux {
+            margin-top: 14px;
+            margin-left: auto;
+            width: 55%;
+        }
+        .totaux table { width: 100%; border-collapse: collapse; }
+        .totaux td {
+            padding: 7px 12px;
+            font-size: 10.5pt;
+        }
+        .totaux td.label { color: var(--ink-muted); text-align: right; }
+        .totaux td.value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+        .totaux tr.remise td.value { color: var(--accent); }
+        .totaux tr.total-final td {
+            border-top: 2px solid var(--accent);
+            font-size: 13pt;
+            font-weight: 700;
+            color: var(--ink);
+            padding-top: 12px;
+        }
+        .totaux tr.total-final td.label { color: var(--ink); }
+        .totaux tr.acompte td { font-size: 10pt; color: var(--accent); padding-top: 2px; }
+        .totaux tr.solde td { font-size: 10pt; color: var(--ink-muted); padding-bottom: 8px; }
+
+        /* Cards (conditions / annulation) */
+        .card {
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 16px 20px;
+            background: var(--paper);
+            margin-bottom: 14px;
+        }
+        .card h3 {
+            font-size: 11pt;
+            font-weight: 600;
+            margin: 0 0 8px;
+            color: var(--ink);
+        }
+        .card ul, .card ol { margin: 0; padding-left: 20px; }
+        .card li {
+            font-size: 10pt;
+            color: var(--ink-soft);
+            padding: 2px 0;
+            line-height: 1.55;
+        }
+        .annulation-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .annulation-table td {
+            padding: 8px 12px;
+            font-size: 10pt;
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink-soft);
+        }
+        .annulation-table tr.highlight td {
+            background: var(--danger-soft);
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        /* Signature */
+        .signature-block {
+            margin-top: 32px;
+            padding-top: 18px;
+            border-top: 1px solid var(--rule);
+        }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 14px;
+        }
+        .signature-zone {
+            border: 1px dashed var(--rule);
+            border-radius: 6px;
+            padding: 14px 16px;
+            min-height: 110px;
+        }
+        .signature-zone .label {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .signature-zone .help {
+            font-size: 9pt;
+            color: var(--ink-soft);
+            font-style: italic;
+        }
+        .signature-zone.signed {
+            background: var(--success-soft);
+            border-color: var(--success);
+            border-style: solid;
+        }
+        .signature-zone img.sig-img {
+            max-height: 70px;
+            max-width: 100%;
+        }
+        .signature-zone .signed-info {
+            font-size: 9pt;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        /* Statut badge */
+        .statut-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .statut-brouillon { background: var(--rule-soft); color: var(--ink-muted); }
+        .statut-envoye { background: var(--accent-soft); color: var(--accent); }
+        .statut-accepte { background: var(--success-soft); color: var(--success); }
+        .statut-refuse { background: var(--danger-soft); color: var(--danger); }
+
+        /* Footer (mentions légales) */
+        .footer-legal {
+            margin-top: 36px;
+            padding-top: 12px;
+            border-top: 1px solid var(--rule);
+            font-size: 8.5pt;
+            color: var(--ink-muted);
+            line-height: 1.6;
+            text-align: center;
+        }
+        .footer-legal strong { color: var(--ink-soft); }
+
+        /* Print/PDF only */
+        @media print {
+            body { font-size: 10pt; }
+            section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<div class="document">
+
+    {# ==================== EN-TÊTE ==================== #}
+    <header class="header">
+        <div class="header-left">
+            {% if prestataire.brand.logo_file %}
+                <img class="header-logo" src="{{ static_url }}/images/{{ prestataire.brand.logo_file }}" alt="Logo {{ prestataire.nom }}">
+            {% endif %}
+            <div class="brand-eyebrow">{{ prestataire.tagline }}</div>
+            <h1 class="brand-title">{{ prestataire.nom_commercial or prestataire.nom }}</h1>
+            <div class="brand-subtitle">{{ prestataire.sous_titre }}</div>
+        </div>
+        <div class="doc-type">
+            <div class="doc-type-label">Document</div>
+            <div class="doc-type-value">Devis</div>
+            <div class="doc-type-ref">
+                {{ devis.reference or document.reference }}
+                {% if devis.statut %}
+                    <span class="statut-badge statut-{{ devis.statut }}">{{ devis.statut|capitalize }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    {# ==================== PARTIES ==================== #}
+    <div class="parties">
+        <div class="partie">
+            <div class="partie-label">Émetteur</div>
+            <div class="partie-nom">{{ prestataire.nom_commercial or prestataire.nom }}</div>
+            <div class="partie-meta">
+                {% if prestataire.adresse %}<div>{{ prestataire.adresse }}</div>{% endif %}
+                <div>{{ prestataire.ville }}</div>
+                {% if prestataire.telephone %}<div>📞 {{ prestataire.telephone }}</div>{% endif %}
+                {% if prestataire.email %}<div>✉️ {{ prestataire.email }}</div>{% endif %}
+                {% if prestataire.siret %}<div style="margin-top:6px;font-size:9pt;color:var(--ink-muted)">SIRET : {{ prestataire.siret }} · APE {{ prestataire.ape }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="partie">
+            <div class="partie-label">Client</div>
+            <div class="partie-nom">
+                {{ client.prenom or "" }} {{ client.nom or "—" }}
+                {% if client.entreprise %}<br><span style="font-size:10pt;color:var(--ink-soft);font-weight:400">{{ client.entreprise }}</span>{% endif %}
+            </div>
+            <div class="partie-meta">
+                {% if client.adresse %}<div>{{ client.adresse }}</div>{% endif %}
+                {% if client.email %}<div>✉️ {{ client.email }}</div>{% endif %}
+                {% if client.telephone %}<div>📞 {{ client.telephone }}</div>{% endif %}
+                {% if client.siret %}<div style="margin-top:6px;font-size:9pt;color:var(--ink-muted)">SIRET : {{ client.siret }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ==================== MÉTADONNÉES ÉVÉNEMENT ==================== #}
+    <div class="event-meta">
+        <div class="event-meta-item">
+            <div class="label">Événement</div>
+            <div class="value">{{ event.name or "—" }}</div>
+        </div>
+        <div class="event-meta-item">
+            <div class="label">Lieu</div>
+            <div class="value">{{ event.location or "—" }}</div>
+        </div>
+        <div class="event-meta-item">
+            <div class="label">Date d'émission</div>
+            <div class="value">{{ document.date_emission or "—" }}</div>
+        </div>
+    </div>
+
+    {# ==================== TABLEAU PRESTATIONS ==================== #}
+    <section>
+        <div class="section-header">
+            <span class="section-number">01</span>
+            <h2>Détail de la prestation</h2>
+        </div>
+
+        <table class="prestations-table">
+            <thead>
+                <tr>
+                    <th>Désignation</th>
+                    <th style="width:80px">Qté</th>
+                    <th class="right" style="width:120px">Prix HT</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {# ===== Pack si présent ===== #}
+                {% if pack %}
+                <tr class="pack-row">
+                    <td>
+                        <span class="item-title">{{ pack.nom }}</span>
+                        <span class="item-tag">Pack</span>
+                        {% if pack.description %}<div class="item-desc">{{ pack.description }}</div>{% endif %}
+                    </td>
+                    <td class="qte">1</td>
+                    <td class="right">{{ prix.pack_ttc | euro }}</td>
+                </tr>
+                {% endif %}
+
+                {# ===== Suppléments à la carte ===== #}
+                {% for supp in supplements_enriched or [] %}
+                <tr>
+                    <td>
+                        <span class="item-title">{{ supp.nom }}</span>
+                        <span class="item-tag">Supplément</span>
+                        {% if supp.description %}<div class="item-desc">{{ supp.description }}</div>{% endif %}
+                    </td>
+                    <td class="qte">{{ supp.quantite }}</td>
+                    <td class="right">{{ supp.prix | euro }}</td>
+                </tr>
+                {% endfor %}
+
+                {# ===== Retraits du pack (info) ===== #}
+                {% if retraits and (retraits.equipements or retraits.prestations) %}
+                {% for r in retraits.equipements %}
+                <tr class="retrait-row">
+                    <td>
+                        <span class="item-title">− Retiré du pack : {{ r.nom }}</span>
+                        <div class="item-desc">À la demande du client, cet élément a été retiré du pack.</div>
+                    </td>
+                    <td class="qte">{{ r.quantite }}</td>
+                    <td class="right">— {{ r.valeur | euro }}</td>
+                </tr>
+                {% endfor %}
+                {% for r in retraits.prestations %}
+                <tr class="retrait-row">
+                    <td>
+                        <span class="item-title">− Retiré du pack : {{ r.nom }}</span>
+                    </td>
+                    <td class="qte">{{ r.quantite }}</td>
+                    <td class="right">— {{ r.valeur | euro }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+
+        {# ===== Totaux ===== #}
+        <div class="totaux">
+            <table>
+                <tr>
+                    <td class="label">Sous-total pack</td>
+                    <td class="value">{{ prix.pack_ttc | euro }}</td>
+                </tr>
+                {% if prix.ajouts_ttc > 0 %}
+                <tr>
+                    <td class="label">+ Suppléments à la carte</td>
+                    <td class="value">+ {{ prix.ajouts_ttc | euro }}</td>
+                </tr>
+                {% endif %}
+                {% if prix.retraits_valeur_appliquee > 0 %}
+                <tr class="remise">
+                    <td class="label">− Compensation retraits</td>
+                    <td class="value">− {{ prix.retraits_valeur_appliquee | euro }}</td>
+                </tr>
+                {% endif %}
+                {% if prix.remise_commerciale and prix.remise_commerciale > 0 %}
+                <tr class="remise">
+                    <td class="label">− Remise commerciale {% if prix.remise_pct %}({{ prix.remise_pct|pct }}){% endif %}</td>
+                    <td class="value">− {{ prix.remise_commerciale | euro }}</td>
+                </tr>
+                {% endif %}
+                <tr class="total-final">
+                    <td class="label">Total TTC</td>
+                    <td class="value">{{ prix.total_ttc | euro }}</td>
+                </tr>
+                {% if devis.acompte_pct and prix.total_ttc > 0 %}
+                {% set acompte_val = (prix.total_ttc * devis.acompte_pct / 100) | round(0) %}
+                {% set solde_val = prix.total_ttc - acompte_val %}
+                <tr class="acompte">
+                    <td class="label">Acompte ({{ devis.acompte_pct|pct }}) à la signature</td>
+                    <td class="value">{{ acompte_val | euro }}</td>
+                </tr>
+                <tr class="solde">
+                    <td class="label">Solde le jour de la prestation</td>
+                    <td class="value">{{ solde_val | euro }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+        <div style="margin-top:14px;font-size:9pt;color:var(--ink-muted);font-style:italic">
+            {{ prestataire.tva_mention }}
+        </div>
+    </section>
+
+    {# ==================== CONDITIONS ==================== #}
+    <section>
+        <div class="section-header">
+            <span class="section-number">02</span>
+            <h2>Conditions générales</h2>
+        </div>
+        <div class="card">
+            <ul>
+                <li>Le présent devis est valable <strong>{{ devis.validite_jours or 30 }} jours</strong> à compter de sa date d'émission.</li>
+                <li>Un acompte de <strong>{{ devis.acompte_pct or 30 }}%</strong> est demandé à la signature pour confirmer la réservation de la date.</li>
+                <li>Le solde est dû le <strong>{{ devis.delai_paiement_solde or "jour de la prestation" }}</strong>.</li>
+                <li>{{ prestataire.tva_mention }}.</li>
+                {% if prestataire.assurance.compagnie %}
+                <li>Le prestataire est couvert par une assurance <strong>{{ prestataire.assurance.type }}</strong>
+                    auprès de <strong>{{ prestataire.assurance.compagnie }}</strong> · contrat n° {{ prestataire.assurance.contrat }}.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </section>
+
+    {# ==================== BARÈME ANNULATION ==================== #}
+    {% if annulation and annulation.bareme %}
+    <section>
+        <div class="section-header">
+            <span class="section-number">03</span>
+            <h2>Barème d'annulation</h2>
+        </div>
+        <div class="card">
+            <table class="annulation-table">
+                <thead>
+                    <tr>
+                        <td style="text-transform:uppercase;letter-spacing:0.06em;font-size:8.5pt;color:var(--ink-muted);font-weight:600;border:none">Délai de notification</td>
+                        <td style="text-transform:uppercase;letter-spacing:0.06em;font-size:8.5pt;color:var(--ink-muted);font-weight:600;border:none">Montant retenu</td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for l in annulation.bareme %}
+                <tr {% if l.surbrillance %}class="highlight"{% endif %}>
+                    <td>{{ l.delai }}</td>
+                    <td>{% if l.surbrillance %}<strong>{{ l.montant }}</strong>{% else %}{{ l.montant }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ==================== SIGNATURE ==================== #}
+    <section class="signature-block">
+        <div class="section-header">
+            <span class="section-number">04</span>
+            <h2>Validation</h2>
+        </div>
+        <div class="signature-grid">
+            <div class="signature-zone">
+                <div class="label">Émetteur</div>
+                <div style="font-weight:500;color:var(--ink)">{{ prestataire.nom }}</div>
+                <div class="help">{{ document.date_emission }}, {{ prestataire.ville }}</div>
+            </div>
+            {% if devis.signature %}
+            <div class="signature-zone signed">
+                <div class="label">Validé par le client</div>
+                {% if devis.signature.mode == "canvas" and devis.signature.image_b64 %}
+                    <img src="{{ devis.signature.image_b64 }}" class="sig-img" alt="Signature">
+                {% endif %}
+                <div style="font-weight:500;color:var(--ink);margin-top:4px">
+                    {{ devis.signature.nom or client.nom }}
+                </div>
+                <div class="signed-info">
+                    {% if devis.signature.mode == "bon_accord" %}
+                        Bon pour accord
+                    {% elif devis.signature.mode == "canvas" %}
+                        Signé électroniquement
+                    {% elif devis.signature.mode == "email" %}
+                        Validé par email
+                    {% endif %}
+                    · {{ devis.signature.timestamp }}
+                </div>
+            </div>
+            {% else %}
+            <div class="signature-zone">
+                <div class="label">Bon pour accord du client</div>
+                <div class="help">Précédé de la mention manuscrite « Lu et approuvé », nom, date et signature.</div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    {# ==================== FOOTER LÉGAL ==================== #}
+    <div class="footer-legal">
+        <strong>{{ prestataire.nom_commercial or prestataire.nom }}</strong>
+        · {{ prestataire.regime }}
+        · SIRET {{ prestataire.siret }}
+        · APE {{ prestataire.ape }}
+        {% if prestataire.assurance.compagnie %}
+        · RC Pro {{ prestataire.assurance.compagnie }} n° {{ prestataire.assurance.contrat }}
+        {% endif %}
+        <br>{{ prestataire.tva_mention }}
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>Catalogue — Prestations</h1>
+    <p class="subtitle">Services immatériels (animation, captation, déplacement…)</p>
+</header>
+
+<div class="cat-tabs">
+    <a class="cat-tab" href="{{ url_for('catalogue.equipements_list') }}">Équipements</a>
+    <a class="cat-tab" href="{{ url_for('catalogue.packs_list') }}">Packs</a>
+    <a class="cat-tab active" href="{{ url_for('catalogue.prestations_list') }}">Prestations</a>
+</div>
+
+<table class="events-table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Unité</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in prestations %}
+        <tr>
+            <td><strong>{{ p.nom }}</strong><br><small class="muted mono">{{ p.id }}</small></td>
+            <td><span class="tag">{{ p.categorie or 'autre' }}</span></td>
+            <td>{{ p.description or '—' }}</td>
+            <td class="mono">
+                {% if p.prix_min and p.prix_max %}
+                    {{ p.prix_min }} – {{ p.prix_max }} €
+                {% elif p.prix %}
+                    {{ p.prix }} €
+                {% else %}
+                    <span class="muted">inclus pack</span>
+                {% endif %}
+            </td>
+            <td>{{ p.unite_facturation or 'forfait' }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p class="muted" style="margin-top:24px"><em>L'édition des prestations via UI sera ajoutée prochainement. Pour l'instant, édite directement <code>data/catalogue/prestations.json</code>.</em></p>
+
+{% endblock %}

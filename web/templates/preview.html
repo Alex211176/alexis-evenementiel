@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header preview-header">
+    <div>
+        <h1>Aperçu</h1>
+        <p class="subtitle mono">{{ filename }}</p>
+    </div>
+    <div class="preview-actions">
+        <a href="{{ url_for('event_edit', filename=filename) }}" class="btn">Éditer</a>
+        <a href="{{ url_for('event_render', filename=filename) }}" class="btn" target="_blank">Fiche HTML</a>
+        <a href="{{ url_for('event_pdf', filename=filename) }}" class="btn">Fiche PDF</a>
+    </div>
+</header>
+
+<!-- Bloc actions devis -->
+<div class="devis-actions-bar">
+    <div class="devis-actions-info">
+        <strong>Devis associé</strong>
+        <span class="muted">— même événement, autre rendu</span>
+    </div>
+    <div class="devis-actions">
+        <a href="{{ url_for('devis.preview', event_filename=filename) }}" class="btn" target="_blank">Aperçu devis</a>
+        <a href="{{ url_for('devis.pdf', event_filename=filename) }}" class="btn">Devis PDF</a>
+        <button type="button" class="btn btn-primary" onclick="sendDevis()">📤 Envoyer au client</button>
+    </div>
+</div>
+<div id="share-link-result" style="display:none"></div>
+
+<div class="preview-frame-wrapper">
+    <iframe class="preview-frame" src="{{ url_for('event_render', filename=filename) }}"></iframe>
+</div>
+
+<script>
+async function sendDevis() {
+    try {
+        const r = await fetch("{{ url_for('devis.send_devis', event_filename=filename) }}", {
+            method: 'POST',
+        });
+        const data = await r.json();
+        const result = document.getElementById('share-link-result');
+        if (data.ok) {
+            result.style.display = '';
+            result.innerHTML = `
+                <div class="share-link-box">
+                    <strong>✅ Devis envoyé — statut "${data.statut}"</strong>
+                    <div class="share-link-row">
+                        <label>Lien à transmettre au client :</label>
+                        <input type="text" id="share-link-input" value="${data.share_url}" readonly>
+                        <button type="button" class="btn btn-sm" onclick="copyLink()">📋 Copier</button>
+                        <a href="${data.share_url}" target="_blank" class="btn btn-sm">Ouvrir</a>
+                    </div>
+                </div>`;
+        } else {
+            alert('Erreur : ' + (data.error || 'inconnue'));
+        }
+    } catch (e) {
+        alert('Erreur réseau : ' + e.message);
+    }
+}
+
+function copyLink() {
+    const inp = document.getElementById('share-link-input');
+    inp.select();
+    document.execCommand('copy');
+    alert('Lien copié !');
+}
+</script>
+
+{% endblock %}

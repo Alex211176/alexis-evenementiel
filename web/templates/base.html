@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title | default("Fiches Techniques") }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <nav class="topnav">
+        <div class="topnav-inner">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-dot"></span>
+                Fiches Techniques
+            </a>
+            <div class="topnav-links">
+                <a href="{{ url_for('index') }}">Événements</a>
+                <a href="{{ url_for('catalogue.equipements_list') }}">Catalogue</a>
+                <a href="{{ url_for('parametres.index') }}">Paramètres</a>
+                <a href="{{ url_for('event_new') }}" class="cta">+ Nouvel événement</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                {% for category, msg in messages %}
+                    <div class="flash flash-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <small>Fiche Technique · Outil local · {{ title }}</small>
+    </footer>
+</body>
+</html>

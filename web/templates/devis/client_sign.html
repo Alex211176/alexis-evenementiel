@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #B45309;
+            --accent-soft: #FEF3C7;
+            --ink: #0F172A;
+            --ink-muted: #475569;
+            --rule: #E2E8F0;
+            --rule-soft: #F1F5F9;
+            --success: #166534;
+            --success-soft: #DCFCE7;
+        }
+        body {
+            font-family: "Inter", -apple-system, sans-serif;
+            margin: 0;
+            background: #F8FAFC;
+            color: var(--ink);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 720px;
+            margin: 28px auto;
+            padding: 0 20px;
+        }
+        header.page-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 26pt;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .page-header .subtitle {
+            color: var(--ink-muted);
+            font-size: 14px;
+        }
+        .summary-box {
+            background: var(--accent-soft);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        .summary-box .event-name { font-size: 16px; font-weight: 600; color: #78350F; }
+        .summary-box .event-meta { font-size: 13px; color: #78350F; margin-top: 4px; }
+        .summary-box .total { font-size: 22pt; font-weight: 700; color: #78350F; margin-top: 8px; }
+
+        .mode-section {
+            background: white;
+            border: 2px solid var(--rule);
+            border-radius: 8px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .mode-section:hover {
+            border-color: var(--accent);
+        }
+        .mode-section.active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .mode-section.active .mode-content { display: block; }
+        .mode-content { display: none; margin-top: 18px; }
+
+        .mode-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .mode-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .mode-text h2 {
+            font-size: 15px;
+            margin: 0 0 4px;
+            font-weight: 600;
+        }
+        .mode-text p {
+            font-size: 12.5px;
+            color: var(--ink-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+        .mode-radio {
+            margin-left: auto;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--rule);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .mode-section.active .mode-radio {
+            border-color: var(--accent);
+        }
+        .mode-section.active .mode-radio::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--ink-muted);
+            margin-bottom: 4px;
+        }
+        input[type=text], input[type=date] {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            margin-bottom: 12px;
+        }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+        #canvas-wrap {
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            background: white;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        #canvas-wrap canvas { display: block; width: 100%; height: 180px; cursor: crosshair; }
+        .canvas-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 22px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--rule);
+            background: white;
+            color: var(--ink);
+            font-family: inherit;
+        }
+        .btn:hover { background: var(--rule-soft); }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: #92400E; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        .submit-row {
+            text-align: center;
+            margin-top: 24px;
+        }
+        .mention-legale {
+            font-size: 11px;
+            color: var(--ink-muted);
+            line-height: 1.55;
+            margin-top: 14px;
+            font-style: italic;
+        }
+        .alert {
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        .alert-error { background: #FEE2E2; color: #B91C1C; }
+        .alert-success { background: var(--success-soft); color: var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+<header class="page-header">
+    <h1>Signature du devis</h1>
+    <div class="subtitle">Choisissez la méthode qui vous convient pour valider le devis.</div>
+</header>
+
+<div class="summary-box">
+    <div class="event-name">{{ event.name }}</div>
+    <div class="event-meta">{{ prestataire.nom_commercial or prestataire.nom }}</div>
+    <div class="total">{{ "%.0f"|format(prix_total) }} € TTC</div>
+</div>
+
+<div id="alert-area"></div>
+
+<!-- MODE 1 : Canvas -->
+<div class="mode-section" onclick="selectMode('canvas')" id="section-canvas">
+    <div class="mode-header">
+        <div class="mode-icon">🖊️</div>
+        <div class="mode-text">
+            <h2>Signature manuscrite numérique</h2>
+            <p>Signez directement à l'écran avec votre doigt ou votre souris. Valeur juridique forte.</p>
+        </div>
+        <div class="mode-radio"></div>
+    </div>
+    <div class="mode-content">
+        <label>Votre nom complet *</label>
+        <input type="text" id="canvas-nom" placeholder="Prénom Nom" value="{{ client.prenom or '' }} {{ client.nom or '' }}">
+        <label>Signature *</label>
+        <div id="canvas-wrap">
+            <canvas id="sign-canvas" width="600" height="180"></canvas>
+        </div>
+        <div class="canvas-actions">
+            <button type="button" class="btn btn-sm" onclick="clearCanvas()">Effacer</button>
+        </div>
+        <div class="mention-legale">
+            En signant, vous acceptez les conditions générales du devis et vous engagez à régler l'acompte mentionné.
+            Votre signature, la date, votre adresse IP et votre navigateur sont enregistrés à titre de preuve.
+        </div>
+        <div class="submit-row">
+            <button type="button" class="btn btn-primary" onclick="submitCanvas()">Valider et signer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODE 2 : Bon pour accord -->
+<div class="mode-section" onclick="selectMode('bon_accord')" id="section-bon_accord">
+    <div class="mode-header">
+        <div class="mode-icon">✅</div>
+        <div class="mode-text">
+            <h2>Bon pour accord (validation rapide)</h2>
+            <p>Validation par saisie de votre nom et de la date. Simple et rapide.</p>
+        </div>
+        <div class="mode-radio"></div>
+    </div>
+    <div class="mode-content">
+        <label>Votre nom complet *</label>
+        <input type="text" id="ba-nom" placeholder="Prénom Nom" value="{{ client.prenom or '' }} {{ client.nom or '' }}">
+        <label>Date *</label>
+        <input type="text" id="ba-date" placeholder="JJ/MM/AAAA">
+        <div class="mention-legale">
+            En cliquant sur « Valider », vous acceptez les conditions du devis. Votre validation,
+            la date, votre adresse IP et votre navigateur sont enregistrés à titre de preuve.
+        </div>
+        <div class="submit-row">
+            <button type="button" class="btn btn-primary" onclick="submitBonAccord()">Bon pour accord</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODE 3 : Email -->
+<div class="mode-section" onclick="selectMode('email')" id="section-email">
+    <div class="mode-header">
+        <div class="mode-icon">📧</div>
+        <div class="mode-text">
+            <h2>Validation par email</h2>
+            <p>Recevez un lien sur l'adresse {{ client.email or "votre email" }}. Cliquez dessus pour confirmer.</p>
+        </div>
+        <div class="mode-radio"></div>
+    </div>
+    <div class="mode-content">
+        <div class="mention-legale">
+            Vous allez recevoir un lien de confirmation à l'adresse <strong>{{ client.email or "(non renseignée)" }}</strong>.
+            Cliquez dessus pour valider le devis. Le lien est valable 30 jours.
+        </div>
+        <div class="submit-row">
+            <button type="button" class="btn btn-primary" onclick="submitEmail()">Envoyer le lien de validation</button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+let currentMode = null;
+let canvas = null, ctx = null, drawing = false, hasSignature = false;
+
+function selectMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + mode).classList.add('active');
+    if (mode === 'canvas') initCanvas();
+    // Date par défaut pour bon_accord
+    if (mode === 'bon_accord') {
+        const dateInput = document.getElementById('ba-date');
+        if (!dateInput.value) {
+            const d = new Date();
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            dateInput.value = `${dd}/${mm}/${yyyy}`;
+        }
+    }
+}
+
+function showAlert(msg, type) {
+    const area = document.getElementById('alert-area');
+    area.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    setTimeout(() => area.innerHTML = '', 5000);
+}
+
+function initCanvas() {
+    if (canvas) return;  // déjà initialisé
+    canvas = document.getElementById('sign-canvas');
+    ctx = canvas.getContext('2d');
+    // Ajuste la résolution interne au CSS size
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#0F172A';
+
+    function getPos(e) {
+        const r = canvas.getBoundingClientRect();
+        if (e.touches) e = e.touches[0];
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function start(e) { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+    function move(e)  { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSignature = true; e.preventDefault(); }
+    function stop()   { drawing = false; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    canvas.addEventListener('mouseup', stop);
+    canvas.addEventListener('mouseleave', stop);
+    canvas.addEventListener('touchstart', start);
+    canvas.addEventListener('touchmove', move);
+    canvas.addEventListener('touchend', stop);
+}
+
+function clearCanvas() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasSignature = false;
+}
+
+async function submitCanvas() {
+    const nom = document.getElementById('canvas-nom').value.trim();
+    if (!nom) return showAlert('Veuillez saisir votre nom', 'error');
+    if (!hasSignature) return showAlert('Veuillez dessiner votre signature', 'error');
+    const dataUrl = canvas.toDataURL('image/png');
+    await submit({ mode: 'canvas', nom, signature_b64: dataUrl });
+}
+
+async function submitBonAccord() {
+    const nom = document.getElementById('ba-nom').value.trim();
+    const dateSig = document.getElementById('ba-date').value.trim();
+    if (!nom) return showAlert('Veuillez saisir votre nom', 'error');
+    if (!dateSig) return showAlert('Veuillez saisir la date', 'error');
+    await submit({ mode: 'bon_accord', nom, date_signature: dateSig });
+}
+
+async function submitEmail() {
+    await submit({ mode: 'email' });
+}
+
+async function submit(payload) {
+    try {
+        const r = await fetch(window.location.pathname, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const data = await r.json();
+        if (!data.ok) {
+            showAlert(data.error || 'Erreur lors de la soumission', 'error');
+            return;
+        }
+        if (data.mode === 'email') {
+            showAlert(data.message || 'Email envoyé', 'success');
+            if (data.validate_url_debug) {
+                showAlert('🔧 Lien de validation (debug) : <a href="' + data.validate_url_debug + '">' + data.validate_url_debug + '</a>', 'success');
+            }
+            return;
+        }
+        if (data.redirect) {
+            showAlert('Devis validé. Redirection...', 'success');
+            setTimeout(() => window.location.href = data.redirect, 1200);
+        }
+    } catch (err) {
+        showAlert('Erreur réseau : ' + err.message, 'error');
+    }
+}
+</script>
+
+</body>
+</html>

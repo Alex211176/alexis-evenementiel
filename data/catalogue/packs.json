@@ -1,0 +1,237 @@
+{
+    "_doc": "Packs (formules tarifaires). Système d'héritage : un pack peut étendre un autre, hériter de sa composition + ajouter / retirer des éléments.",
+    "_schema_version": "1.0",
+
+    "packs": {
+
+        "_doc_section_dj_prive": "═══ PACKS DJ ÉVÉNEMENTS PRIVÉS & ANNIVERSAIRES ═══",
+
+        "signature-cocktail": {
+            "nom": "Signature Cocktail",
+            "categorie": "dj_prive",
+            "prix_ttc": 500,
+            "duree_estimee": "≈ 3h",
+            "description": "DJ + animation apéritif. Sonorisation Bose L1 (<100 pers/intérieur), lumières piste basiques, écran géant.",
+            "extends": null,
+            "composition": {
+                "equipements": [
+                    { "id": "denon-sc-live-4", "quantite": 1 },
+                    { "id": "bose-l1", "quantite": 1 },
+                    { "id": "chauvet-swarm-fx", "quantite": 2 },
+                    { "id": "martin-magnum-2500", "quantite": 1 },
+                    { "id": "ecran-projection-150", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "animation-dj-3h", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-soiree"]
+        },
+
+        "full-soiree": {
+            "nom": "Full Soirée",
+            "categorie": "dj_prive",
+            "prix_ttc": 650,
+            "duree_estimee": "soirée complète",
+            "description": "Tout Signature Cocktail + playlist collaborative, rampe GigBar, enceinte Bose S1 pour after.",
+            "extends": "signature-cocktail",
+            "composition": {
+                "equipements": [
+                    { "id": "chauvet-gigbar-move-ils", "quantite": 1 },
+                    { "id": "bose-s1", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "playlist-personnalisee", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-soiree"]
+        },
+
+        "immersion": {
+            "nom": "Immersion",
+            "categorie": "dj_prive",
+            "prix_ttc": 800,
+            "duree_estimee": "soirée complète",
+            "description": "Tout Full Soirée + 2e rampe GigBar, 2 barres LED Colorband, station énergétique, captation vidéo basique.",
+            "extends": "full-soiree",
+            "composition": {
+                "equipements": [
+                    { "id": "chauvet-gigbar-move-ils", "quantite": 1 },
+                    { "id": "chauvet-colorband-t3bt", "quantite": 2 },
+                    { "id": "ecoflow-station-energetique", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "captation-video-basique", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-soiree", "pack-video-mariage"]
+        },
+
+        "_doc_section_mariage": "═══ PACKS MARIAGE ═══",
+
+        "essentiel": {
+            "nom": "Essentiel",
+            "categorie": "mariage",
+            "prix_ttc": 1000,
+            "duree_estimee": "vin d'honneur à soirée (≈ 4h+)",
+            "description": "DJ + animation vin d'honneur à soirée, 3 réunions de préparation, sonorisation Bose L1, 2 rampes GigBar + 2 barres LED + Magnum, playlist personnalisée, écran 150\".",
+            "extends": null,
+            "composition": {
+                "equipements": [
+                    { "id": "denon-sc-live-4", "quantite": 1 },
+                    { "id": "bose-l1", "quantite": 1 },
+                    { "id": "chauvet-gigbar-move-ils", "quantite": 2 },
+                    { "id": "chauvet-colorband-t3bt", "quantite": 2 },
+                    { "id": "martin-magnum-2500", "quantite": 1 },
+                    { "id": "ecran-projection-150", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "animation-dj-soiree-complete", "quantite": 1 },
+                    { "id": "reunions-preparation-3", "quantite": 1 },
+                    { "id": "playlist-personnalisee", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-mariage", "pack-video-mariage"]
+        },
+
+        "confort": {
+            "nom": "Confort",
+            "categorie": "mariage",
+            "prix_ttc": 1300,
+            "duree_estimee": "vin d'honneur à soirée",
+            "description": "Tout Essentiel + éclairage architectural complet (H9), captation vidéo classique, enceinte Bose S1 after, station énergétique.",
+            "extends": "essentiel",
+            "composition": {
+                "equipements": [
+                    { "id": "chauvet-h9-set", "quantite": 1 },
+                    { "id": "bose-s1", "quantite": 1 },
+                    { "id": "ecoflow-station-energetique", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "captation-video-classique", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-mariage", "pack-video-mariage"]
+        },
+
+        "premium": {
+            "nom": "Premium",
+            "categorie": "mariage",
+            "prix_ttc": 1600,
+            "duree_estimee": "vin d'honneur à soirée",
+            "description": "Tout Confort + captation vidéo 360°, effets supplémentaires (boule à facettes + spot), bundle media inclus.",
+            "extends": "confort",
+            "composition": {
+                "equipements": [
+                    { "id": "boule-facettes-spot", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "captation-video-360", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": ["pack-photo-mariage"]
+        },
+
+        "cinematique": {
+            "nom": "Cinématique",
+            "categorie": "mariage",
+            "prix_ttc": 2000,
+            "duree_estimee": "vin d'honneur à soirée",
+            "description": "Tout Premium + clip vidéo résumé complet, moments clés sublimés par lumière, musique et effets spéciaux.",
+            "extends": "premium",
+            "composition": {
+                "equipements": [],
+                "prestations": [
+                    { "id": "clip-resume-cinematique", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": []
+        },
+
+        "_doc_section_photobooth": "═══ PACKS PHOTOBOOTH ═══",
+
+        "pack-photobooth-basic": {
+            "nom": "Photobooth Basic",
+            "categorie": "photobooth",
+            "prix_ttc": 150,
+            "duree_estimee": "soirée",
+            "description": "Photobooth Canon 5D Mark III sans impression. Affichage sur écran géant si prestation DJ incluse. Fond + accessoires.",
+            "extends": null,
+            "composition": {
+                "equipements": [
+                    { "id": "photobooth-canon-5d", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "fond-photo-accessoires", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": []
+        },
+
+        "pack-photobooth-classic-100": {
+            "nom": "Photobooth Classic 100 impressions",
+            "categorie": "photobooth",
+            "prix_ttc": 200,
+            "duree_estimee": "soirée",
+            "description": "Photobooth Canon 5D Mark III avec 100 impressions sublimation thermique. Fond + accessoires.",
+            "extends": "pack-photobooth-basic",
+            "composition": {
+                "equipements": [
+                    { "id": "imprimante-canon-selphy", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "impressions-photobooth-100", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": []
+        },
+
+        "pack-photobooth-classic-200": {
+            "nom": "Photobooth Classic 200 impressions",
+            "categorie": "photobooth",
+            "prix_ttc": 250,
+            "duree_estimee": "soirée",
+            "description": "Photobooth Canon 5D Mark III avec 200 impressions sublimation thermique. Fond + accessoires.",
+            "extends": "pack-photobooth-basic",
+            "composition": {
+                "equipements": [
+                    { "id": "imprimante-dnp", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "impressions-photobooth-200", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": []
+        },
+
+        "pack-photobooth-illimite": {
+            "nom": "Photobooth Illimité",
+            "categorie": "photobooth",
+            "prix_ttc": 300,
+            "duree_estimee": "soirée",
+            "description": "Photobooth Canon 5D Mark III avec impressions illimitées via imprimante pro DNP. Fond + accessoires.",
+            "extends": "pack-photobooth-basic",
+            "composition": {
+                "equipements": [
+                    { "id": "imprimante-dnp", "quantite": 1 }
+                ],
+                "prestations": [
+                    { "id": "impressions-photobooth-illimite", "quantite": 1 }
+                ]
+            },
+            "retraits": [],
+            "bundle_compatible": []
+        }
+
+    }
+}

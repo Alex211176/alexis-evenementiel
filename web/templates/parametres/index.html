@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>Paramètres</h1>
+    <p class="subtitle">Valeurs persistantes pré-remplies automatiquement dans chaque fiche et devis. Sauvegarde instantanée à chaque modification.</p>
+</header>
+
+<div class="param-status" id="param-status" aria-live="polite"></div>
+
+<form class="param-form" onsubmit="return false;">
+
+    <!-- ====================== IDENTITÉ ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">01</span> Identité</h2>
+        <div class="param-grid">
+            <label>
+                Nom légal
+                <input type="text" data-path="prestataire.nom" value="{{ data.prestataire.nom or '' }}">
+            </label>
+            <label>
+                Nom commercial
+                <input type="text" data-path="prestataire.nom_commercial" value="{{ data.prestataire.nom_commercial or '' }}">
+            </label>
+        </div>
+        <label>
+            Tagline (sur-titre)
+            <input type="text" data-path="prestataire.tagline" value="{{ data.prestataire.tagline or '' }}">
+        </label>
+        <label>
+            Sous-titre
+            <input type="text" data-path="prestataire.sous_titre" value="{{ data.prestataire.sous_titre or '' }}">
+        </label>
+    </section>
+
+    <!-- ====================== CONTACT ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">02</span> Contact</h2>
+        <div class="param-grid">
+            <label>
+                Téléphone
+                <input type="tel" data-path="prestataire.telephone" value="{{ data.prestataire.telephone or '' }}">
+            </label>
+            <label>
+                Email
+                <input type="email" data-path="prestataire.email" value="{{ data.prestataire.email or '' }}">
+            </label>
+        </div>
+        <div class="param-grid">
+            <label>
+                Ville
+                <input type="text" data-path="prestataire.ville" value="{{ data.prestataire.ville or '' }}">
+            </label>
+            <label>
+                Site web
+                <input type="url" data-path="prestataire.site_web" value="{{ data.prestataire.site_web or '' }}" placeholder="https://...">
+            </label>
+        </div>
+        <label>
+            Adresse postale (optionnelle, affichée dans les documents officiels)
+            <input type="text" data-path="prestataire.adresse" value="{{ data.prestataire.adresse or '' }}">
+        </label>
+    </section>
+
+    <!-- ====================== ADMINISTRATIF ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">03</span> Administratif</h2>
+        <div class="param-grid">
+            <label>
+                SIRET
+                <input type="text" data-path="prestataire.siret" value="{{ data.prestataire.siret or '' }}">
+            </label>
+            <label>
+                Code APE
+                <input type="text" data-path="prestataire.ape" value="{{ data.prestataire.ape or '' }}">
+            </label>
+        </div>
+        <label>
+            Régime
+            <input type="text" data-path="prestataire.regime" value="{{ data.prestataire.regime or '' }}">
+        </label>
+        <label>
+            Mention TVA (affichée en pied de page)
+            <input type="text" data-path="prestataire.tva_mention" value="{{ data.prestataire.tva_mention or '' }}">
+        </label>
+    </section>
+
+    <!-- ====================== ASSURANCE ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">04</span> Assurance RC Professionnelle</h2>
+        <div class="param-grid">
+            <label>
+                Compagnie
+                <input type="text" data-path="prestataire.assurance.compagnie" value="{{ data.prestataire.assurance.compagnie or '' }}">
+            </label>
+            <label>
+                N° de contrat
+                <input type="text" data-path="prestataire.assurance.contrat" value="{{ data.prestataire.assurance.contrat or '' }}">
+            </label>
+        </div>
+        <label>
+            Type de couverture
+            <input type="text" data-path="prestataire.assurance.type" value="{{ data.prestataire.assurance.type or '' }}">
+        </label>
+    </section>
+
+    <!-- ====================== ÉLECTRICITÉ ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">05</span> Besoins électriques par défaut</h2>
+        <p class="param-help">Valeurs pré-remplies dans chaque fiche technique. Peuvent être surchargées au cas par cas.</p>
+        <div class="param-grid-4">
+            <label>
+                Nombre de prises
+                <input type="number" data-path="electricite.nb_prises" value="{{ data.electricite.nb_prises or 4 }}">
+            </label>
+            <label>
+                Ampérage (A)
+                <input type="number" data-path="electricite.amperage" value="{{ data.electricite.amperage or 16 }}">
+            </label>
+            <label>
+                Voltage (V)
+                <input type="number" data-path="electricite.voltage" value="{{ data.electricite.voltage or 220 }}">
+            </label>
+            <label>
+                Puissance crête estimée
+                <input type="text" data-path="electricite.puissance_kw" value="{{ data.electricite.puissance_kw or '' }}" placeholder="ex: 4,5">
+            </label>
+        </div>
+    </section>
+
+    <!-- ====================== PERSONNEL ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">06</span> Personnel & restauration</h2>
+        <label>
+            Description de l'effectif technique
+            <input type="text" data-path="personnel.effectif" value="{{ data.personnel.effectif or '' }}">
+        </label>
+        <div class="param-grid">
+            <label>
+                Interlocuteur unique
+                <input type="text" data-path="personnel.interlocuteur" value="{{ data.personnel.interlocuteur or '' }}">
+            </label>
+            <label>
+                Seuil pour demande de repas (heures)
+                <input type="number" data-path="personnel.seuil_repas_h" value="{{ data.personnel.seuil_repas_h or 5 }}">
+            </label>
+        </div>
+    </section>
+
+    <!-- ====================== LOGISTIQUE ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">07</span> Logistique par défaut</h2>
+        <p class="param-help">Ces valeurs s'appliquent par défaut. Tu peux les ajuster individuellement pour chaque événement.</p>
+        <div class="param-grid">
+            <label>
+                Temps de montage
+                <input type="text" data-path="logistique.montage_h" value="{{ data.logistique.montage_h or '' }}" placeholder="ex: 4 heures">
+            </label>
+            <label>
+                Temps de démontage
+                <input type="text" data-path="logistique.demontage_h" value="{{ data.logistique.demontage_h or '' }}" placeholder="ex: 2 h 30">
+            </label>
+        </div>
+        <div class="param-grid">
+            <label>
+                Dimensions de la régie
+                <input type="text" data-path="logistique.regie_dim" value="{{ data.logistique.regie_dim or '' }}" placeholder="ex: 4 m × 2 m">
+            </label>
+            <label>
+                Nombre de tables demandées
+                <input type="number" data-path="logistique.nb_tables" value="{{ data.logistique.nb_tables or 2 }}">
+            </label>
+        </div>
+    </section>
+
+    <!-- ====================== DÉPLACEMENT ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">08</span> Déplacements</h2>
+        <div class="param-grid">
+            <label>
+                Ville de base
+                <input type="text" data-path="deplacement.ville_base" value="{{ data.deplacement.ville_base or '' }}">
+            </label>
+            <label>
+                Rayon maximum (km)
+                <input type="number" data-path="deplacement.rayon_max_km" value="{{ data.deplacement.rayon_max_km or 200 }}">
+            </label>
+        </div>
+        <h3 class="param-subhead">Barème kilométrique</h3>
+        <p class="param-help">L'édition fine du barème se fait pour l'instant en JSON. Une UI dédiée viendra plus tard.</p>
+        <table class="events-table">
+            <thead>
+                <tr><th>Tranche</th><th>Tarif</th><th>Libellé</th></tr>
+            </thead>
+            <tbody>
+                {% for t in data.deplacement.bareme %}
+                <tr>
+                    <td class="mono">{{ t.min_km }} – {{ t.max_km }} km</td>
+                    <td class="mono">{{ t.tarif }} €</td>
+                    <td>{{ t.label }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ====================== INTEMPÉRIES ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">09</span> Dispositif extérieur (intempéries)</h2>
+        <p class="param-help">Valeurs reprises dans la section intempéries de la fiche technique quand l'événement est en extérieur.</p>
+        <div class="param-grid">
+            <label>
+                Délai de validation du repli (heures avant événement)
+                <input type="number" data-path="intemperies.delai_validation_h" value="{{ data.intemperies.delai_validation_h or 48 }}">
+            </label>
+            <label>
+                Dimensions minimales du barnum
+                <input type="text" data-path="intemperies.barnum_dim" value="{{ data.intemperies.barnum_dim or '' }}" placeholder="ex: 4 m × 3 m">
+            </label>
+        </div>
+    </section>
+
+    <!-- ====================== ANNULATION ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">10</span> Barème d'annulation</h2>
+        <p class="param-help">Affiché dans la section "Clauses financières" en cas d'événement extérieur. L'édition fine se fait pour l'instant en JSON.</p>
+        <table class="events-table">
+            <thead>
+                <tr><th>Délai de notification</th><th>Montant dû</th></tr>
+            </thead>
+            <tbody>
+                {% for l in data.annulation.bareme %}
+                <tr>
+                    <td>{{ l.delai }}</td>
+                    <td>{% if l.surbrillance %}<strong>{{ l.montant }}</strong>{% else %}{{ l.montant }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ====================== BRANDING ====================== -->
+    <section class="param-section">
+        <h2><span class="param-section-num">11</span> Identité visuelle</h2>
+        <p class="param-help">Quand ton logo et ta police custom seront prêts, renseigne-les ici. Voir <code>docs/BRANDING.md</code> pour le détail.</p>
+        <div class="param-grid">
+            <label>
+                Fichier logo (dans <code>fiches/static/images/</code>)
+                <input type="text" data-path="prestataire.brand.logo_file" value="{{ data.prestataire.brand.logo_file or '' }}" placeholder="logo.svg ou logo.png">
+            </label>
+            <label>
+                Couleur d'accent
+                <input type="color" data-path="prestataire.brand.accent_color" value="{{ data.prestataire.brand.accent_color or '#B45309' }}">
+            </label>
+        </div>
+        <label class="checkbox-row">
+            <input type="checkbox" data-path="prestataire.fonts.custom" {% if data.prestataire.fonts.custom %}checked{% endif %}>
+            <span>Utiliser une police custom (à déposer dans <code>fiches/static/fonts/</code>)</span>
+        </label>
+    </section>
+
+</form>
+
+<script>
+(function() {
+    const statusEl = document.getElementById('param-status');
+    let statusTimer = null;
+
+    function showStatus(msg, cls) {
+        statusEl.textContent = msg;
+        statusEl.className = 'param-status visible ' + (cls || '');
+        if (statusTimer) clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => {
+            statusEl.classList.remove('visible');
+        }, 2000);
+    }
+
+    async function saveField(input) {
+        const path = input.dataset.path;
+        let value = input.value;
+        if (input.type === 'checkbox') value = input.checked;
+
+        try {
+            const r = await fetch('/parametres/api/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ path, value })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            showStatus('✓ Sauvegardé', 'ok');
+        } catch (err) {
+            showStatus('⚠ Erreur de sauvegarde', 'err');
+            console.error(err);
+        }
+    }
+
+    document.querySelectorAll('.param-form [data-path]').forEach(input => {
+        const ev = (input.type === 'checkbox' || input.type === 'color') ? 'change' : 'blur';
+        input.addEventListener(ev, () => saveField(input));
+    });
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+  "storage_mode": "local",
+  "app_password": "change-moi",
+  "secret_key": "change-moi-chaine-aleatoire-longue",
+  "local_data_dir": "/Volumes/CORSAIR/.CloudStorage/Data/Dropbox/Programmation/Python/Alexis évènementiel/data",
+  "dropbox": {
+    "app_key": "",
+    "app_secret": "",
+    "refresh_token": ""
+  }
+}

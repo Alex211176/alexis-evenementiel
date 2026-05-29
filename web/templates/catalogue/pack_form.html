@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>{% if pack_id %}{{ pack.nom }}{% else %}Nouveau pack{% endif %}</h1>
+    <p class="subtitle">{% if pack_id %}<span class="mono">{{ pack_id }}</span>{% else %}Édition d'un nouveau pack{% endif %}</p>
+</header>
+
+{% if pack_resolu and pack_resolu.chaine_heritage|length > 1 %}
+<div class="callout">
+    <strong>Chaîne d'héritage :</strong>
+    {% for p in pack_resolu.chaine_heritage %}
+        <code>{{ p }}</code>{% if not loop.last %} → {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="grid-two-col">
+    <section class="card">
+        <h3>Informations du pack</h3>
+        <div class="info-block">
+            <p><strong>Nom</strong> {{ pack.nom }}</p>
+            <p><strong>Catégorie</strong> {{ pack.categorie }}</p>
+            <p><strong>Prix TTC</strong> {{ pack.prix_ttc }} €</p>
+            <p><strong>Hérite de</strong> {% if pack.extends %}{{ pack.extends }}{% else %}—{% endif %}</p>
+            <p><strong>Durée</strong> {{ pack.duree_estimee or '—' }}</p>
+        </div>
+        <p style="margin-top:12px">{{ pack.description }}</p>
+    </section>
+
+    <section class="card">
+        <h3>Valorisation</h3>
+        <div class="info-block">
+            <p><strong>Prix pack</strong> {{ pack.prix_ttc }} €</p>
+            <p><strong>Valeur à la carte (auto)</strong> {{ "%.0f"|format(valeur_carte) }} €</p>
+            {% if valeur_carte > pack.prix_ttc %}
+                <p><strong>Économie client</strong> <span class="tag tag-outdoor">−{{ "%.0f"|format(valeur_carte - pack.prix_ttc) }} €</span></p>
+            {% elif valeur_carte < pack.prix_ttc %}
+                <p style="color:var(--ink-muted)"><em>La valeur à la carte est inférieure au prix du pack — c'est probablement dû à des prestations immatérielles sans prix de référence. Cliquer "Éditer" pour ajuster les prix de référence ou saisir une valeur manuelle.</em></p>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<section class="cat-section">
+    <h2 class="cat-heading">Composition complète</h2>
+
+    <h3 style="margin-top:24px">Équipements ({{ pack_resolu.composition_complete.equipements|length if pack_resolu else 0 }})</h3>
+    {% if pack_resolu %}
+    <table class="events-table">
+        <thead><tr><th>Équipement</th><th>Quantité</th></tr></thead>
+        <tbody>
+        {% for ligne in pack_resolu.composition_complete.equipements %}
+            {% set eq = catalogue.equipements.get(ligne.id, {}) %}
+            <tr>
+                <td>
+                    <strong>{{ eq.nom or ligne.id }}</strong>
+                    {% if eq.description_courte %}<br><small class="muted">{{ eq.description_courte }}</small>{% endif %}
+                </td>
+                <td class="mono">× {{ ligne.quantite }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <h3 style="margin-top:24px">Prestations ({{ pack_resolu.composition_complete.prestations|length if pack_resolu else 0 }})</h3>
+    {% if pack_resolu %}
+    <table class="events-table">
+        <thead><tr><th>Prestation</th><th>Quantité</th></tr></thead>
+        <tbody>
+        {% for ligne in pack_resolu.composition_complete.prestations %}
+            {% set p = catalogue.prestations.get(ligne.id, {}) %}
+            <tr>
+                <td>
+                    <strong>{{ p.nom or ligne.id }}</strong>
+                    {% if p.description %}<br><small class="muted">{{ p.description }}</small>{% endif %}
+                </td>
+                <td class="mono">× {{ ligne.quantite }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</section>
+
+<div class="form-actions">
+    <a href="{{ url_for('catalogue.packs_list') }}" class="btn">Retour à la liste</a>
+    <p class="muted"><em>L'édition complète des packs (ajouts, retraits, héritage) sera ajoutée dans une prochaine itération. Pour l'instant, édite directement le fichier <code>data/catalogue/packs.json</code>.</em></p>
+</div>
+
+{% endblock %}

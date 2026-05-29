@@ -1,0 +1,251 @@
+"""
+web/catalogue_routes.py — Routes catalogue (version cloud, via storage).
+
+Identique à l'original, mais : lecture/écriture du catalogue via le storage,
+et photos servies depuis le storage (Dropbox ou local) avec cache mémoire.
+"""
+
+import sys
+import json
+import mimetypes
+import re
+import unicodedata
+from pathlib import Path
+
+from flask import (
+    Blueprint, render_template, request, redirect, url_for, abort, flash, Response
+)
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from catalogue import (
+    calculer_prix, paliers_disponibles,
+    resoudre_pack, calculer_valeur_a_la_carte,
+)
+from catalogue.queries import (
+    equipements_par_categorie, packs_par_categorie,
+    label_categorie, CATEGORIE_LABELS,
+)
+from app_storage import STORAGE
+import storage_io
+
+catalogue_bp = Blueprint("catalogue", __name__, url_prefix="/catalogue")
+
+# Cache mémoire des photos (évite un appel API par vignette)
+_PHOTO_CACHE: dict = {}
+_PHOTO_CACHE_MAX = 200
+
+
+def _load():
+    return storage_io.load_catalogue(STORAGE)
+
+
+@catalogue_bp.route("/")
+def index():
+    return redirect(url_for("catalogue.equipements_list"))
+
+
+@catalogue_bp.route("/photo/<filename>")
+def photo(filename):
+    """Sert une photo d'équipement depuis le storage, avec cache."""
+    rel = f"catalogue/photos/{filename}"
+    data = _PHOTO_CACHE.get(filename)
+    if data is None:
+        if not STORAGE.exists(rel):
+            abort(404)
+        try:
+            data = STORAGE.read_bytes(rel)
+        except Exception:
+            abort(404)
+        if len(_PHOTO_CACHE) < _PHOTO_CACHE_MAX:
+            _PHOTO_CACHE[filename] = data
+    mime = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    return Response(data, mimetype=mime, headers={"Cache-Control": "public, max-age=86400"})
+
+
+# ==================== ÉQUIPEMENTS ====================
+
+@catalogue_bp.route("/equipements")
+def equipements_list():
+    cat = _load()
+    groupes = equipements_par_categorie(cat["equipements"])
+    return render_template("catalogue/equipements_list.html",
+                           groupes=groupes, label_categorie=label_categorie,
+                           title="Catalogue — Équipements")
+
+
+@catalogue_bp.route("/equipements/new")
+def equipement_new():
+    return render_template("catalogue/equipement_form.html",
+                           equipement={}, equipement_id=None,
+                           categories=CATEGORIE_LABELS, title="Nouvel équipement")
+
+
+@catalogue_bp.route("/equipements/<eq_id>/edit")
+def equipement_edit(eq_id):
+    cat = _load()
+    if eq_id not in cat["equipements"]:
+        abort(404)
+    eq = cat["equipements"][eq_id]
+    return render_template("catalogue/equipement_form.html",
+                           equipement=eq, equipement_id=eq_id,
+                           categories=CATEGORIE_LABELS,
+                           title=f"Édition · {eq.get('nom', eq_id)}")
+
+
+@catalogue_bp.route("/equipements/save", methods=["POST"])
+def equipement_save():
+    form = request.form
+    cat = _load()
+
+    eq_id = form.get("equipement_id", "").strip()
+    is_new = not eq_id
+
+    if is_new:
+        nom = form.get("nom", "").strip()
+        slug = unicodedata.normalize("NFKD", nom).encode("ascii", "ignore").decode()
+        slug = re.sub(r"[^\w\s-]", "", slug).strip().lower()
+        slug = re.sub(r"[-\s]+", "-", slug)
+        eq_id = slug
+        if not eq_id:
+            flash("Le nom est obligatoire", "error")
+            return redirect(url_for("catalogue.equipement_new"))
+        if eq_id in cat["equipements"]:
+            flash(f"Un équipement avec cet id existe déjà : {eq_id}", "error")
+            return redirect(url_for("catalogue.equipement_new"))
+
+    def _f(key, default="", typ=str):
+        val = form.get(key, default)
+        if typ == int:
+            try: return int(val) if val else None
+            except ValueError: return None
+        if typ == float:
+            try: return float(val) if val else None
+            except ValueError: return None
+        if typ == bool:
+            return val == "on"
+        return val.strip() if isinstance(val, str) else val
+
+    mode_vente = _f("vente_mode", "forfaitaire")
+    qa_type = _f("vente_qa_type", "libre")
+
+    vente = {
+        "mode": mode_vente,
+        "unite_label": _f("vente_unite_label", "unité"),
+        "quantites_autorisees": {"type": qa_type},
+    }
+
+    if qa_type == "multiples_de":
+        vente["quantites_autorisees"]["valeur"] = _f("vente_qa_valeur_int", 1, int) or 1
+    elif qa_type == "valeurs_fixes":
+        valeurs_str = form.get("vente_qa_valeurs", "").strip()
+        try:
+            valeurs = [int(x.strip()) for x in valeurs_str.split(",") if x.strip()]
+        except ValueError:
+            valeurs = []
+        vente["quantites_autorisees"]["valeur"] = valeurs
+
+    if mode_vente in ("forfaitaire", "unitaire"):
+        vente["prix_unitaire"] = _f("vente_prix_unitaire", 0, float) or 0
+    elif mode_vente == "tranches":
+        paliers_json = form.get("vente_paliers_json", "[]")
+        try:
+            vente["paliers"] = json.loads(paliers_json)
+        except json.JSONDecodeError:
+            vente["paliers"] = []
+
+    equipement = {
+        "nom": _f("nom"),
+        "marque": _f("marque") or None,
+        "modele": _f("modele") or None,
+        "categorie": _f("categorie", "autre"),
+        "sous_categorie": _f("sous_categorie") or None,
+        "description_courte": _f("description_courte") or None,
+        "description_longue": _f("description_longue") or None,
+        "photo": _f("photo") or f"{eq_id}.png",
+        "puissance_w": _f("puissance_w", 0, float) or 0,
+        "poids_kg": _f("poids_kg", 0, float) or 0,
+        "dimensions": _f("dimensions") or None,
+        "dmx": _f("dmx", False, bool),
+        "connecteurs": [c.strip() for c in form.get("connecteurs", "").split(",") if c.strip()],
+        "vente": vente,
+        "quantite_possedee": _f("quantite_possedee", 1, int) or 1,
+        "visible_dans": {
+            "devis": _f("visible_devis", False, bool),
+            "fiche_materiel": _f("visible_fiche_materiel", False, bool),
+            "fiche_puissance": _f("visible_fiche_puissance", False, bool),
+        },
+        "tags": [t.strip() for t in form.get("tags", "").split(",") if t.strip()],
+    }
+
+    cat["equipements"][eq_id] = equipement
+    storage_io.save_catalogue_section(STORAGE, cat, "equipements")
+    flash(f"Équipement sauvegardé : {equipement['nom']}", "success")
+    return redirect(url_for("catalogue.equipements_list"))
+
+
+@catalogue_bp.route("/equipements/<eq_id>/delete", methods=["POST"])
+def equipement_delete(eq_id):
+    cat = _load()
+    if eq_id not in cat["equipements"]:
+        abort(404)
+    nom = cat["equipements"][eq_id].get("nom", eq_id)
+    del cat["equipements"][eq_id]
+    storage_io.save_catalogue_section(STORAGE, cat, "equipements")
+    flash(f"Équipement supprimé : {nom}", "success")
+    return redirect(url_for("catalogue.equipements_list"))
+
+
+# ==================== PACKS ====================
+
+@catalogue_bp.route("/packs")
+def packs_list():
+    cat = _load()
+    groupes = packs_par_categorie(cat["packs"])
+    for cat_groupes in groupes.values():
+        for p in cat_groupes:
+            try:
+                pack_resolu = resoudre_pack(p["id"], cat["packs"])
+                p["_valeur_carte"] = calculer_valeur_a_la_carte(
+                    pack_resolu, cat["equipements"], cat["prestations"])
+            except Exception:
+                p["_valeur_carte"] = None
+    return render_template("catalogue/packs_list.html",
+                           groupes=groupes, label_categorie=label_categorie,
+                           title="Catalogue — Packs")
+
+
+@catalogue_bp.route("/packs/<pack_id>/edit")
+def pack_edit(pack_id):
+    cat = _load()
+    if pack_id not in cat["packs"]:
+        abort(404)
+    pack = cat["packs"][pack_id]
+    pack_resolu = resoudre_pack(pack_id, cat["packs"])
+    valeur_carte = calculer_valeur_a_la_carte(pack_resolu, cat["equipements"], cat["prestations"])
+    return render_template("catalogue/pack_form.html",
+                           pack=pack, pack_id=pack_id, pack_resolu=pack_resolu,
+                           valeur_carte=valeur_carte, catalogue=cat,
+                           categories=CATEGORIE_LABELS,
+                           title=f"Édition pack · {pack.get('nom', pack_id)}")
+
+
+@catalogue_bp.route("/packs/new")
+def pack_new():
+    cat = _load()
+    return render_template("catalogue/pack_form.html",
+                           pack={}, pack_id=None, pack_resolu=None,
+                           valeur_carte=0, catalogue=cat,
+                           categories=CATEGORIE_LABELS, title="Nouveau pack")
+
+
+# ==================== PRESTATIONS ====================
+
+@catalogue_bp.route("/prestations")
+def prestations_list():
+    cat = _load()
+    prestations = [{"id": pid, **p} for pid, p in cat["prestations"].items()]
+    prestations.sort(key=lambda x: (x.get("categorie", ""), x.get("nom", "")))
+    return render_template("catalogue/prestations_list.html",
+                           prestations=prestations, title="Catalogue — Prestations")
