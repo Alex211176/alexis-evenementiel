@@ -274,13 +274,27 @@ let supplementIndex = {{ (data.supplements or []) | length }};
 
 // État local des retraits (initialisé depuis les données sauvegardées)
 const retraitsDataAttr = document.getElementById('pack-summary').dataset.retraits;
-let currentRetraits = { equipements: [], prestations: [] };
+// currentRetraits[type] = Map(id -> {deduire:bool, montant:number|null})
+let currentRetraits = { equipements: new Map(), prestations: new Map() };
+function _ingestRetraits(arr, map) {
+    for (const item of (arr || [])) {
+        if (item && typeof item === 'object') {
+            map.set(item.id, { deduire: !!item.deduire,
+                               montant: (item.montant !== undefined ? item.montant : null) });
+        } else {
+            map.set(item, { deduire: false, montant: null });
+        }
+    }
+}
 try {
     const r = JSON.parse(retraitsDataAttr || '{}');
-    if (r.equipements) currentRetraits.equipements = [...r.equipements];
-    if (r.prestations) currentRetraits.prestations = [...r.prestations];
+    _ingestRetraits(r.equipements, currentRetraits.equipements);
+    _ingestRetraits(r.prestations, currentRetraits.prestations);
 } catch (e) {
     console.error('Erreur parsing retraits:', e);
+}
+function _retraitMap(type) {
+    return type === 'eq' ? currentRetraits.equipements : currentRetraits.prestations;
 }
 
 function updateMode() {
@@ -314,8 +328,8 @@ function onPackChange() {
         const pack = CATALOGUE.packs[packId];
         if (pack) {
             // Récupère les retraits déjà sauvegardés
-            const retraitsEq = new Set(currentRetraits.equipements || []);
-            const retraitsPr = new Set(currentRetraits.prestations || []);
+            const retraitsEq = currentRetraits.equipements;
+            const retraitsPr = currentRetraits.prestations;
 
             // Groupe les équipements par catégorie
             const parCat = {};
@@ -340,6 +354,11 @@ function onPackChange() {
                         ? `<button type="button" class="btn-pack-restore" onclick="restoreItem('eq','${item.id}')" title="Restaurer">↩</button>`
                         : `<button type="button" class="btn-pack-remove" onclick="removeItem('eq','${item.id}')" title="Retirer du pack">×</button>`;
                     detailHtml += `<li class="${css}"><span>${item.quantite}× ${item.nom}</span>${btn}</li>`;
+                    if (isRetire) {
+                        const eqCat = CATALOGUE.equipements[item.id] || {};
+                        const valCat = computePrixCatalogue(eqCat, item.quantite);
+                        detailHtml += renderDeductionRow('eq', item.id, valCat);
+                    }
                 }
                 detailHtml += `</ul></div>`;
             }
@@ -360,6 +379,11 @@ function onPackChange() {
                         ? `<button type="button" class="btn-pack-restore" onclick="restoreItem('pr','${p.id}')" title="Restaurer">↩</button>`
                         : `<button type="button" class="btn-pack-remove" onclick="removeItem('pr','${p.id}')" title="Retirer du pack">×</button>`;
                     prestaHtml += `<li class="${css}"><span>${nom}${qteLabel}</span>${btn}</li>`;
+                    if (isRetire) {
+                        const prCat = (CATALOGUE.prestations || {})[p.id] || {};
+                        const valCat = (prCat.prix || 0) * p.quantite;
+                        prestaHtml += renderDeductionRow('pr', p.id, valCat);
+                    }
                 }
                 prestaHtml += `</ul></div>`;
             }
@@ -388,34 +412,75 @@ function onPackChange() {
 }
 
 function removeItem(type, id) {
-    if (type === 'eq') {
-        if (!currentRetraits.equipements.includes(id)) currentRetraits.equipements.push(id);
-    } else {
-        if (!currentRetraits.prestations.includes(id)) currentRetraits.prestations.push(id);
-    }
+    const map = _retraitMap(type);
+    if (!map.has(id)) map.set(id, { deduire: false, montant: null });
     onPackChange();
 }
 
 function restoreItem(type, id) {
-    if (type === 'eq') {
-        currentRetraits.equipements = currentRetraits.equipements.filter(x => x !== id);
-    } else {
-        currentRetraits.prestations = currentRetraits.prestations.filter(x => x !== id);
-    }
+    _retraitMap(type).delete(id);
     onPackChange();
+}
+
+// Rend la petite UI "déduire du total" sous un item retiré (usage interne)
+function renderDeductionRow(type, id, valeurCatalogue) {
+    const map = _retraitMap(type);
+    const meta = map.get(id) || { deduire: false, montant: null };
+    const montant = (meta.montant !== null && meta.montant !== undefined) ? meta.montant : valeurCatalogue;
+    const checked = meta.deduire ? 'checked' : '';
+    const inputStyle = meta.deduire ? '' : 'style="display:none"';
+    return `
+        <li class="pack-deduction">
+            <label class="deduction-check">
+                <input type="checkbox" ${checked}
+                       onchange="toggleDeduction('${type}','${id}', this.checked, ${valeurCatalogue})">
+                <span>Déduire du total</span>
+            </label>
+            <span class="deduction-amount" id="ded-amt-${type}-${id}" ${inputStyle}>
+                −<input type="number" min="0" step="1" value="${montant}"
+                        class="deduction-input"
+                        onchange="setDeductionAmount('${type}','${id}', this.value)"> €
+            </span>
+        </li>`;
+}
+
+function toggleDeduction(type, id, checked, valeurCatalogue) {
+    const map = _retraitMap(type);
+    const meta = map.get(id) || { deduire: false, montant: null };
+    meta.deduire = checked;
+    if (meta.montant === null || meta.montant === undefined) meta.montant = valeurCatalogue;
+    map.set(id, meta);
+    const amt = document.getElementById(`ded-amt-${type}-${id}`);
+    if (amt) amt.style.display = checked ? '' : 'none';
+    updateRetraitFields();
+    recomputeBilan();
+}
+
+function setDeductionAmount(type, id, value) {
+    const map = _retraitMap(type);
+    const meta = map.get(id) || { deduire: true, montant: null };
+    const v = parseFloat(value);
+    meta.montant = isNaN(v) ? 0 : v;
+    map.set(id, meta);
+    updateRetraitFields();
+    recomputeBilan();
 }
 
 function updateRetraitFields() {
     const container = document.getElementById('retraits-list');
     container.innerHTML = '';
     let idx = 0;
-    for (const id of currentRetraits.equipements) {
-        container.innerHTML += `<input type="hidden" name="retrait_eq_${idx}" value="${id}">`;
+    for (const [id, meta] of currentRetraits.equipements) {
+        const val = JSON.stringify({ id: id, deduire: !!meta.deduire,
+            montant: (meta.montant !== null && meta.montant !== undefined) ? meta.montant : null });
+        container.innerHTML += `<input type="hidden" name="retrait_eq_${idx}" value='${val.replace(/'/g, "&#39;")}'>`;
         idx++;
     }
     idx = 0;
-    for (const id of currentRetraits.prestations) {
-        container.innerHTML += `<input type="hidden" name="retrait_pr_${idx}" value="${id}">`;
+    for (const [id, meta] of currentRetraits.prestations) {
+        const val = JSON.stringify({ id: id, deduire: !!meta.deduire,
+            montant: (meta.montant !== null && meta.montant !== undefined) ? meta.montant : null });
+        container.innerHTML += `<input type="hidden" name="retrait_pr_${idx}" value='${val.replace(/'/g, "&#39;")}'>`;
         idx++;
     }
 }
@@ -563,7 +628,7 @@ function refreshSelectAvailability() {
     // 1. Construit le map des quantités utilisées par équipement
     const utilises = {};
     const packId = document.getElementById('pack-select').value;
-    const retraitsEq = new Set(currentRetraits.equipements || []);
+    const retraitsEq = currentRetraits.equipements;
 
     if (packId && CATALOGUE.packs[packId]) {
         for (const l of CATALOGUE.packs[packId].composition_complete.equipements) {
@@ -619,7 +684,7 @@ function recomputeBilan() {
 
     const packId = document.getElementById('pack-select').value;
     const lignes = {};
-    const retraitsEq = new Set(currentRetraits.equipements || []);
+    const retraitsEq = currentRetraits.equipements;
 
     let prixPack = 0;
     if (packId && CATALOGUE.packs[packId]) {
@@ -691,28 +756,35 @@ function recomputeBilan() {
     nbPrises = Math.min(8, nbPrises);
     document.getElementById('bilan-prises').textContent = `${nbPrises} prise${nbPrises > 1 ? 's' : ''}`;
 
-    // Calcul du prix final avec règle de compensation
-    let retraitsBrut = 0;
-    for (const id of retraitsEq) {
-        if (!packId || !CATALOGUE.packs[packId]) continue;
-        const ligne = CATALOGUE.packs[packId].composition_complete.equipements.find(l => l.id === id);
-        if (!ligne) continue;
-        const eq = CATALOGUE.equipements[id];
-        if (eq) retraitsBrut += computePrixCatalogue(eq, ligne.quantite);
+    // Déductions manuelles (retraits cochés "déduire")
+    let deductionTotale = 0;
+    for (const [id, meta] of currentRetraits.equipements) {
+        if (!meta.deduire) continue;
+        let montant = meta.montant;
+        if (montant === null || montant === undefined) {
+            const eq = CATALOGUE.equipements[id];
+            const ligne = (packId && CATALOGUE.packs[packId])
+                ? CATALOGUE.packs[packId].composition_complete.equipements.find(l => l.id === id) : null;
+            montant = eq && ligne ? computePrixCatalogue(eq, ligne.quantite) : 0;
+        }
+        deductionTotale += parseFloat(montant) || 0;
     }
-    // Retraits prestations
-    for (const prId of (currentRetraits.prestations || [])) {
-        if (!packId || !CATALOGUE.packs[packId]) continue;
-        const ligne = CATALOGUE.packs[packId].composition_complete.prestations.find(l => l.id === prId);
-        if (!ligne) continue;
-        const pr = (CATALOGUE.prestations || {})[prId];
-        if (pr) retraitsBrut += (pr.prix || 0) * ligne.quantite;
+    for (const [id, meta] of currentRetraits.prestations) {
+        if (!meta.deduire) continue;
+        let montant = meta.montant;
+        if (montant === null || montant === undefined) {
+            const pr = (CATALOGUE.prestations || {})[id];
+            const ligne = (packId && CATALOGUE.packs[packId])
+                ? CATALOGUE.packs[packId].composition_complete.prestations.find(l => l.id === id) : null;
+            montant = pr && ligne ? (pr.prix || 0) * ligne.quantite : 0;
+        }
+        deductionTotale += parseFloat(montant) || 0;
     }
-    const retraitsApplique = Math.min(retraitsBrut, ajoutsTotal);
-    const total = prixPack + ajoutsTotal - retraitsApplique + horsCompensation;
 
-    // Met à jour le bloc prix (créé une fois)
-    updatePrixBox(prixPack, ajoutsTotal, retraitsBrut, retraitsApplique, total, horsCompensation);
+    // Règle simplifiée : pack − déductions + équipements + prestations/packs
+    const total = prixPack - deductionTotale + ajoutsTotal + horsCompensation;
+
+    updatePrixBox(prixPack, ajoutsTotal, deductionTotale, total, horsCompensation);
 
     // Met à jour la disponibilité des options dans le select "Ajouter"
     refreshSelectAvailability();
@@ -747,11 +819,11 @@ function computePrixCatalogue(eq, qte) {
     return 0;
 }
 
-function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total, horsCompensation) {
+function updatePrixBox(pack, ajouts, deduction, total, horsCompensation) {
     horsCompensation = horsCompensation || 0;
+    deduction = deduction || 0;
     let box = document.getElementById('prix-box');
     if (!box) {
-        // Crée le bloc si pas encore présent
         const bilanFieldset = document.querySelector('#bilan-auto').closest('fieldset');
         box = document.createElement('div');
         box.id = 'prix-box';
@@ -760,18 +832,11 @@ function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total, hors
     }
     box.style.display = '';
     let html = `<div class="prix-line"><span>Pack</span><span class="mono">${pack.toFixed(0)} €</span></div>`;
-    if (ajouts > 0) {
-        html += `<div class="prix-line"><span>+ Suppléments</span><span class="mono">+${ajouts.toFixed(0)} €</span></div>`;
+    if (deduction > 0) {
+        html += `<div class="prix-line prix-retrait"><span>− Déductions retraits <em>(interne)</em></span><span class="mono">−${deduction.toFixed(0)} €</span></div>`;
     }
-    if (retraitsBrut > 0) {
-        if (retraitsApplique > 0) {
-            html += `<div class="prix-line prix-retrait"><span>− Retraits du pack</span><span class="mono">−${retraitsApplique.toFixed(0)} €</span></div>`;
-            if (retraitsBrut > retraitsApplique) {
-                html += `<div class="prix-line prix-info"><span>&nbsp;&nbsp;<em>Moins-value brute ${retraitsBrut.toFixed(0)} € plafonnée au montant des ajouts</em></span><span></span></div>`;
-            }
-        } else {
-            html += `<div class="prix-line prix-info"><span><em>Retraits sans ajouts — pas de moins-value (${retraitsBrut.toFixed(0)} € non déduits)</em></span><span></span></div>`;
-        }
+    if (ajouts > 0) {
+        html += `<div class="prix-line"><span>+ Suppléments équipement</span><span class="mono">+${ajouts.toFixed(0)} €</span></div>`;
     }
     if (horsCompensation > 0) {
         html += `<div class="prix-line"><span>+ Prestations & packs</span><span class="mono">+${horsCompensation.toFixed(0)} €</span></div>`;

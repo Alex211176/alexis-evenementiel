@@ -497,7 +497,7 @@
                         <div class="item-desc">À la demande du client, cet élément a été retiré du pack.</div>
                     </td>
                     <td class="qte">{{ r.quantite }}</td>
-                    <td class="right">— {{ r.valeur | euro }}</td>
+                    <td class="right">{% if not r.deduire %}—{% endif %}</td>
                 </tr>
                 {% endfor %}
                 {% for r in retraits.prestations %}
@@ -506,7 +506,7 @@
                         <span class="item-title">− Retiré du pack : {{ r.nom }}</span>
                     </td>
                     <td class="qte">{{ r.quantite }}</td>
-                    <td class="right">— {{ r.valeur | euro }}</td>
+                    <td class="right">{% if not r.deduire %}—{% endif %}</td>
                 </tr>
                 {% endfor %}
                 {% endif %}
@@ -526,12 +526,6 @@
                     <td class="value">+ {{ prix.ajouts_ttc | euro }}</td>
                 </tr>
                 {% endif %}
-                {% if prix.retraits_valeur_appliquee > 0 %}
-                <tr class="remise">
-                    <td class="label">− Compensation retraits</td>
-                    <td class="value">− {{ prix.retraits_valeur_appliquee | euro }}</td>
-                </tr>
-                {% endif %}
                 {% if prix.ajouts_hors_compensation and prix.ajouts_hors_compensation > 0 %}
                 <tr>
                     <td class="label">+ Prestations &amp; packs</td>
@@ -540,7 +534,7 @@
                 {% endif %}
                 {% if prix.remise_commerciale and prix.remise_commerciale > 0 %}
                 <tr class="remise">
-                    <td class="label">− Remise commerciale {% if prix.remise_pct %}({{ prix.remise_pct|pct }}){% endif %}</td>
+                    <td class="label">− Remise {% if prix.remise_pct %}({{ prix.remise_pct|pct }}){% endif %}</td>
                     <td class="value">− {{ prix.remise_commerciale | euro }}</td>
                 </tr>
                 {% endif %}

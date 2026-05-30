@@ -56,18 +56,32 @@ def _load_event_resolved(filename: str):
     if not data["devis"].get("statut"):
         data["devis"]["statut"] = "brouillon"
 
-    # Tarif minoré global (prix_propose) -> remise commerciale
+    # ── Remise globale fusionnée ──────────────────────────────────────────
+    # Deux leviers de remise possibles, additionnés en UNE seule ligne :
+    #   1) déduction manuelle des retraits (déjà soustraite dans total_ttc par le resolver)
+    #   2) prix proposé : écart entre le total courant et le prix négocié saisi
+    prix = result["prix"]
+    deduction = prix.get("deduction_totale", 0) or 0
+
+    # Base "plein tarif" = total actuel SANS la déduction de retrait
+    total_avant_remise = prix["total_ttc"] + deduction
+    remise_totale = deduction
+
+    # Prix proposé : remise supplémentaire jusqu'au prix négocié
     if data["devis"].get("prix_propose"):
         try:
             propose = float(str(data["devis"]["prix_propose"]).replace(",", "."))
-            theorique = result["prix"]["total_ttc"]
-            if propose < theorique and theorique > 0:
-                remise = theorique - propose
-                result["prix"]["remise_commerciale"] = remise
-                result["prix"]["remise_pct"] = (remise / theorique) * 100
-                result["prix"]["total_ttc"] = propose
+            if 0 < propose < prix["total_ttc"]:
+                remise_prix_propose = prix["total_ttc"] - propose
+                remise_totale += remise_prix_propose
+                prix["total_ttc"] = propose
         except (ValueError, TypeError):
             pass
+
+    if remise_totale > 0 and total_avant_remise > 0:
+        prix["remise_commerciale"] = remise_totale
+        prix["remise_pct"] = (remise_totale / total_avant_remise) * 100
+        prix["total_avant_remise"] = total_avant_remise
 
     return data, result, filename
 

@@ -310,6 +310,30 @@ def event_edit(filename):
                            title=f"Édition · {filename}", **ctx)
 
 
+def _parse_retrait(val: str):
+    """Un champ retrait peut être un id simple ou un JSON {id,deduire,montant}.
+    Retourne soit la chaîne id (rétro-compat), soit le dict normalisé."""
+    val = val.strip()
+    if val.startswith("{"):
+        import json as _j
+        try:
+            obj = _j.loads(val)
+            rid = obj.get("id")
+            if not rid:
+                return None
+            out = {"id": rid, "deduire": bool(obj.get("deduire", False))}
+            montant = obj.get("montant", None)
+            if montant not in (None, ""):
+                try:
+                    out["montant"] = float(montant)
+                except (TypeError, ValueError):
+                    pass
+            return out
+        except Exception:
+            return val
+    return val
+
+
 @app.route("/event/save", methods=["POST"])
 def event_save():
     form = request.form
@@ -336,11 +360,11 @@ def event_save():
         if key.startswith("retrait_eq_"):
             val = form.get(key, "").strip()
             if val:
-                retraits_eq.append(val)
+                retraits_eq.append(_parse_retrait(val))
         elif key.startswith("retrait_pr_"):
             val = form.get(key, "").strip()
             if val:
-                retraits_pr.append(val)
+                retraits_pr.append(_parse_retrait(val))
 
     data = {
         "document": {
@@ -396,7 +420,10 @@ def event_save():
         data["pack_id"] = pack_id if pack_id else None
         data["supplements"] = supplements
         if retraits_eq or retraits_pr:
-            data["retraits"] = {"equipements": retraits_eq, "prestations": retraits_pr}
+            data["retraits"] = {
+                "equipements": [r for r in retraits_eq if r],
+                "prestations": [r for r in retraits_pr if r],
+            }
     else:
         data["materiel_manuel"] = {"son_video": materiel_son, "lumiere": materiel_lum, "divers": materiel_div}
 

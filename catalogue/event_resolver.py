@@ -83,51 +83,92 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
             }
             prix_pack = float(pack_resolu.get("prix_ttc", 0))
 
-        # 2. Application des retraits
+        # 2. Application des retraits.
+        #    Format rétro-compatible : un retrait peut être
+        #      - un id simple "xxx"                       -> non déduit (info seule)
+        #      - un objet {"id","deduire":bool,"montant"} -> déduction manuelle
+        #    deduction_totale = somme des montants des retraits cochés "deduire".
         retraits = event.get("retraits", {}) or {}
-        retraits_eq_ids = set(retraits.get("equipements", []))
-        retraits_pr_ids = set(retraits.get("prestations", []))
-        retraits_appliques = {"equipements": [], "prestations": []}
-        retraits_valeur_brute = 0.0
 
-        if retraits_eq_ids:
+        def _norm_retraits(lst):
+            """Retourne {id: {"deduire":bool, "montant":float|None}} depuis une liste mixte."""
+            out = {}
+            for item in (lst or []):
+                if isinstance(item, dict):
+                    rid = item.get("id")
+                    if not rid:
+                        continue
+                    out[rid] = {
+                        "deduire": bool(item.get("deduire", False)),
+                        "montant": item.get("montant", None),
+                    }
+                else:
+                    out[item] = {"deduire": False, "montant": None}
+            return out
+
+        retraits_eq_map = _norm_retraits(retraits.get("equipements"))
+        retraits_pr_map = _norm_retraits(retraits.get("prestations"))
+        retraits_appliques = {"equipements": [], "prestations": []}
+        deduction_totale = 0.0
+
+        if retraits_eq_map:
             nouvelle_compo = []
             for ligne in composition["equipements"]:
-                if ligne["id"] in retraits_eq_ids:
+                if ligne["id"] in retraits_eq_map:
                     eq = catalogue["equipements"].get(ligne["id"], {})
-                    valeur = _valeur_catalogue_item(eq, ligne["quantite"])
+                    valeur_cat = _valeur_catalogue_item(eq, ligne["quantite"])
+                    meta = retraits_eq_map[ligne["id"]]
+                    montant = meta["montant"] if meta["montant"] is not None else valeur_cat
+                    try:
+                        montant = float(montant)
+                    except (TypeError, ValueError):
+                        montant = valeur_cat
+                    deduit = meta["deduire"]
+                    if deduit:
+                        deduction_totale += montant
                     retraits_appliques["equipements"].append({
                         "id": ligne["id"],
                         "nom": eq.get("nom", ligne["id"]),
                         "quantite": ligne["quantite"],
-                        "valeur": valeur,
+                        "valeur": valeur_cat,
+                        "deduire": deduit,
+                        "montant": montant,
                     })
-                    retraits_valeur_brute += valeur
                 else:
                     nouvelle_compo.append(ligne)
             composition["equipements"] = nouvelle_compo
 
-        if retraits_pr_ids:
+        if retraits_pr_map:
             nouvelle_pr = []
             for ligne in composition["prestations"]:
-                if ligne["id"] in retraits_pr_ids:
+                if ligne["id"] in retraits_pr_map:
                     pr = catalogue["prestations"].get(ligne["id"], {})
-                    valeur = float(pr.get("prix", 0)) * ligne["quantite"]
+                    valeur_cat = float(pr.get("prix", 0)) * ligne["quantite"]
+                    meta = retraits_pr_map[ligne["id"]]
+                    montant = meta["montant"] if meta["montant"] is not None else valeur_cat
+                    try:
+                        montant = float(montant)
+                    except (TypeError, ValueError):
+                        montant = valeur_cat
+                    deduit = meta["deduire"]
+                    if deduit:
+                        deduction_totale += montant
                     retraits_appliques["prestations"].append({
                         "id": ligne["id"],
                         "nom": pr.get("nom", ligne["id"]),
                         "quantite": ligne["quantite"],
-                        "valeur": valeur,
+                        "valeur": valeur_cat,
+                        "deduire": deduit,
+                        "montant": montant,
                     })
-                    retraits_valeur_brute += valeur
                 else:
                     nouvelle_pr.append(ligne)
             composition["prestations"] = nouvelle_pr
 
         # 3. Ajout des suppléments (équipements, prestations, packs complémentaires)
-        #    - equipement : entre dans la compensation croisée (ajouts_ttc)
-        #    - prestation / pack : facturés EN PLUS, hors compensation (ajouts_hors_compensation)
-        ajouts_ttc = 0.0                 # suppléments équipement (compensables par retraits)
+        #    Plus de compensation croisée automatique : TOUT s'additionne.
+        #    Les déductions de retraits sont gérées manuellement (section 2).
+        ajouts_ttc = 0.0                 # suppléments équipement
         ajouts_hors_compensation = 0.0   # prestations + packs complémentaires (toujours en plus)
         supplements_detail = {"equipements": [], "prestations": [], "packs": []}
 
@@ -228,12 +269,10 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
 
             poids_total += _poids_total_item(eq, qte)
 
-        # 5. Prix final.
-        #    Compensation croisée INCHANGÉE : seuls les suppléments équipement
-        #    peuvent être absorbés par les retraits du pack.
-        #    Les prestations et packs complémentaires s'ajoutent toujours par-dessus.
-        retraits_valeur_appliquee = min(retraits_valeur_brute, ajouts_ttc)
-        total_ttc = prix_pack + ajouts_ttc - retraits_valeur_appliquee + ajouts_hors_compensation
+        # 5. Prix final (règle simplifiée, tout explicite) :
+        #    total = pack − déductions manuelles + suppléments équipement
+        #            + prestations/packs complémentaires
+        total_ttc = prix_pack - deduction_totale + ajouts_ttc + ajouts_hors_compensation
 
         return {
             "mode": "catalogue",
@@ -249,8 +288,7 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
                 "pack_ttc": prix_pack,
                 "ajouts_ttc": ajouts_ttc,
                 "ajouts_hors_compensation": ajouts_hors_compensation,
-                "retraits_valeur_brute": retraits_valeur_brute,
-                "retraits_valeur_appliquee": retraits_valeur_appliquee,
+                "deduction_totale": deduction_totale,
                 "total_ttc": total_ttc,
             },
         }
@@ -273,8 +311,8 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
         "prix": {
             "pack_ttc": 0,
             "ajouts_ttc": 0,
-            "retraits_valeur_brute": 0,
-            "retraits_valeur_appliquee": 0,
+            "ajouts_hors_compensation": 0,
+            "deduction_totale": 0,
             "total_ttc": 0,
         },
     }
