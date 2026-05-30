@@ -95,6 +95,27 @@ def healthz():
     return {"ok": True}
 
 
+@app.route("/diag")
+def diag():
+    info = {
+        "storage_mode": config.get("storage_mode"),
+        "on_render": is_on_render(),
+        "dropbox_key_present": bool(config.get("dropbox", {}).get("app_key")),
+        "dropbox_secret_present": bool(config.get("dropbox", {}).get("app_secret")),
+        "dropbox_token_present": bool(config.get("dropbox", {}).get("refresh_token")),
+        "connected": False, "events_found": None,
+        "catalogue_counts": None, "error": None,
+    }
+    try:
+        info["events_found"] = storage_io.list_events(STORAGE)
+        cat = storage_io.load_catalogue(STORAGE)
+        info["catalogue_counts"] = {k: len(v) for k, v in cat.items()}
+        info["connected"] = True
+    except Exception as exc:
+        info["error"] = f"{type(exc).__name__}: {exc}"
+    return jsonify(info)
+
+
 # --- Statics du module fiches (logo, polices) --------------------------------
 @app.route("/fiches-static/<path:filename>")
 def fiches_static(filename):
