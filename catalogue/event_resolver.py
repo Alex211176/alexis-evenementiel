@@ -124,25 +124,85 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
                     nouvelle_pr.append(ligne)
             composition["prestations"] = nouvelle_pr
 
-        # 3. Ajout des suppléments
-        ajouts_ttc = 0.0
+        # 3. Ajout des suppléments (équipements, prestations, packs complémentaires)
+        #    - equipement : entre dans la compensation croisée (ajouts_ttc)
+        #    - prestation / pack : facturés EN PLUS, hors compensation (ajouts_hors_compensation)
+        ajouts_ttc = 0.0                 # suppléments équipement (compensables par retraits)
+        ajouts_hors_compensation = 0.0   # prestations + packs complémentaires (toujours en plus)
+        supplements_detail = {"equipements": [], "prestations": [], "packs": []}
+
         for supp in event.get("supplements", []):
             supp_id = supp.get("id")
-            qte = supp.get("quantite", 1)
+            qte = supp.get("quantite", 1) or 1
+            supp_type = supp.get("type", "equipement")  # défaut = équipement (rétro-compat)
             if not supp_id:
                 continue
-            eq = catalogue["equipements"].get(supp_id)
-            if eq:
-                ajouts_ttc += _valeur_catalogue_item(eq, qte)
-            # Fusion dans composition
-            found = False
-            for ligne in composition["equipements"]:
-                if ligne["id"] == supp_id:
-                    ligne["quantite"] += qte
-                    found = True
-                    break
-            if not found:
-                composition["equipements"].append({"id": supp_id, "quantite": qte})
+
+            if supp_type == "prestation":
+                pr = catalogue["prestations"].get(supp_id)
+                if not pr:
+                    continue
+                valeur = float(pr.get("prix", 0)) * qte
+                ajouts_hors_compensation += valeur
+                supplements_detail["prestations"].append({
+                    "id": supp_id, "nom": pr.get("nom", supp_id),
+                    "quantite": qte, "valeur": valeur,
+                })
+                # Ajout à la composition prestations (pour la fiche technique)
+                found = False
+                for ligne in composition["prestations"]:
+                    if ligne["id"] == supp_id:
+                        ligne["quantite"] += qte
+                        found = True
+                        break
+                if not found:
+                    composition["prestations"].append({"id": supp_id, "quantite": qte})
+
+            elif supp_type == "pack":
+                pk = catalogue["packs"].get(supp_id)
+                if not pk:
+                    continue
+                try:
+                    pack_comp = resoudre_pack(supp_id, catalogue["packs"])
+                except Exception:
+                    pack_comp = None
+                valeur = float((pack_comp or pk).get("prix_ttc", 0)) * qte
+                ajouts_hors_compensation += valeur
+                supplements_detail["packs"].append({
+                    "id": supp_id, "nom": pk.get("nom", supp_id),
+                    "quantite": qte, "valeur": valeur,
+                })
+                # Fusion du matériel + prestations du pack complémentaire dans la composition
+                if pack_comp:
+                    for ligne in pack_comp["composition_complete"]["equipements"]:
+                        existe = next((l for l in composition["equipements"] if l["id"] == ligne["id"]), None)
+                        if existe:
+                            existe["quantite"] += ligne["quantite"] * qte
+                        else:
+                            composition["equipements"].append({"id": ligne["id"], "quantite": ligne["quantite"] * qte})
+                    for ligne in pack_comp["composition_complete"]["prestations"]:
+                        existe = next((l for l in composition["prestations"] if l["id"] == ligne["id"]), None)
+                        if existe:
+                            existe["quantite"] += ligne["quantite"] * qte
+                        else:
+                            composition["prestations"].append({"id": ligne["id"], "quantite": ligne["quantite"] * qte})
+
+            else:  # equipement (comportement historique inchangé)
+                eq = catalogue["equipements"].get(supp_id)
+                if eq:
+                    ajouts_ttc += _valeur_catalogue_item(eq, qte)
+                    supplements_detail["equipements"].append({
+                        "id": supp_id, "nom": eq.get("nom", supp_id),
+                        "quantite": qte, "valeur": _valeur_catalogue_item(eq, qte),
+                    })
+                found = False
+                for ligne in composition["equipements"]:
+                    if ligne["id"] == supp_id:
+                        ligne["quantite"] += qte
+                        found = True
+                        break
+                if not found:
+                    composition["equipements"].append({"id": supp_id, "quantite": qte})
 
         # 4. Agrégats techniques
         materiel_par_bucket = {"son_video": [], "lumiere": [], "divers": []}
@@ -168,9 +228,12 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
 
             poids_total += _poids_total_item(eq, qte)
 
-        # 5. Prix final avec règle de compensation
+        # 5. Prix final.
+        #    Compensation croisée INCHANGÉE : seuls les suppléments équipement
+        #    peuvent être absorbés par les retraits du pack.
+        #    Les prestations et packs complémentaires s'ajoutent toujours par-dessus.
         retraits_valeur_appliquee = min(retraits_valeur_brute, ajouts_ttc)
-        total_ttc = prix_pack + ajouts_ttc - retraits_valeur_appliquee
+        total_ttc = prix_pack + ajouts_ttc - retraits_valeur_appliquee + ajouts_hors_compensation
 
         return {
             "mode": "catalogue",
@@ -181,9 +244,11 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
             "puissance_totale_w": puissance_totale,
             "puissance_totale_kw": round(puissance_totale / 1000, 2),
             "poids_total_kg": round(poids_total, 1),
+            "supplements_detail": supplements_detail,
             "prix": {
                 "pack_ttc": prix_pack,
                 "ajouts_ttc": ajouts_ttc,
+                "ajouts_hors_compensation": ajouts_hors_compensation,
                 "retraits_valeur_brute": retraits_valeur_brute,
                 "retraits_valeur_appliquee": retraits_valeur_appliquee,
                 "total_ttc": total_ttc,
@@ -217,3 +282,5 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
 
 def bucket_label(key: str) -> str:
     return BUCKET_LABELS.get(key, key)
+
+

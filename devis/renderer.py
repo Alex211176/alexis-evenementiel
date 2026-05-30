@@ -48,25 +48,68 @@ def render_devis_html(
     env.filters["pct"] = _filter_pct
     env.filters["date_fr"] = _filter_date_fr
 
-    # Construit la liste des suppléments enrichie (id → nom, prix)
+    # Construit la liste des suppléments enrichie (id → nom, prix).
+    # Gère les 3 types : equipement (défaut, rétro-compat), prestation, pack.
     supplements_enriched = []
-    if catalogue and "equipements" in catalogue:
+    if catalogue:
         from catalogue.pricing import calculer_prix
+        try:
+            from catalogue.packs import resoudre_pack
+        except Exception:
+            resoudre_pack = None
+        equipements = catalogue.get("equipements", {})
+        prestations = catalogue.get("prestations", {})
+        packs = catalogue.get("packs", {})
         for supp in (data.get("supplements") or []):
-            eq = catalogue["equipements"].get(supp["id"])
-            if not eq:
+            supp_id = supp.get("id")
+            qte = supp.get("quantite", 1) or 1
+            supp_type = supp.get("type", "equipement")
+            if not supp_id:
                 continue
-            try:
-                prix = calculer_prix(eq, supp["quantite"])
-            except Exception:
-                prix = 0
-            supplements_enriched.append({
-                "id": supp["id"],
-                "nom": eq.get("nom", supp["id"]),
-                "description": eq.get("description_courte", ""),
-                "quantite": supp["quantite"],
-                "prix": prix,
-            })
+
+            if supp_type == "prestation":
+                pr = prestations.get(supp_id)
+                if not pr:
+                    continue
+                supplements_enriched.append({
+                    "id": supp_id, "type": "prestation",
+                    "nom": pr.get("nom", supp_id),
+                    "description": pr.get("description", ""),
+                    "quantite": qte,
+                    "prix": float(pr.get("prix", 0)) * qte,
+                })
+            elif supp_type == "pack":
+                pk = packs.get(supp_id)
+                if not pk:
+                    continue
+                prix_pack = pk.get("prix_ttc", 0)
+                if resoudre_pack:
+                    try:
+                        prix_pack = resoudre_pack(supp_id, packs).get("prix_ttc", prix_pack)
+                    except Exception:
+                        pass
+                supplements_enriched.append({
+                    "id": supp_id, "type": "pack",
+                    "nom": pk.get("nom", supp_id),
+                    "description": pk.get("description", ""),
+                    "quantite": qte,
+                    "prix": float(prix_pack) * qte,
+                })
+            else:  # equipement
+                eq = equipements.get(supp_id)
+                if not eq:
+                    continue
+                try:
+                    prix = calculer_prix(eq, qte)
+                except Exception:
+                    prix = 0
+                supplements_enriched.append({
+                    "id": supp_id, "type": "equipement",
+                    "nom": eq.get("nom", supp_id),
+                    "description": eq.get("description_courte", ""),
+                    "quantite": qte,
+                    "prix": prix,
+                })
 
     tpl = env.get_template("devis.html.j2")
     return tpl.render(
@@ -136,3 +179,5 @@ def _filter_date_fr(value):
     if isinstance(value, datetime):
         return value.strftime("%d/%m/%Y")
     return str(value)
+
+

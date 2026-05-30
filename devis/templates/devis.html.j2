@@ -478,7 +478,9 @@
                 <tr>
                     <td>
                         <span class="item-title">{{ supp.nom }}</span>
-                        <span class="item-tag">Supplément</span>
+                        {% if supp.type == "prestation" %}<span class="item-tag">Prestation</span>
+                        {% elif supp.type == "pack" %}<span class="item-tag">Pack ajouté</span>
+                        {% else %}<span class="item-tag">Supplément</span>{% endif %}
                         {% if supp.description %}<div class="item-desc">{{ supp.description }}</div>{% endif %}
                     </td>
                     <td class="qte">{{ supp.quantite }}</td>
@@ -528,6 +530,12 @@
                 <tr class="remise">
                     <td class="label">− Compensation retraits</td>
                     <td class="value">− {{ prix.retraits_valeur_appliquee | euro }}</td>
+                </tr>
+                {% endif %}
+                {% if prix.ajouts_hors_compensation and prix.ajouts_hors_compensation > 0 %}
+                <tr>
+                    <td class="label">+ Prestations &amp; packs</td>
+                    <td class="value">+ {{ prix.ajouts_hors_compensation | euro }}</td>
                 </tr>
                 {% endif %}
                 {% if prix.remise_commerciale and prix.remise_commerciale > 0 %}
@@ -664,3 +672,6 @@
 </div>
 </body>
 </html>
+
+
+================================================================
