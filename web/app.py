@@ -97,21 +97,25 @@ def healthz():
 
 @app.route("/diag")
 def diag():
+    """Diagnostic de la connexion au stockage (protégé par le login global)."""
     info = {
         "storage_mode": config.get("storage_mode"),
         "on_render": is_on_render(),
         "dropbox_key_present": bool(config.get("dropbox", {}).get("app_key")),
         "dropbox_secret_present": bool(config.get("dropbox", {}).get("app_secret")),
         "dropbox_token_present": bool(config.get("dropbox", {}).get("refresh_token")),
-        "connected": False, "events_found": None,
-        "catalogue_counts": None, "error": None,
+        "connected": False,
+        "events_found": None,
+        "catalogue_counts": None,
+        "error": None,
     }
     try:
-        info["events_found"] = storage_io.list_events(STORAGE)
+        events = storage_io.list_events(STORAGE)
+        info["events_found"] = events
         cat = storage_io.load_catalogue(STORAGE)
         info["catalogue_counts"] = {k: len(v) for k, v in cat.items()}
         info["connected"] = True
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         info["error"] = f"{type(exc).__name__}: {exc}"
     return jsonify(info)
 
@@ -176,10 +180,39 @@ def _prepare_catalogue_context():
         "prestations": cat["prestations"],
     }, ensure_ascii=False, default=str)
 
+    # Prestations facturables proposables en supplément (prix > 0, hors déplacement)
+    prestations_pour_js = {}
+    for pid, pr in cat["prestations"].items():
+        if pr.get("categorie") == "deplacement":
+            continue
+        prestations_pour_js[pid] = pr
+
+    # Packs complémentaires : compatibles en tête, puis le reste.
+    # La compatibilité dépend du pack principal courant ; on expose tous les packs
+    # avec un groupe "Compatibles" calculé côté template via JS au besoin. Ici on
+    # fournit deux groupes simples : Photobooth d'abord (cas d'usage fréquent), puis autres.
+    packs_photobooth, packs_autres = [], []
+    for pid, pk in cat["packs"].items():
+        entry = {"id": pid, "nom": pk.get("nom", pid), "prix_ttc": pk.get("prix_ttc", 0),
+                 "categorie": pk.get("categorie", "")}
+        if pk.get("categorie") == "photobooth":
+            packs_photobooth.append(entry)
+        else:
+            packs_autres.append(entry)
+    packs_photobooth.sort(key=lambda x: x["prix_ttc"])
+    packs_autres.sort(key=lambda x: x["nom"])
+    packs_compl_groupes = []
+    if packs_photobooth:
+        packs_compl_groupes.append({"label": "Photobooth", "packs": packs_photobooth})
+    if packs_autres:
+        packs_compl_groupes.append({"label": "Autres packs", "packs": packs_autres})
+
     return {
         "packs_par_cat": packs_par_cat,
         "equipements_par_cat": equipements_par_cat,
         "catalogue_json": catalogue_json,
+        "prestations_pour_js": prestations_pour_js,
+        "packs_compl_groupes": packs_compl_groupes,
     }
 
 
@@ -290,12 +323,13 @@ def event_save():
         if key.startswith("supp_id_"):
             idx = key.split("_")[-1]
             supp_id = form.get(f"supp_id_{idx}", "").strip()
+            supp_type = form.get(f"supp_type_{idx}", "equipement").strip() or "equipement"
             try:
                 supp_qte = int(form.get(f"supp_qte_{idx}", "1"))
             except ValueError:
                 supp_qte = 1
             if supp_id:
-                supplements.append({"id": supp_id, "quantite": supp_qte})
+                supplements.append({"type": supp_type, "id": supp_id, "quantite": supp_qte})
 
     retraits_eq, retraits_pr = [], []
     for key in form.keys():

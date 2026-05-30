@@ -146,6 +146,30 @@
                 </select>
                 <button type="button" class="btn btn-sm" onclick="addSupplement()">+ Ajouter</button>
             </div>
+
+            <div class="add-supplement">
+                <select id="add-presta-select">
+                    <option value="">— Ajouter une prestation —</option>
+                    {% for pid, pr in prestations_pour_js.items() %}
+                        <option value="{{ pid }}" data-nom="{{ pr.nom }}">{{ pr.nom }}{% if pr.prix %} — {{ pr.prix }} €{% endif %}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-sm" onclick="addPrestation()">+ Ajouter</button>
+            </div>
+
+            <div class="add-supplement">
+                <select id="add-pack-select">
+                    <option value="">— Ajouter un pack complémentaire —</option>
+                    {% for grp in packs_compl_groupes %}
+                        <optgroup label="{{ grp.label }}">
+                        {% for p in grp.packs %}
+                            <option value="{{ p.id }}" data-nom="{{ p.nom }}">{{ p.nom }} — {{ p.prix_ttc }} €</option>
+                        {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-sm" onclick="addPackCompl()">+ Ajouter</button>
+            </div>
         </div>
 
         <!-- MODE MANUEL -->
@@ -433,10 +457,66 @@ function addSupplement(idForced, qteForced) {
     const div = document.createElement('div');
     div.className = 'supplement-row';
     div.dataset.id = id;
+    div.dataset.type = 'equipement';
     div.innerHTML = `
         <span class="supp-name">${nom}</span>
         <span class="supp-stock">stock : ${stockMax} ${stockMax > 1 ? uniteLabel + 's' : uniteLabel}</span>
         ${qteFieldHtml}
+        <input type="hidden" name="supp_type_${supplementIndex}" value="equipement">
+        <input type="hidden" name="supp_id_${supplementIndex}" value="${id}">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeSupplement(this)">×</button>
+    `;
+    document.getElementById('supplements-list').appendChild(div);
+    supplementIndex++;
+    if (!idForced) sel.value = '';
+    recomputeBilan();
+}
+
+function addPrestation(idForced, qteForced) {
+    const sel = document.getElementById('add-presta-select');
+    const id = idForced || sel.value;
+    if (!id) return;
+    const pr = (CATALOGUE.prestations || {})[id];
+    if (!pr) return;
+    const nom = pr.nom || id;
+    const prix = pr.prix || 0;
+
+    const div = document.createElement('div');
+    div.className = 'supplement-row supplement-presta';
+    div.dataset.id = id;
+    div.dataset.type = 'prestation';
+    div.innerHTML = `
+        <span class="supp-name">${nom} <span class="supp-tag">prestation</span></span>
+        <span class="supp-stock">${prix} €</span>
+        <input type="hidden" name="supp_qte_${supplementIndex}" value="1">
+        <input type="hidden" name="supp_type_${supplementIndex}" value="prestation">
+        <input type="hidden" name="supp_id_${supplementIndex}" value="${id}">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeSupplement(this)">×</button>
+    `;
+    document.getElementById('supplements-list').appendChild(div);
+    supplementIndex++;
+    if (!idForced) sel.value = '';
+    recomputeBilan();
+}
+
+function addPackCompl(idForced, qteForced) {
+    const sel = document.getElementById('add-pack-select');
+    const id = idForced || sel.value;
+    if (!id) return;
+    const pk = (CATALOGUE.packs || {})[id];
+    if (!pk) return;
+    const nom = pk.nom || id;
+    const prix = pk.prix_ttc || 0;
+
+    const div = document.createElement('div');
+    div.className = 'supplement-row supplement-pack';
+    div.dataset.id = id;
+    div.dataset.type = 'pack';
+    div.innerHTML = `
+        <span class="supp-name">${nom} <span class="supp-tag">pack</span></span>
+        <span class="supp-stock">${prix} €</span>
+        <input type="hidden" name="supp_qte_${supplementIndex}" value="1">
+        <input type="hidden" name="supp_type_${supplementIndex}" value="pack">
         <input type="hidden" name="supp_id_${supplementIndex}" value="${id}">
         <button type="button" class="btn btn-sm btn-danger" onclick="removeSupplement(this)">×</button>
     `;
@@ -453,7 +533,10 @@ function restoreSupplementsFromData() {
     try {
         const supps = JSON.parse(dataAttr);
         for (const s of supps) {
-            addSupplement(s.id, s.quantite);
+            const t = s.type || 'equipement';
+            if (t === 'prestation') addPrestation(s.id, s.quantite);
+            else if (t === 'pack') addPackCompl(s.id, s.quantite);
+            else addSupplement(s.id, s.quantite);
         }
     } catch (e) {
         console.error('Erreur restoration suppléments:', e);
@@ -490,8 +573,10 @@ function refreshSelectAvailability() {
     }
 
     document.querySelectorAll('.supplement-row').forEach(row => {
+        if ((row.dataset.type || 'equipement') !== 'equipement') return;
         const id = row.dataset.id;
-        const qte = parseInt(row.querySelector('.supp-qte').value) || 1;
+        const qteField = row.querySelector('.supp-qte');
+        const qte = qteField ? (parseInt(qteField.value) || 1) : 1;
         utilises[id] = (utilises[id] || 0) + qte;
     });
 
@@ -545,15 +630,35 @@ function recomputeBilan() {
         }
     }
 
-    // Suppléments
-    let ajoutsTotal = 0;
+    // Suppléments (typés : equipement / prestation / pack)
+    let ajoutsTotal = 0;            // équipements (compensables)
+    let horsCompensation = 0;       // prestations + packs (toujours en plus)
     document.querySelectorAll('.supplement-row').forEach(row => {
         const id = row.dataset.id;
-        const qte = parseInt(row.querySelector('.supp-qte').value) || 1;
-        lignes[id] = (lignes[id] || 0) + qte;
-        // Calcul ajout prix (palier ou simple)
-        const eq = CATALOGUE.equipements[id];
-        if (eq) ajoutsTotal += computePrixCatalogue(eq, qte);
+        const type = row.dataset.type || 'equipement';
+        const qteField = row.querySelector('.supp-qte');
+        const qte = qteField ? (parseInt(qteField.value) || 1) : 1;
+
+        if (type === 'prestation') {
+            const pr = (CATALOGUE.prestations || {})[id];
+            if (pr) horsCompensation += (pr.prix || 0) * qte;
+            // matériel du pack de prestation : aucun (prestation immatérielle)
+        } else if (type === 'pack') {
+            const pk = (CATALOGUE.packs || {})[id];
+            if (pk) {
+                horsCompensation += (pk.prix_ttc || 0) * qte;
+                // fusionne le matériel du pack complémentaire dans le bilan technique
+                if (pk.composition_complete && pk.composition_complete.equipements) {
+                    for (const l of pk.composition_complete.equipements) {
+                        lignes[l.id] = (lignes[l.id] || 0) + l.quantite * qte;
+                    }
+                }
+            }
+        } else {
+            lignes[id] = (lignes[id] || 0) + qte;
+            const eq = CATALOGUE.equipements[id];
+            if (eq) ajoutsTotal += computePrixCatalogue(eq, qte);
+        }
     });
 
     // Bilan technique
@@ -604,10 +709,10 @@ function recomputeBilan() {
         if (pr) retraitsBrut += (pr.prix || 0) * ligne.quantite;
     }
     const retraitsApplique = Math.min(retraitsBrut, ajoutsTotal);
-    const total = prixPack + ajoutsTotal - retraitsApplique;
+    const total = prixPack + ajoutsTotal - retraitsApplique + horsCompensation;
 
     // Met à jour le bloc prix (créé une fois)
-    updatePrixBox(prixPack, ajoutsTotal, retraitsBrut, retraitsApplique, total);
+    updatePrixBox(prixPack, ajoutsTotal, retraitsBrut, retraitsApplique, total, horsCompensation);
 
     // Met à jour la disponibilité des options dans le select "Ajouter"
     refreshSelectAvailability();
@@ -642,7 +747,8 @@ function computePrixCatalogue(eq, qte) {
     return 0;
 }
 
-function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total) {
+function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total, horsCompensation) {
+    horsCompensation = horsCompensation || 0;
     let box = document.getElementById('prix-box');
     if (!box) {
         // Crée le bloc si pas encore présent
@@ -666,6 +772,9 @@ function updatePrixBox(pack, ajouts, retraitsBrut, retraitsApplique, total) {
         } else {
             html += `<div class="prix-line prix-info"><span><em>Retraits sans ajouts — pas de moins-value (${retraitsBrut.toFixed(0)} € non déduits)</em></span><span></span></div>`;
         }
+    }
+    if (horsCompensation > 0) {
+        html += `<div class="prix-line"><span>+ Prestations & packs</span><span class="mono">+${horsCompensation.toFixed(0)} €</span></div>`;
     }
     html += `<div class="prix-line prix-total"><span><strong>Total TTC</strong></span><span class="mono"><strong>${total.toFixed(0)} €</strong></span></div>`;
     box.innerHTML = html;
