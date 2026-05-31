@@ -227,6 +227,9 @@ def pack_edit(pack_id):
     return render_template("catalogue/pack_form.html",
                            pack=pack, pack_id=pack_id, pack_resolu=pack_resolu,
                            valeur_carte=valeur_carte, catalogue=cat,
+                           equipements_tries=_equipements_tries(cat),
+                           prestations_triees=_prestations_triees(cat),
+                           packs_extends=_packs_pour_extends(cat, pack_id),
                            categories=CATEGORIE_LABELS,
                            title=f"Édition pack · {pack.get('nom', pack_id)}")
 
@@ -237,7 +240,117 @@ def pack_new():
     return render_template("catalogue/pack_form.html",
                            pack={}, pack_id=None, pack_resolu=None,
                            valeur_carte=0, catalogue=cat,
+                           equipements_tries=_equipements_tries(cat),
+                           prestations_triees=_prestations_triees(cat),
+                           packs_extends=_packs_pour_extends(cat, None),
                            categories=CATEGORIE_LABELS, title="Nouveau pack")
+
+
+def _equipements_tries(cat):
+    items = [{"id": eid, "nom": e.get("nom", eid), "categorie": e.get("categorie", "")}
+             for eid, e in cat["equipements"].items()]
+    items.sort(key=lambda x: (x["categorie"], x["nom"]))
+    return items
+
+
+def _prestations_triees(cat):
+    items = [{"id": pid, "nom": p.get("nom", pid), "categorie": p.get("categorie", "")}
+             for pid, p in cat["prestations"].items()]
+    items.sort(key=lambda x: (x["categorie"], x["nom"]))
+    return items
+
+
+def _packs_pour_extends(cat, exclude_id):
+    """Liste des packs pouvant servir de parent (héritage), en excluant le pack courant."""
+    items = [{"id": pid, "nom": p.get("nom", pid)}
+             for pid, p in cat["packs"].items() if pid != exclude_id]
+    items.sort(key=lambda x: x["nom"])
+    return items
+
+
+@catalogue_bp.route("/packs/save", methods=["POST"])
+def pack_save():
+    import re as _re
+    import unicodedata as _ud
+    form = request.form
+    cat = _load()
+
+    pack_id = form.get("pack_id", "").strip()
+    is_new = not pack_id
+
+    if is_new:
+        nom = form.get("nom", "").strip()
+        slug = _ud.normalize("NFKD", nom).encode("ascii", "ignore").decode()
+        slug = _re.sub(r"[^\w\s-]", "", slug).strip().lower()
+        slug = _re.sub(r"[-\s]+", "-", slug)
+        pack_id = slug
+        if not pack_id:
+            flash("Le nom est obligatoire", "error")
+            return redirect(url_for("catalogue.pack_new"))
+        if pack_id in cat["packs"]:
+            flash(f"Un pack avec cet id existe déjà : {pack_id}", "error")
+            return redirect(url_for("catalogue.pack_new"))
+
+    def _float(key, default=0):
+        try:
+            return float(form.get(key, default))
+        except (ValueError, TypeError):
+            return default
+
+    # Composition : champs comp_eq_id_N / comp_eq_qte_N et comp_pr_id_N / comp_pr_qte_N
+    def _collect(prefix):
+        out = []
+        for k in form.keys():
+            if k.startswith(f"{prefix}_id_"):
+                idx = k.rsplit("_", 1)[-1]
+                cid = form.get(f"{prefix}_id_{idx}", "").strip()
+                try:
+                    q = int(form.get(f"{prefix}_qte_{idx}", "1"))
+                except ValueError:
+                    q = 1
+                if cid:
+                    out.append({"id": cid, "quantite": q})
+        return out
+
+    pack = {
+        "nom": form.get("nom", "").strip(),
+        "categorie": form.get("categorie", "autre").strip() or "autre",
+        "prix_ttc": _float("prix_ttc", 0),
+        "duree_estimee": form.get("duree_estimee", "").strip(),
+        "description": form.get("description", "").strip(),
+        "composition": {
+            "equipements": _collect("comp_eq"),
+            "prestations": _collect("comp_pr"),
+        },
+        "retraits": [r.strip() for r in form.getlist("retraits") if r.strip()],
+        "bundle_compatible": [b.strip() for b in form.getlist("bundle_compatible") if b.strip()],
+    }
+    extends = form.get("extends", "").strip()
+    if extends:
+        pack["extends"] = extends
+
+    # Préserver d'éventuelles clés non gérées par le formulaire
+    if not is_new and pack_id in cat["packs"]:
+        for k, v in cat["packs"][pack_id].items():
+            if k not in pack and k not in ("extends",):
+                pack[k] = v
+
+    cat["packs"][pack_id] = pack
+    storage_io.save_catalogue_section(STORAGE, cat, "packs")
+    flash(f"Pack sauvegardé : {pack['nom']}", "success")
+    return redirect(url_for("catalogue.packs_list"))
+
+
+@catalogue_bp.route("/packs/<pack_id>/delete", methods=["POST"])
+def pack_delete(pack_id):
+    cat = _load()
+    if pack_id not in cat["packs"]:
+        abort(404)
+    nom = cat["packs"][pack_id].get("nom", pack_id)
+    del cat["packs"][pack_id]
+    storage_io.save_catalogue_section(STORAGE, cat, "packs")
+    flash(f"Pack supprimé : {nom}", "success")
+    return redirect(url_for("catalogue.packs_list"))
 
 
 # ==================== PRESTATIONS ====================

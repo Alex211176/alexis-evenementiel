@@ -2,91 +2,158 @@
 {% block content %}
 
 <header class="page-header">
-    <h1>{% if pack_id %}{{ pack.nom }}{% else %}Nouveau pack{% endif %}</h1>
-    <p class="subtitle">{% if pack_id %}<span class="mono">{{ pack_id }}</span>{% else %}Édition d'un nouveau pack{% endif %}</p>
+    <div>
+        <h1>{{ "Édition du pack" if pack_id else "Nouveau pack" }}</h1>
+        {% if pack_id %}<p class="subtitle mono">{{ pack_id }}</p>{% endif %}
+    </div>
+    <div>
+        <a href="{{ url_for('catalogue.packs_list') }}" class="btn">← Retour</a>
+    </div>
 </header>
 
-{% if pack_resolu and pack_resolu.chaine_heritage|length > 1 %}
-<div class="callout">
-    <strong>Chaîne d'héritage :</strong>
-    {% for p in pack_resolu.chaine_heritage %}
-        <code>{{ p }}</code>{% if not loop.last %} → {% endif %}
-    {% endfor %}
-</div>
-{% endif %}
+<form method="POST" action="{{ url_for('catalogue.pack_save') }}" class="pack-form">
+    <input type="hidden" name="pack_id" value="{{ pack_id or '' }}">
 
-<div class="grid-two-col">
-    <section class="card">
-        <h3>Informations du pack</h3>
-        <div class="info-block">
-            <p><strong>Nom</strong> {{ pack.nom }}</p>
-            <p><strong>Catégorie</strong> {{ pack.categorie }}</p>
-            <p><strong>Prix TTC</strong> {{ pack.prix_ttc }} €</p>
-            <p><strong>Hérite de</strong> {% if pack.extends %}{{ pack.extends }}{% else %}—{% endif %}</p>
-            <p><strong>Durée</strong> {{ pack.duree_estimee or '—' }}</p>
+    <fieldset>
+        <legend>Informations générales</legend>
+        <div class="form-grid">
+            <label>Nom
+                <input type="text" name="nom" value="{{ pack.nom or '' }}" required>
+            </label>
+            <label>Catégorie
+                <select name="categorie">
+                    {% for key, lbl in categories.items() %}
+                        <option value="{{ key }}" {% if pack.categorie == key %}selected{% endif %}>{{ lbl }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Prix TTC (€)
+                <input type="number" name="prix_ttc" min="0" step="1" value="{{ pack.prix_ttc or 0 }}">
+            </label>
+            <label>Durée estimée
+                <input type="text" name="duree_estimee" value="{{ pack.duree_estimee or '' }}" placeholder="soirée complète">
+            </label>
         </div>
-        <p style="margin-top:12px">{{ pack.description }}</p>
-    </section>
+        <label class="full">Description
+            <textarea name="description" rows="2">{{ pack.description or '' }}</textarea>
+        </label>
+        <label class="full">Hérite d'un pack parent (optionnel)
+            <select name="extends">
+                <option value="">— Aucun héritage —</option>
+                {% for p in packs_extends %}
+                    <option value="{{ p.id }}" {% if pack.extends == p.id %}selected{% endif %}>{{ p.nom }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        {% if pack.extends %}
+        <p class="help">⚠️ Ce pack hérite de « {{ pack.extends }} » : son matériel s'ajoute automatiquement à ce qui est listé ci-dessous.</p>
+        {% endif %}
+    </fieldset>
 
-    <section class="card">
-        <h3>Valorisation</h3>
-        <div class="info-block">
-            <p><strong>Prix pack</strong> {{ pack.prix_ttc }} €</p>
-            <p><strong>Valeur à la carte (auto)</strong> {{ "%.0f"|format(valeur_carte) }} €</p>
-            {% if valeur_carte > pack.prix_ttc %}
-                <p><strong>Économie client</strong> <span class="tag tag-outdoor">−{{ "%.0f"|format(valeur_carte - pack.prix_ttc) }} €</span></p>
-            {% elif valeur_carte < pack.prix_ttc %}
-                <p style="color:var(--ink-muted)"><em>La valeur à la carte est inférieure au prix du pack — c'est probablement dû à des prestations immatérielles sans prix de référence. Cliquer "Éditer" pour ajuster les prix de référence ou saisir une valeur manuelle.</em></p>
-            {% endif %}
+    <fieldset>
+        <legend>Équipements propres au pack</legend>
+        <div id="comp-eq-list">
+            {% for item in (pack.composition.equipements if pack.composition else []) %}
+            <div class="comp-row" data-id="{{ item.id }}">
+                <span class="comp-name">{{ catalogue.equipements[item.id].nom if item.id in catalogue.equipements else item.id }}</span>
+                <input type="number" min="1" name="comp_eq_qte_{{ loop.index0 }}" value="{{ item.quantite }}" class="comp-qte">
+                <input type="hidden" name="comp_eq_id_{{ loop.index0 }}" value="{{ item.id }}">
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">×</button>
+            </div>
+            {% endfor %}
         </div>
-    </section>
-</div>
+        <div class="add-row">
+            <select id="add-eq">
+                <option value="">— Ajouter un équipement —</option>
+                {% for e in equipements_tries %}
+                    <option value="{{ e.id }}" data-nom="{{ e.nom }}">{{ e.nom }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-sm" onclick="addRow('eq')">+ Ajouter</button>
+        </div>
+    </fieldset>
 
-<section class="cat-section">
-    <h2 class="cat-heading">Composition complète</h2>
+    <fieldset>
+        <legend>Prestations propres au pack</legend>
+        <div id="comp-pr-list">
+            {% for item in (pack.composition.prestations if pack.composition else []) %}
+            <div class="comp-row" data-id="{{ item.id }}">
+                <span class="comp-name">{{ catalogue.prestations[item.id].nom if item.id in catalogue.prestations else item.id }}</span>
+                <input type="number" min="1" name="comp_pr_qte_{{ loop.index0 }}" value="{{ item.quantite }}" class="comp-qte">
+                <input type="hidden" name="comp_pr_id_{{ loop.index0 }}" value="{{ item.id }}">
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="add-row">
+            <select id="add-pr">
+                <option value="">— Ajouter une prestation —</option>
+                {% for p in prestations_triees %}
+                    <option value="{{ p.id }}" data-nom="{{ p.nom }}">{{ p.nom }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-sm" onclick="addRow('pr')">+ Ajouter</button>
+        </div>
+    </fieldset>
 
-    <h3 style="margin-top:24px">Équipements ({{ pack_resolu.composition_complete.equipements|length if pack_resolu else 0 }})</h3>
     {% if pack_resolu %}
-    <table class="events-table">
-        <thead><tr><th>Équipement</th><th>Quantité</th></tr></thead>
-        <tbody>
-        {% for ligne in pack_resolu.composition_complete.equipements %}
-            {% set eq = catalogue.equipements.get(ligne.id, {}) %}
-            <tr>
-                <td>
-                    <strong>{{ eq.nom or ligne.id }}</strong>
-                    {% if eq.description_courte %}<br><small class="muted">{{ eq.description_courte }}</small>{% endif %}
-                </td>
-                <td class="mono">× {{ ligne.quantite }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <fieldset>
+        <legend>Aperçu du contenu complet (héritage inclus)</legend>
+        <p class="help">Valeur à la carte estimée : <strong>{{ valeur_carte }} €</strong> — prix du pack : <strong>{{ pack.prix_ttc or 0 }} €</strong></p>
+    </fieldset>
     {% endif %}
 
-    <h3 style="margin-top:24px">Prestations ({{ pack_resolu.composition_complete.prestations|length if pack_resolu else 0 }})</h3>
-    {% if pack_resolu %}
-    <table class="events-table">
-        <thead><tr><th>Prestation</th><th>Quantité</th></tr></thead>
-        <tbody>
-        {% for ligne in pack_resolu.composition_complete.prestations %}
-            {% set p = catalogue.prestations.get(ligne.id, {}) %}
-            <tr>
-                <td>
-                    <strong>{{ p.nom or ligne.id }}</strong>
-                    {% if p.description %}<br><small class="muted">{{ p.description }}</small>{% endif %}
-                </td>
-                <td class="mono">× {{ ligne.quantite }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
-</section>
+    <div class="form-actions">
+        <a href="{{ url_for('catalogue.packs_list') }}" class="btn">Annuler</a>
+        <button type="submit" class="btn btn-primary">Sauvegarder le pack</button>
+    </div>
+</form>
 
-<div class="form-actions">
-    <a href="{{ url_for('catalogue.packs_list') }}" class="btn">Retour à la liste</a>
-    <p class="muted"><em>L'édition complète des packs (ajouts, retraits, héritage) sera ajoutée dans une prochaine itération. Pour l'instant, édite directement le fichier <code>data/catalogue/packs.json</code>.</em></p>
-</div>
+<style>
+    .pack-form fieldset { border: 1px solid var(--rule-soft, #e0e0e0); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+    .pack-form legend { font-weight: 600; padding: 0 8px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .pack-form label { display: block; font-size: 13px; margin-bottom: 10px; }
+    .pack-form label.full { grid-column: 1 / -1; }
+    .pack-form input, .pack-form select, .pack-form textarea { width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 6px; margin-top: 3px; }
+    .comp-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+    .comp-name { flex: 1; }
+    .comp-qte { width: 70px; }
+    .add-row { display: flex; gap: 8px; margin-top: 10px; }
+    .add-row select { flex: 1; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .help { font-size: 12px; color: #666; margin-top: 8px; }
+</style>
+
+<script>
+let eqIdx = {{ (pack.composition.equipements | length) if pack.composition else 0 }};
+let prIdx = {{ (pack.composition.prestations | length) if pack.composition else 0 }};
+
+function addRow(type) {
+    const sel = document.getElementById(type === 'eq' ? 'add-eq' : 'add-pr');
+    const id = sel.value;
+    if (!id) return;
+    const nom = sel.options[sel.selectedIndex].dataset.nom || id;
+    const list = document.getElementById(type === 'eq' ? 'comp-eq-list' : 'comp-pr-list');
+    const idx = type === 'eq' ? eqIdx : prIdx;
+    const prefix = type === 'eq' ? 'comp_eq' : 'comp_pr';
+    const div = document.createElement('div');
+    div.className = 'comp-row';
+    div.dataset.id = id;
+    div.innerHTML = `
+        <span class="comp-name">${nom}</span>
+        <input type="number" min="1" name="${prefix}_qte_${idx}" value="1" class="comp-qte">
+        <input type="hidden" name="${prefix}_id_${idx}" value="${id}">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">×</button>
+    `;
+    list.appendChild(div);
+    if (type === 'eq') eqIdx++; else prIdx++;
+    sel.value = '';
+}
+
+function removeRow(btn) {
+    btn.closest('.comp-row').remove();
+}
+</script>
 
 {% endblock %}
