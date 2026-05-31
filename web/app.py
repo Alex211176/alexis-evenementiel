@@ -353,7 +353,15 @@ def event_save():
             except ValueError:
                 supp_qte = 1
             if supp_id:
-                supplements.append({"type": supp_type, "id": supp_id, "quantite": supp_qte})
+                supp_obj = {"type": supp_type, "id": supp_id, "quantite": supp_qte}
+                # Prix facturé optionnel (vide = prix catalogue ; 0 = offert)
+                pf_raw = form.get(f"supp_prix_{idx}", "").strip()
+                if pf_raw != "":
+                    try:
+                        supp_obj["prix_facture"] = float(pf_raw.replace(",", "."))
+                    except ValueError:
+                        pass
+                supplements.append(supp_obj)
 
     retraits_eq, retraits_pr = [], []
     for key in form.keys():

@@ -208,6 +208,8 @@
             font-weight: 600; text-transform: uppercase; font-size: 9.5px; letter-spacing: .04em;
             vertical-align: top; }
         .pack-contenu-items { color: #555; }
+        .prix-barre { text-decoration: line-through; color: #999; font-size: 11px; margin-right: 6px; }
+        .prix-offert { color: var(--accent, #b5651d); font-weight: 600; }
         .item-desc {
             font-size: 9.5pt;
             color: var(--ink-soft);
@@ -500,7 +502,17 @@
                         {% if supp.description %}<div class="item-desc">{{ supp.description }}</div>{% endif %}
                     </td>
                     <td class="qte">{{ supp.quantite }}</td>
-                    <td class="right">{{ supp.prix | euro }}</td>
+                    <td class="right">
+                        {% if supp.offert %}
+                            <span class="prix-barre">{{ supp.prix_plein | euro }}</span>
+                            <span class="prix-offert">Offert</span>
+                        {% elif supp.reduit %}
+                            <span class="prix-barre">{{ supp.prix_plein | euro }}</span>
+                            {{ supp.prix | euro }}
+                        {% else %}
+                            {{ supp.prix | euro }}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
 

@@ -50,6 +50,7 @@ def render_devis_html(
 
     # Construit la liste des suppléments enrichie (id → nom, prix).
     # Gère les 3 types : equipement (défaut, rétro-compat), prestation, pack.
+    # Croise avec result["supplements_detail"] pour récupérer le prix facturé / offert.
     supplements_enriched = []
     if catalogue:
         from catalogue.pricing import calculer_prix
@@ -60,6 +61,28 @@ def render_devis_html(
         equipements = catalogue.get("equipements", {})
         prestations = catalogue.get("prestations", {})
         packs = catalogue.get("packs", {})
+
+        # Index des détails calculés par le resolver : (type, id) -> detail
+        detail_idx = {}
+        for t, key in (("equipement", "equipements"), ("prestation", "prestations"), ("pack", "packs")):
+            for d in (result.get("supplements_detail", {}) or {}).get(key, []):
+                detail_idx[(t, d["id"])] = d
+
+        def _enrich(entry, supp_type, supp_id, prix_plein):
+            """Ajoute prix facturé/offert/reduit à une ligne d'après le resolver."""
+            d = detail_idx.get((supp_type, supp_id))
+            if d:
+                entry["prix"] = d.get("valeur_facturee", prix_plein)
+                entry["prix_plein"] = d.get("valeur", prix_plein)
+                entry["offert"] = d.get("offert", False)
+                entry["reduit"] = d.get("reduit", False)
+            else:
+                entry["prix"] = prix_plein
+                entry["prix_plein"] = prix_plein
+                entry["offert"] = False
+                entry["reduit"] = False
+            return entry
+
         for supp in (data.get("supplements") or []):
             supp_id = supp.get("id")
             qte = supp.get("quantite", 1) or 1
@@ -71,13 +94,12 @@ def render_devis_html(
                 pr = prestations.get(supp_id)
                 if not pr:
                     continue
-                supplements_enriched.append({
+                supplements_enriched.append(_enrich({
                     "id": supp_id, "type": "prestation",
                     "nom": pr.get("nom", supp_id),
                     "description": pr.get("description", ""),
                     "quantite": qte,
-                    "prix": float(pr.get("prix", 0)) * qte,
-                })
+                }, "prestation", supp_id, float(pr.get("prix", 0)) * qte))
             elif supp_type == "pack":
                 pk = packs.get(supp_id)
                 if not pk:
@@ -88,13 +110,12 @@ def render_devis_html(
                         prix_pack = resoudre_pack(supp_id, packs).get("prix_ttc", prix_pack)
                     except Exception:
                         pass
-                supplements_enriched.append({
+                supplements_enriched.append(_enrich({
                     "id": supp_id, "type": "pack",
                     "nom": pk.get("nom", supp_id),
                     "description": pk.get("description", ""),
                     "quantite": qte,
-                    "prix": float(prix_pack) * qte,
-                })
+                }, "pack", supp_id, float(prix_pack) * qte))
             else:  # equipement
                 eq = equipements.get(supp_id)
                 if not eq:
@@ -103,13 +124,13 @@ def render_devis_html(
                     prix = calculer_prix(eq, qte)
                 except Exception:
                     prix = 0
-                supplements_enriched.append({
+                supplements_enriched.append(_enrich({
                     "id": supp_id, "type": "equipement",
                     "nom": eq.get("nom", supp_id),
                     "description": eq.get("description_courte", ""),
                     "quantite": qte,
-                    "prix": prix,
-                })
+                }, "equipement", supp_id, prix))
+
 
     # Contenu du pack groupé par catégorie (sans prix), pour l'afficher sous le pack.
     # On prend la composition PROPRE du pack résolu (héritage inclus), PAS la

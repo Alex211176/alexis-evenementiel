@@ -172,6 +172,17 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
         ajouts_hors_compensation = 0.0   # prestations + packs complémentaires (toujours en plus)
         supplements_detail = {"equipements": [], "prestations": [], "packs": []}
 
+        def _prix_facture(supp, valeur_catalogue):
+            """Retourne le prix réellement facturé pour une ligne.
+            Si 'prix_facture' est défini (y compris 0), on l'utilise ; sinon valeur catalogue."""
+            pf = supp.get("prix_facture", None)
+            if pf is None or pf == "":
+                return valeur_catalogue
+            try:
+                return float(pf)
+            except (TypeError, ValueError):
+                return valeur_catalogue
+
         for supp in event.get("supplements", []):
             supp_id = supp.get("id")
             qte = supp.get("quantite", 1) or 1
@@ -184,10 +195,12 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
                 if not pr:
                     continue
                 valeur = float(pr.get("prix", 0)) * qte
-                ajouts_hors_compensation += valeur
+                facturee = _prix_facture(supp, valeur)
+                ajouts_hors_compensation += facturee
                 supplements_detail["prestations"].append({
                     "id": supp_id, "nom": pr.get("nom", supp_id),
-                    "quantite": qte, "valeur": valeur,
+                    "quantite": qte, "valeur": valeur, "valeur_facturee": facturee,
+                    "offert": facturee == 0, "reduit": facturee < valeur,
                 })
                 # Ajout à la composition prestations (pour la fiche technique)
                 found = False
@@ -208,10 +221,12 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
                 except Exception:
                     pack_comp = None
                 valeur = float((pack_comp or pk).get("prix_ttc", 0)) * qte
-                ajouts_hors_compensation += valeur
+                facturee = _prix_facture(supp, valeur)
+                ajouts_hors_compensation += facturee
                 supplements_detail["packs"].append({
                     "id": supp_id, "nom": pk.get("nom", supp_id),
-                    "quantite": qte, "valeur": valeur,
+                    "quantite": qte, "valeur": valeur, "valeur_facturee": facturee,
+                    "offert": facturee == 0, "reduit": facturee < valeur,
                 })
                 # Fusion du matériel + prestations du pack complémentaire dans la composition
                 if pack_comp:
@@ -228,13 +243,16 @@ def resoudre_evenement(event: dict, catalogue: dict) -> dict:
                         else:
                             composition["prestations"].append({"id": ligne["id"], "quantite": ligne["quantite"] * qte})
 
-            else:  # equipement (comportement historique inchangé)
+            else:  # equipement
                 eq = catalogue["equipements"].get(supp_id)
                 if eq:
-                    ajouts_ttc += _valeur_catalogue_item(eq, qte)
+                    valeur = _valeur_catalogue_item(eq, qte)
+                    facturee = _prix_facture(supp, valeur)
+                    ajouts_ttc += facturee
                     supplements_detail["equipements"].append({
                         "id": supp_id, "nom": eq.get("nom", supp_id),
-                        "quantite": qte, "valeur": _valeur_catalogue_item(eq, qte),
+                        "quantite": qte, "valeur": valeur, "valeur_facturee": facturee,
+                        "offert": facturee == 0, "reduit": facturee < valeur,
                     })
                 found = False
                 for ligne in composition["equipements"]:
