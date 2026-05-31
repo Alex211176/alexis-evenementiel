@@ -476,7 +476,30 @@ def event_delete(filename):
 
 @app.route("/event/preview/<filename>")
 def event_preview(filename):
-    return render_template("preview.html", filename=filename, title=f"Aperçu · {filename}")
+    # Charge les données pour pré-remplir l'email (client, event, prestataire, réf devis)
+    email_ctx = {}
+    try:
+        data = storage_io.load_config_merged(STORAGE, filename)
+        client = data.get("client", {}) or {}
+        event = data.get("event", {}) or {}
+        prestataire = data.get("prestataire", {}) or {}
+        devis = data.get("devis", {}) or {}
+        ref = devis.get("reference", "")
+        email_ctx = {
+            "client_email": client.get("email", ""),
+            "client_prenom": client.get("prenom", ""),
+            "client_nom": client.get("nom", ""),
+            "event_name": event.get("name", ""),
+            "event_location": event.get("location", ""),
+            "devis_reference": ref,
+            "prestataire_nom": prestataire.get("nom", ""),
+            "prestataire_telephone": prestataire.get("telephone", ""),
+            "prestataire_email": prestataire.get("email", ""),
+        }
+    except Exception:
+        pass
+    return render_template("preview.html", filename=filename,
+                           email_ctx=email_ctx, title=f"Aperçu · {filename}")
 
 
 @app.route("/event/render/<filename>")

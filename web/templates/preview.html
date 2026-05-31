@@ -22,48 +22,84 @@
     <div class="devis-actions">
         <a href="{{ url_for('devis.preview', event_filename=filename) }}" class="btn" target="_blank">Aperçu devis</a>
         <a href="{{ url_for('devis.pdf', event_filename=filename) }}" class="btn">Devis PDF</a>
-        <button type="button" class="btn btn-primary" onclick="sendDevis()">📤 Envoyer au client</button>
+        <button type="button" class="btn btn-primary" onclick="prepareEmail()">✉️ Préparer l'email</button>
     </div>
 </div>
-<div id="share-link-result" style="display:none"></div>
+
+<!-- Zone email (cachée par défaut) -->
+<div id="email-box" class="email-box" style="display:none">
+    <div class="email-field">
+        <label>Destinataire</label>
+        <input type="email" id="email-to">
+    </div>
+    <div class="email-field">
+        <label>Objet</label>
+        <input type="text" id="email-subject">
+    </div>
+    <div class="email-field">
+        <label>Message</label>
+        <textarea id="email-body" rows="9"></textarea>
+    </div>
+    <div class="email-actions">
+        <button type="button" class="btn btn-primary" onclick="openMail()">📧 Ouvrir dans Mail</button>
+        <button type="button" class="btn" onclick="copyBody()">📋 Copier le message</button>
+        <span class="email-hint">Pense à joindre le PDF du devis (bouton « Devis PDF » ci-dessus).</span>
+    </div>
+</div>
 
 <div class="preview-frame-wrapper">
     <iframe class="preview-frame" src="{{ url_for('event_render', filename=filename) }}"></iframe>
 </div>
 
 <script>
-async function sendDevis() {
-    try {
-        const r = await fetch("{{ url_for('devis.send_devis', event_filename=filename) }}", {
-            method: 'POST',
-        });
-        const data = await r.json();
-        const result = document.getElementById('share-link-result');
-        if (data.ok) {
-            result.style.display = '';
-            result.innerHTML = `
-                <div class="share-link-box">
-                    <strong>✅ Devis envoyé — statut "${data.statut}"</strong>
-                    <div class="share-link-row">
-                        <label>Lien à transmettre au client :</label>
-                        <input type="text" id="share-link-input" value="${data.share_url}" readonly>
-                        <button type="button" class="btn btn-sm" onclick="copyLink()">📋 Copier</button>
-                        <a href="${data.share_url}" target="_blank" class="btn btn-sm">Ouvrir</a>
-                    </div>
-                </div>`;
-        } else {
-            alert('Erreur : ' + (data.error || 'inconnue'));
-        }
-    } catch (e) {
-        alert('Erreur réseau : ' + e.message);
-    }
+// Données injectées par le serveur (peuvent être vides)
+const EMAIL_CTX = {{ email_ctx | tojson }};
+
+function buildDefaults() {
+    const c = EMAIL_CTX || {};
+    const prenom = c.client_prenom || "";
+    const nom = c.client_nom || "";
+    const nomComplet = (prenom + " " + nom).trim();
+    const ref = c.devis_reference || "";
+    const evt = c.event_name || "votre événement";
+    const lieu = c.event_location || "";
+    const presta = c.prestataire_nom || "Alexis Arokiassamy";
+    const tel = c.prestataire_telephone || "";
+
+    const objet = ref ? `Devis ${ref}` : `Devis — ${evt}`;
+
+    let corps = `Bonjour ${nomComplet || prenom || ""},\n\n`;
+    corps += `Veuillez trouver ci-joint ma proposition de devis pour l'événement « ${evt} »`;
+    if (lieu) corps += ` à ${lieu}`;
+    corps += `.\n\n`;
+    corps += `Je reste à votre disposition pour tout renseignement complémentaire.\n\n`;
+    corps += `Cordialement,\n${presta}`;
+    if (tel) corps += `\n${tel}`;
+
+    return { to: c.client_email || "", subject: objet, body: corps };
 }
 
-function copyLink() {
-    const inp = document.getElementById('share-link-input');
-    inp.select();
+function prepareEmail() {
+    const box = document.getElementById('email-box');
+    const d = buildDefaults();
+    document.getElementById('email-to').value = d.to;
+    document.getElementById('email-subject').value = d.subject;
+    document.getElementById('email-body').value = d.body;
+    box.style.display = (box.style.display === 'none') ? '' : 'none';
+}
+
+function openMail() {
+    const to = encodeURIComponent(document.getElementById('email-to').value);
+    const subject = encodeURIComponent(document.getElementById('email-subject').value);
+    const body = encodeURIComponent(document.getElementById('email-body').value);
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+function copyBody() {
+    const ta = document.getElementById('email-body');
+    ta.select();
     document.execCommand('copy');
-    alert('Lien copié !');
+    alert('Message copié !');
 }
 </script>
 

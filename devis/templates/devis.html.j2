@@ -400,9 +400,6 @@
             <div class="doc-type-value">Devis</div>
             <div class="doc-type-ref">
                 {{ devis.reference or document.reference }}
-                {% if devis.statut %}
-                    <span class="statut-badge statut-{{ devis.statut }}">{{ devis.statut|capitalize }}</span>
-                {% endif %}
             </div>
         </div>
     </header>
