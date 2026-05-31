@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — Alexis Événementiel</title>
+<meta name="description" content="Depuis 2010, Alexis orchestre mariages et événements autour d'Albi : DJ, animation sur-mesure, sonorisation, lumière, photobooth et captation. Un seul interlocuteur, à votre écoute.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { max-width: 1280px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover { color: var(--or-clair); }
+
+    /* Hero À propos */
+    .hero { padding: 170px 0 90px; position: relative; overflow: hidden;
+        background: radial-gradient(ellipse 70% 60% at 70% 10%, rgba(201,165,92,0.12), transparent 60%), linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%); }
+    .hero-grid { display: grid; grid-template-columns: 1fr 0.85fr; gap: 70px; align-items: center; }
+    .hero .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 22px; }
+    .hero h1 { font-size: clamp(2.6rem, 5.5vw, 4.4rem); line-height: 1.02; margin-bottom: 26px; }
+    .hero h1 .italic { font-style: italic; color: var(--or-clair); }
+    .hero .lede { color: var(--gris-clair); font-size: 1.15rem; }
+    .portrait { aspect-ratio: 3/4; background: var(--noir-3) center/cover no-repeat; border: 1px solid var(--line); border-radius: 5px; }
+
+    section { padding: 80px 0; }
+    .intro-citation { text-align: center; max-width: 760px; margin: 0 auto; }
+    .intro-citation p { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 3vw, 2.2rem); font-style: italic; line-height: 1.4; color: var(--creme); }
+    .intro-citation .sign { margin-top: 26px; font-family: 'Jost', sans-serif; font-style: normal; font-size: 0.82rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--or); }
+
+    .bloc { background: var(--noir-2); }
+    .bloc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    .bloc-grid.solo { grid-template-columns: 1fr; max-width: 760px; margin: 0 auto; }
+    .label { font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--or); margin-bottom: 16px; display: flex; align-items: center; gap: 14px; }
+    .label::before { content: ""; width: 34px; height: 1px; background: var(--or-sombre); }
+    .bloc h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); line-height: 1.1; margin-bottom: 22px; }
+    .bloc h2 .italic { font-style: italic; color: var(--or-clair); }
+    .bloc p { color: var(--gris-clair); margin-bottom: 18px; }
+    .bloc p strong { color: var(--creme); font-weight: 400; }
+
+    /* Déroulé soirée */
+    .timeline { list-style: none; margin-top: 10px; }
+    .timeline li { position: relative; padding-left: 28px; margin-bottom: 18px; color: var(--gris-clair); }
+    .timeline li::before { content: ""; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--or); }
+    .timeline li strong { color: var(--creme); font-weight: 400; display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; }
+
+    /* Atouts */
+    .atouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 10px; }
+    .atout { background: var(--noir); padding: 38px 30px; }
+    .atout .ico { font-size: 1.4rem; color: var(--or); width: 50px; height: 50px; border: 1px solid var(--line); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .atout h3 { font-size: 1.4rem; margin-bottom: 10px; }
+    .atout p { color: var(--gris); font-size: 0.92rem; }
+
+    /* Chiffres */
+    .stats { display: flex; justify-content: center; gap: 70px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat .num { font-family: 'Cormorant Garamond', serif; font-size: 3.4rem; color: var(--or-clair); line-height: 1; }
+    .stat .lbl { color: var(--gris); font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 8px; }
+
+    /* CTA */
+    .cta { text-align: center; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.10), transparent 60%), var(--noir); }
+    .cta h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 22px; }
+    .cta h2 .italic { font-style: italic; color: var(--or-clair); }
+    .cta p { color: var(--gris-clair); max-width: 460px; margin: 0 auto 36px; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 34px; font-family: 'Jost', sans-serif; font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none; border-radius: 2px; transition: all 0.35s ease; border: none; }
+    .btn-gold { background: var(--or); color: var(--noir); }
+    .btn-gold:hover { background: var(--or-clair); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(201,165,92,0.25); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+    footer .pro { margin-top: 14px; font-size: 0.78rem; }
+    footer .pro a { color: var(--gris); border-bottom: 1px solid var(--line); }
+
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.9s ease, transform 0.9s ease; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+        .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+        .portrait { max-width: 360px; }
+        .bloc-grid { grid-template-columns: 1fr; gap: 36px; }
+        .atouts { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+        .stats { gap: 40px; }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="galerie.html">Réalisations</a>
+            <a href="apropos.html">À propos</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <div class="eyebrow">À propos</div>
+            <h1>La passion de la scène,<br>le sens du <span class="italic">détail</span>.</h1>
+            <p class="lede">DJ-animateur installé dans le Tarn, je conçois et pilote vos événements de A à Z — pour que vous n'ayez plus qu'à en profiter.</p>
+        </div>
+        <div class="portrait" style="background-image:url('photos/portrait.jpg')"></div>
+    </div>
+</header>
+
+<section>
+    <div class="wrap intro-citation reveal">
+        <p>« Chaque événement est unique. Mon rôle, c'est de comprendre vos envies, de vous conseiller, et d'orchestrer une soirée à votre image — du premier morceau à la dernière lumière. »</p>
+        <div class="sign">Alexis · Alexis Événementiel</div>
+    </div>
+</section>
+
+<section class="bloc">
+    <div class="wrap bloc-grid">
+        <div class="reveal">
+            <div class="label">À votre écoute</div>
+            <h2>Une prestation <span class="italic">sur-mesure</span>, jamais standardisée</h2>
+        </div>
+        <div class="reveal">
+            <p>Avant chaque événement, je prends le temps de vous rencontrer, de cerner vos goûts et l'ambiance que vous imaginez. La musique se construit <strong>avec vous</strong> : playlist collaborative, morceaux qui comptent, titres à éviter.</p>
+            <p>Le jour J, mon attention va bien au-delà des platines. Je reste à l'écoute de la salle, je lis l'énergie des invités et j'adapte le tempo en temps réel pour que la fête ne retombe jamais.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap bloc-grid">
+        <div class="reveal">
+            <div class="label">Un seul interlocuteur</div>
+            <h2>Tout votre événement,<br><span class="italic">coordonné</span> par une seule personne</h2>
+        </div>
+        <div class="reveal">
+            <p>Son, lumière, animation, photobooth, captation photo et vidéo : au lieu de jongler entre plusieurs prestataires, vous avez <strong>un seul interlocuteur</strong> qui maîtrise chaque dimension de votre soirée.</p>
+            <p>Je coordonne aussi le bon déroulé de l'événement avec les autres intervenants — traiteur, lieu, photographe — pour que tout s'enchaîne sans accroc. Vous gagnez en sérénité, et l'ensemble gagne en cohérence.</p>
+        </div>
+    </div>
+</section>
+
+<section class="bloc">
+    <div class="wrap bloc-grid">
+        <div class="reveal">
+            <div class="label">Le déroulé d'une soirée</div>
+            <h2>Une montée en énergie <span class="italic">maîtrisée</span></h2>
+            <p>Ma programmation évolue au fil des heures pour accompagner chaque moment.</p>
+        </div>
+        <div class="reveal">
+            <ul class="timeline">
+                <li><strong>L'apéritif & le repas</strong>Ambiances feutrées, classiques intemporels, pour laisser place aux conversations.</li>
+                <li><strong>L'ouverture de bal</strong>Le moment fort, mis en lumière et en son avec soin.</li>
+                <li><strong>La soirée dansante</strong>Des tubes de toutes les époques aux rythmes latinos, ma spécialité, pour faire danser toutes les générations.</li>
+                <li><strong>Les animations</strong>Jeux, quiz, blind-tests, karaoké et concepts interactifs projetés sur grand écran pour impliquer vos invités.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="reveal" style="text-align:center; margin-bottom:48px">
+            <div class="label" style="justify-content:center">Mes atouts</div>
+            <h2 style="font-size:clamp(1.9rem,3.6vw,2.8rem)">Ce qui fait la <span style="font-style:italic;color:var(--or-clair)">différence</span></h2>
+        </div>
+        <div class="atouts reveal">
+            <div class="atout"><div class="ico">♪</div><h3>Animation vivante</h3><p>Lecture de salle, micro, jeux et concepts interactifs : bien plus qu'un simple DJ.</p></div>
+            <div class="atout"><div class="ico">◍</div><h3>Matériel haut de gamme</h3><p>Sonorisation Bose & RCF, éclairage Chauvet, effets spectaculaires (fumée lourde, étincelles froides).</p></div>
+            <div class="atout"><div class="ico">▷</div><h3>Image & souvenirs</h3><p>Photobooth avec impression instantanée et captation vidéo immersive 360°.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="bloc">
+    <div class="wrap">
+        <div class="stats reveal">
+            <div class="stat"><div class="num" id="annees">16</div><div class="lbl">ans d'expérience</div></div>
+            <div class="stat"><div class="num">200 km</div><div class="lbl">autour d'Albi</div></div>
+            <div class="stat"><div class="num">6</div><div class="lbl">métiers réunis</div></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="wrap reveal">
+        <h2>Parlons de <span class="italic">votre projet</span></h2>
+        <p>Les meilleures dates partent vite — il est conseillé de réserver jusqu'à un an à l'avance. Contactez-moi pour en discuter.</p>
+        <a href="index.html#contact" class="btn btn-gold">Demander un devis</a>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis <span>Événementiel</span></div>
+        <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:alexis.arokiassamy@gmail.com">alexis.arokiassamy@gmail.com</a></p>
+        <p><a href="https://www.facebook.com/alexis.evenementiel/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/alexis_evenementiel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p class="pro"><a href="https://alexis-evenementiel.onrender.com" target="_blank" rel="noopener">Espace pro</a></p>
+    </div>
+</footer>
+
+<script>
+    const an = document.getElementById('annees');
+    if (an) an.textContent = new Date().getFullYear() - 2010;
+    const obs = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } }), { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>

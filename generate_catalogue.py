@@ -249,165 +249,127 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <title>Catalogue — Alexis Événementiel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
     :root {{
-        --ink: #1a1410;
-        --ink-soft: #5a4f47;
-        --paper: #faf6f0;
-        --paper-2: #f3ece2;
-        --accent: #c2410c;
-        --accent-soft: #fdebd9;
-        --gold: #b8893a;
-        --line: #e4d9ca;
-        --shadow: 0 2px 20px rgba(40,25,10,0.06);
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
     }}
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+    html {{ scroll-behavior: smooth; }}
     body {{
-        font-family: 'Outfit', sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
+        font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme);
+        line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased;
     }}
-    .wrap {{ max-width: 1100px; margin: 0 auto; padding: 0 24px; }}
+    h1, h2, h3 {{ font-family: 'Cormorant Garamond', serif; font-weight: 500; }}
+    .wrap {{ max-width: 1200px; margin: 0 auto; padding: 0 32px; }}
 
-    /* Hero */
-    header.hero {{
-        background: linear-gradient(135deg, #1a1410 0%, #2d2018 55%, #3d2a18 100%);
-        color: var(--paper);
-        padding: 90px 0 80px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }}
-    header.hero::before {{
-        content: "";
-        position: absolute; inset: 0;
-        background: radial-gradient(circle at 20% 30%, rgba(194,65,12,0.25), transparent 45%),
-                    radial-gradient(circle at 80% 70%, rgba(184,137,58,0.18), transparent 40%);
-    }}
-    .hero-content {{ position: relative; z-index: 1; }}
-    .hero .eyebrow {{
-        font-size: 13px; letter-spacing: 0.35em; text-transform: uppercase;
-        color: var(--gold); margin-bottom: 18px;
-    }}
-    .hero h1 {{
-        font-family: 'Fraunces', serif;
-        font-size: clamp(2.4rem, 6vw, 4rem);
-        font-weight: 600; line-height: 1.05; margin-bottom: 20px;
-    }}
-    .hero p {{ font-size: 1.1rem; color: rgba(250,246,240,0.8); max-width: 560px; margin: 0 auto; }}
-
-    /* Navigation par ancres */
-    nav.sticky {{
-        position: sticky; top: 0; z-index: 10;
-        background: rgba(250,246,240,0.92);
-        backdrop-filter: blur(10px);
+    nav {{
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0;
+        background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
         border-bottom: 1px solid var(--line);
-        padding: 14px 0;
     }}
-    nav.sticky .wrap {{ display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }}
-    nav.sticky a {{
-        color: var(--ink-soft); text-decoration: none; font-weight: 500;
-        font-size: 15px; transition: color 0.2s; position: relative;
-    }}
-    nav.sticky a:hover {{ color: var(--accent); }}
+    nav .wrap {{ display: flex; align-items: center; justify-content: space-between; }}
+    .logo {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }}
+    .logo span {{ color: var(--or); }}
+    .nav-links {{ display: flex; gap: 32px; align-items: center; }}
+    .nav-links a {{ color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }}
+    .nav-links a:hover {{ color: var(--or-clair); }}
 
-    /* Sections */
-    section {{ padding: 70px 0; }}
-    section:nth-child(even) {{ background: var(--paper-2); }}
-    .section-head {{ text-align: center; margin-bottom: 50px; }}
-    .section-head .num {{
-        font-family: 'Fraunces', serif; font-size: 14px; color: var(--accent);
-        letter-spacing: 0.2em;
+    header.hero {{
+        padding: 160px 0 80px; text-align: center; position: relative; overflow: hidden;
+        background:
+            radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,165,92,0.14), transparent 60%),
+            linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%);
     }}
-    .section-head h2 {{
-        font-family: 'Fraunces', serif; font-size: clamp(1.8rem, 4vw, 2.6rem);
-        font-weight: 600; margin-top: 6px;
-    }}
-    .section-head p {{ color: var(--ink-soft); margin-top: 10px; }}
+    .hero .eyebrow {{ font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 20px; }}
+    .hero h1 {{ font-size: clamp(2.6rem, 6vw, 4.5rem); line-height: 1.02; margin-bottom: 22px; }}
+    .hero h1 .italic {{ font-style: italic; color: var(--or-clair); }}
+    .hero p {{ color: var(--gris-clair); max-width: 560px; margin: 0 auto; font-size: 1.08rem; }}
 
-    .cat-group {{ margin-bottom: 44px; }}
-    .cat-title {{
-        font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600;
-        margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid var(--accent-soft);
-        display: inline-block;
-    }}
+    nav.sticky-sub {{ position: sticky; top: 61px; z-index: 50; background: rgba(18,17,22,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 0; }}
+    nav.sticky-sub .wrap {{ display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }}
+    nav.sticky-sub a {{ color: var(--gris-clair); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.3s; }}
+    nav.sticky-sub a:hover {{ color: var(--or-clair); }}
 
-    .card-grid {{
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-    }}
-    .equip-grid {{ grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }}
+    section {{ padding: 90px 0; }}
+    section:nth-of-type(even) {{ background: var(--noir-2); }}
+    .section-head {{ text-align: center; margin-bottom: 56px; }}
+    .section-head .num {{ font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: var(--or); letter-spacing: 0.3em; font-style: italic; }}
+    .section-head h2 {{ font-size: clamp(2rem, 4vw, 3rem); margin-top: 8px; }}
+    .section-head h2 .italic {{ font-style: italic; color: var(--or-clair); }}
+    .section-head p {{ color: var(--gris-clair); margin-top: 12px; max-width: 520px; margin-left: auto; margin-right: auto; }}
 
-    .card {{
-        background: #fff; border: 1px solid var(--line); border-radius: 14px;
-        padding: 22px; box-shadow: var(--shadow);
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }}
-    .card:hover {{ transform: translateY(-4px); box-shadow: 0 12px 32px rgba(40,25,10,0.12); }}
+    .cat-group {{ margin-bottom: 50px; }}
+    .cat-title {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }}
+
+    .card-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }}
+    .equip-grid {{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
+
+    .card {{ background: var(--noir-3); border: 1px solid var(--line); border-radius: 6px; padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease; }}
+    .card:hover {{ transform: translateY(-4px); border-color: var(--or-sombre); }}
     .card-head {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }}
-    .card h3 {{ font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; }}
-    .price {{
-        font-weight: 600; color: var(--accent); font-size: 1.15rem; white-space: nowrap;
-    }}
-    .price-unit {{ font-size: 0.75rem; color: var(--ink-soft); font-weight: 400; }}
-    .card-meta {{ font-size: 0.85rem; color: var(--gold); font-weight: 500; }}
-    .card-desc {{ color: var(--ink-soft); font-size: 0.92rem; margin-top: 10px; }}
+    .card h3 {{ font-size: 1.35rem; }}
+    .price {{ font-family: 'Cormorant Garamond', serif; font-weight: 600; color: var(--or-clair); font-size: 1.3rem; white-space: nowrap; }}
+    .price-unit {{ font-size: 0.7rem; color: var(--gris); font-weight: 400; font-family: 'Jost', sans-serif; }}
+    .card-meta {{ font-size: 0.82rem; color: var(--or); letter-spacing: 0.08em; }}
+    .card-desc {{ color: var(--gris-clair); font-size: 0.92rem; margin-top: 10px; }}
 
-    .card-contenu {{ margin-top: 14px; }}
-    .card-contenu summary {{
-        cursor: pointer; font-size: 0.85rem; color: var(--accent); font-weight: 500;
-        list-style: none; user-select: none;
-    }}
+    .card-contenu {{ margin-top: 16px; }}
+    .card-contenu summary {{ cursor: pointer; font-size: 0.8rem; color: var(--or); letter-spacing: 0.08em; text-transform: uppercase; list-style: none; }}
     .card-contenu summary::-webkit-details-marker {{ display: none; }}
     .card-contenu summary::before {{ content: "＋ "; }}
     .card-contenu[open] summary::before {{ content: "− "; }}
     .card-contenu ul {{ margin-top: 12px; padding-left: 18px; }}
-    .card-contenu li {{ font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 4px; }}
+    .card-contenu li {{ font-size: 0.85rem; color: var(--gris-clair); margin-bottom: 5px; }}
 
-    /* Cartes équipement avec photo */
     .equip-card {{ padding: 0; overflow: hidden; display: flex; flex-direction: column; }}
-    .equip-photo {{
-        aspect-ratio: 4/3; background: var(--paper-2); overflow: hidden;
-        display: flex; align-items: center; justify-content: center;
-    }}
-    .equip-photo img {{ width: 100%; height: 100%; object-fit: contain; padding: 12px; }}
-    .equip-body {{ padding: 18px; flex: 1; display: flex; flex-direction: column; }}
-    .equip-marque {{
-        font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
-        color: var(--gold); font-weight: 600;
-    }}
-    .equip-body h3 {{ font-size: 1.05rem; margin: 4px 0 0; }}
-    .equip-body .price {{ margin-top: auto; padding-top: 12px; }}
+    .equip-photo {{ aspect-ratio: 4/3; background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; }}
+    .equip-photo img {{ width: 100%; height: 100%; object-fit: contain; padding: 14px; }}
+    .equip-body {{ padding: 20px; flex: 1; display: flex; flex-direction: column; }}
+    .equip-marque {{ font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--or); font-weight: 500; }}
+    .equip-body h3 {{ font-size: 1.15rem; margin: 5px 0 0; }}
+    .equip-body .price {{ margin-top: auto; padding-top: 14px; font-size: 1.15rem; }}
 
-    /* Footer */
-    footer {{
-        background: var(--ink); color: rgba(250,246,240,0.85);
-        text-align: center; padding: 50px 0; font-size: 0.9rem;
-    }}
-    footer .brand {{ font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--paper); margin-bottom: 8px; }}
-    footer a {{ color: var(--gold); text-decoration: none; }}
-    footer .maj {{ margin-top: 16px; font-size: 0.78rem; color: rgba(250,246,240,0.5); }}
+    footer {{ background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }}
+    footer .brand {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }}
+    footer .brand span {{ color: var(--or); }}
+    footer p {{ color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }}
+    footer a {{ color: var(--or-clair); text-decoration: none; }}
+    footer .maj {{ margin-top: 18px; font-size: 0.76rem; color: var(--gris); }}
 
-    @media (max-width: 600px) {{
-        section {{ padding: 48px 0; }}
-        header.hero {{ padding: 64px 0 56px; }}
+    @media (max-width: 700px) {{
+        .nav-links {{ display: none; }}
+        section {{ padding: 60px 0; }}
+        .equip-grid {{ grid-template-columns: 1fr; }}
     }}
 </style>
 </head>
 <body>
 
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="index.html#realisations">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
 <header class="hero">
-    <div class="wrap hero-content">
-        <div class="eyebrow">Alexis Événementiel</div>
-        <h1>Packs, prestations<br>& location de matériel</h1>
-        <p>DJ-animateur dans le Tarn — sonorisation, lumière, photobooth et animations pour vos événements.</p>
+    <div class="wrap">
+        <div class="eyebrow">Packs · Prestations · Location</div>
+        <h1>Le <span class="italic">catalogue</span></h1>
+        <p>Formules clés en main, prestations à la carte et location de matériel professionnel.</p>
     </div>
 </header>
 
-<nav class="sticky">
+<nav class="sticky-sub">
     <div class="wrap">
         <a href="#packs">Nos formules</a>
         <a href="#prestations">Prestations</a>
@@ -419,7 +381,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="wrap">
         <div class="section-head">
             <div class="num">01</div>
-            <h2>Nos formules</h2>
+            <h2>Nos <span class="italic">formules</span></h2>
             <p>Des packs clés en main, du cocktail à la soirée complète.</p>
         </div>
         {packs}
@@ -431,7 +393,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="section-head">
             <div class="num">02</div>
             <h2>Prestations</h2>
-            <p>À la carte, pour compléter votre événement.</p>
+            <p>À la carte, pour composer votre événement sur-mesure.</p>
         </div>
         {prestations}
     </div>
@@ -441,7 +403,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="wrap">
         <div class="section-head">
             <div class="num">03</div>
-            <h2>Location de matériel</h2>
+            <h2>Location de <span class="italic">matériel</span></h2>
             <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
         </div>
         {equipements}
@@ -450,10 +412,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 <footer>
     <div class="wrap">
-        <div class="brand">Alexis Événementiel</div>
-        <div>Albi & Tarn (81) — déplacements jusqu'à 200 km</div>
-        <div><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:alexis.arokiassamy@gmail.com">alexis.arokiassamy@gmail.com</a></div>
-        <div class="maj">Catalogue mis à jour le {maj} · TVA non applicable, art. 293 B du CGI</div>
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:alexis.arokiassamy@gmail.com">alexis.arokiassamy@gmail.com</a></p>
+        <p class="maj">Catalogue mis à jour le {maj} · TVA non applicable, art. 293 B du CGI</p>
     </div>
 </footer>
 

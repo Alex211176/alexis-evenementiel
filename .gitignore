@@ -7,3 +7,9 @@ venv/
 .venv/
 data/output/
 *.pdf
+
+# Sauvegardes et anciens rendus
+*.bak
+*.bak2
+catalogue_site/
+*.rtf

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalogue — Alexis Événementiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme);
+        line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+    nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0;
+        background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--line);
+    }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover { color: var(--or-clair); }
+
+    header.hero {
+        padding: 160px 0 80px; text-align: center; position: relative; overflow: hidden;
+        background:
+            radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,165,92,0.14), transparent 60%),
+            linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%);
+    }
+    .hero .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); line-height: 1.02; margin-bottom: 22px; }
+    .hero h1 .italic { font-style: italic; color: var(--or-clair); }
+    .hero p { color: var(--gris-clair); max-width: 560px; margin: 0 auto; font-size: 1.08rem; }
+
+    nav.sticky-sub { position: sticky; top: 61px; z-index: 50; background: rgba(18,17,22,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 0; }
+    nav.sticky-sub .wrap { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+    nav.sticky-sub a { color: var(--gris-clair); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.3s; }
+    nav.sticky-sub a:hover { color: var(--or-clair); }
+
+    section { padding: 90px 0; }
+    section:nth-of-type(even) { background: var(--noir-2); }
+    .section-head { text-align: center; margin-bottom: 56px; }
+    .section-head .num { font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: var(--or); letter-spacing: 0.3em; font-style: italic; }
+    .section-head h2 { font-size: clamp(2rem, 4vw, 3rem); margin-top: 8px; }
+    .section-head h2 .italic { font-style: italic; color: var(--or-clair); }
+    .section-head p { color: var(--gris-clair); margin-top: 12px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+    .cat-group { margin-bottom: 50px; }
+    .cat-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .equip-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    .card { background: var(--noir-3); border: 1px solid var(--line); border-radius: 6px; padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease; }
+    .card:hover { transform: translateY(-4px); border-color: var(--or-sombre); }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .card h3 { font-size: 1.35rem; }
+    .price { font-family: 'Cormorant Garamond', serif; font-weight: 600; color: var(--or-clair); font-size: 1.3rem; white-space: nowrap; }
+    .price-unit { font-size: 0.7rem; color: var(--gris); font-weight: 400; font-family: 'Jost', sans-serif; }
+    .card-meta { font-size: 0.82rem; color: var(--or); letter-spacing: 0.08em; }
+    .card-desc { color: var(--gris-clair); font-size: 0.92rem; margin-top: 10px; }
+
+    .card-contenu { margin-top: 16px; }
+    .card-contenu summary { cursor: pointer; font-size: 0.8rem; color: var(--or); letter-spacing: 0.08em; text-transform: uppercase; list-style: none; }
+    .card-contenu summary::-webkit-details-marker { display: none; }
+    .card-contenu summary::before { content: "＋ "; }
+    .card-contenu[open] summary::before { content: "− "; }
+    .card-contenu ul { margin-top: 12px; padding-left: 18px; }
+    .card-contenu li { font-size: 0.85rem; color: var(--gris-clair); margin-bottom: 5px; }
+
+    .equip-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+    .equip-photo { aspect-ratio: 4/3; background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .equip-photo img { width: 100%; height: 100%; object-fit: contain; padding: 14px; }
+    .equip-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .equip-marque { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--or); font-weight: 500; }
+    .equip-body h3 { font-size: 1.15rem; margin: 5px 0 0; }
+    .equip-body .price { margin-top: auto; padding-top: 14px; font-size: 1.15rem; }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+    footer .maj { margin-top: 18px; font-size: 0.76rem; color: var(--gris); }
+
+    @media (max-width: 700px) {
+        .nav-links { display: none; }
+        section { padding: 60px 0; }
+        .equip-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="index.html#realisations">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap">
+        <div class="eyebrow">Packs · Prestations · Location</div>
+        <h1>Le <span class="italic">catalogue</span></h1>
+        <p>Formules clés en main, prestations à la carte et location de matériel professionnel.</p>
+    </div>
+</header>
+
+<nav class="sticky-sub">
+    <div class="wrap">
+        <a href="#packs">Nos formules</a>
+        <a href="#prestations">Prestations</a>
+        <a href="#location">Location</a>
+    </div>
+</nav>
+
+<section id="packs">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="num">01</div>
+            <h2>Nos <span class="italic">formules</span></h2>
+            <p>Des packs clés en main, du cocktail à la soirée complète.</p>
+        </div>
+        <div class="cat-group"><h3 class="cat-title">DJ privé</h3><div class="card-grid">
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Signature Cocktail</h3>
+                <div class="price">500 €</div>
+            </div>
+            <span class="card-meta">≈ 3h</span>
+            <p class="card-desc">DJ + animation apéritif. Sonorisation Bose L1 (&lt;100 pers/intérieur), lumières piste basiques, écran géant.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>Animation DJ — apéritif (≈ 3h)</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Full Soirée</h3>
+                <div class="price">650 €</div>
+            </div>
+            <span class="card-meta">soirée complète</span>
+            <p class="card-desc">Tout Signature Cocktail + playlist collaborative, rampe GigBar, enceinte Bose S1 pour after.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Chauvet GigBar Move + ILS</li><li>1× Bose S1 Pro</li><li>Animation DJ — apéritif (≈ 3h)</li><li>Playlist personnalisée &amp; collaborative</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Immersion</h3>
+                <div class="price">800 €</div>
+            </div>
+            <span class="card-meta">soirée complète</span>
+            <p class="card-desc">Tout Full Soirée + 2e rampe GigBar, 2 barres LED Colorband, station énergétique, captation vidéo basique.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Chauvet GigBar Move + ILS</li><li>1× Bose S1 Pro</li><li>1× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Station énergétique portable EcoFlow</li><li>Animation DJ — apéritif (≈ 3h)</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo basique</li></ul>
+            </details>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Mariage</h3><div class="card-grid">
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Essentiel</h3>
+                <div class="price">1000 €</div>
+            </div>
+            <span class="card-meta">vin d&#x27;honneur à soirée (≈ 4h+)</span>
+            <p class="card-desc">DJ + animation vin d&#x27;honneur à soirée, 3 réunions de préparation, sonorisation Bose L1, 2 rampes GigBar + 2 barres LED + Magnum, playlist personnalisée, écran 150&quot;.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Confort</h3>
+                <div class="price">1300 €</div>
+            </div>
+            <span class="card-meta">vin d&#x27;honneur à soirée</span>
+            <p class="card-desc">Tout Essentiel + éclairage architectural complet (H9), captation vidéo classique, enceinte Bose S1 after, station énergétique.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Premium</h3>
+                <div class="price">1600 €</div>
+            </div>
+            <span class="card-meta">vin d&#x27;honneur à soirée</span>
+            <p class="card-desc">Tout Confort + captation vidéo 360°, effets supplémentaires (boule à facettes + spot), bundle media inclus.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360° (Insta360)</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Cinématique</h3>
+                <div class="price">2000 €</div>
+            </div>
+            <span class="card-meta">vin d&#x27;honneur à soirée</span>
+            <p class="card-desc">Tout Premium + clip vidéo résumé complet, moments clés sublimés par lumière, musique et effets spéciaux.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360° (Insta360)</li><li>Clip vidéo résumé cinématique</li></ul>
+            </details>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Photobooth Basic</h3>
+                <div class="price">150 €</div>
+            </div>
+            <span class="card-meta">soirée</span>
+            <p class="card-desc">Photobooth Canon 5D Mark III sans impression. Affichage sur écran géant si prestation DJ incluse. Fond + accessoires.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Photobooth Canon 5D Mark III</li><li>Fond photo + accessoires fun</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Photobooth Classic 100 impressions</h3>
+                <div class="price">200 €</div>
+            </div>
+            <span class="card-meta">soirée</span>
+            <p class="card-desc">Photobooth Canon 5D Mark III avec 100 impressions sublimation thermique. Fond + accessoires.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Photobooth Canon 5D Mark III</li><li>1× Imprimante Canon Selphy CP</li><li>Fond photo + accessoires fun</li><li>100 impressions photobooth incluses</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Photobooth Classic 200 impressions</h3>
+                <div class="price">250 €</div>
+            </div>
+            <span class="card-meta">soirée</span>
+            <p class="card-desc">Photobooth Canon 5D Mark III avec 200 impressions sublimation thermique. Fond + accessoires.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Photobooth Canon 5D Mark III</li><li>1× Imprimante DNP DS620</li><li>Fond photo + accessoires fun</li><li>200 impressions photobooth incluses</li></ul>
+            </details>
+        </article>
+        <article class="card pack-card">
+            <div class="card-head">
+                <h3>Photobooth Illimité</h3>
+                <div class="price">300 €</div>
+            </div>
+            <span class="card-meta">soirée</span>
+            <p class="card-desc">Photobooth Canon 5D Mark III avec impressions illimitées via imprimante pro DNP. Fond + accessoires.</p>
+            <details class="card-contenu">
+                <summary>Voir le contenu</summary>
+                <ul><li>1× Photobooth Canon 5D Mark III</li><li>1× Imprimante DNP DS620</li><li>Fond photo + accessoires fun</li><li>Impressions photobooth illimitées</li></ul>
+            </details>
+        </article></div></div>
+    </div>
+</section>
+
+<section id="prestations">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="num">02</div>
+            <h2>Prestations</h2>
+            <p>À la carte, pour composer votre événement sur-mesure.</p>
+        </div>
+        <div class="cat-group"><h3 class="cat-title">Animation</h3><div class="card-grid">
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Sculpture sur ballons</h3>
+                <div class="price">30 €</div>
+            </div>
+            <p class="card-desc">Animation sculpture sur ballons pour enfants</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Animation DJ — apéritif (≈ 3h)</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Animation DJ + apéritif, durée approximative 3 heures</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Animation DJ du vin d&#x27;honneur jusqu&#x27;à la fin de soirée</p>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Photo &amp; Vidéo</h3><div class="card-grid">
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Pack Photo Mariage</h3>
+                <div class="price">550 €</div>
+            </div>
+            <p class="card-desc">Cérémonie, groupes et couples, post-traitement inclus</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Pack Vidéo Mariage</h3>
+                <div class="price">550 €</div>
+            </div>
+            <p class="card-desc">Captation cérémonie &amp; soirée, montage professionnel, version 360° pour immersion</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Pack Photo Soirée</h3>
+                <div class="price">150 €</div>
+            </div>
+            <p class="card-desc">Moments clés de l&#x27;événement : apéritif, repas, soirée dansante. Pas de post-traitement.</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Captation vidéo 360° (Insta360)</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Captation immersive 360° pour version immersive</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Captation vidéo basique</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Captation vidéo simple des moments clés (sans post-production complexe)</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Captation vidéo classique (cérémonie + soirée)</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Captation cérémonie &amp; soirée, montage professionnel</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Clip vidéo résumé cinématique</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Clip vidéo résumé complet, moments clés sublimés par lumière, musique et effets</p>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Services</h3><div class="card-grid">
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>3 réunions de préparation</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Réunion de contact, intermédiaire et finale pour préparer l&#x27;événement</p>
+        </article>
+        <article class="card presta-card">
+            <div class="card-head">
+                <h3>Playlist personnalisée &amp; collaborative</h3>
+                <div class="price">Sur devis</div>
+            </div>
+            <p class="card-desc">Playlist sur-mesure, collaborative avec les mariés/invités</p>
+        </article></div></div>
+    </div>
+</section>
+
+<section id="location">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="num">03</div>
+            <h2>Location de <span class="italic">matériel</span></h2>
+            <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
+        </div>
+        <div class="cat-group"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/bose-f1-systeme.png" alt="Bose F1 (système complet)" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Bose</span>
+                <h3>Bose F1 (système complet)</h3>
+                <p class="card-desc">Sonorisation pour plus de 100 personnes</p>
+                <div class="price">200 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/bose-l1.png" alt="Bose L1" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Bose</span>
+                <h3>Bose L1</h3>
+                <p class="card-desc">Sonorisation pour moins de 100 personnes</p>
+                <div class="price">150 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/bose-s1.png" alt="Bose S1 Pro" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Bose</span>
+                <h3>Bose S1 Pro</h3>
+                <p class="card-desc">Sonorisation Mairie, Église, vin d&#x27;honneur (&lt;50 pers.), fin de soirée</p>
+                <div class="price">50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/rcf-915.png" alt="RCF ART 915 (paire)" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">RCF</span>
+                <h3>RCF ART 915 (paire)</h3>
+                <p class="card-desc">Sonorisation vin d&#x27;honneur pour plus de 50 personnes</p>
+                <div class="price">100 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Régie DJ</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/denon-sc-live-4.png" alt="Denon SC Live 4" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Denon DJ</span>
+                <h3>Denon SC Live 4</h3>
+                <p class="card-desc">Régie DJ standalone 4 platines pour soirée dansante</p>
+                <div class="price">50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/numark-mixstream-pro-go.png" alt="Numark Mixstream Pro Go" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Numark</span>
+                <h3>Numark Mixstream Pro Go</h3>
+                <p class="card-desc">Régie DJ portable sur batterie pour vin d&#x27;honneur, cérémonies</p>
+                <div class="price">50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Lumière</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/boule-facettes-spot.png" alt="Boule à facettes 50 cm + spot LED" loading="lazy"></div>
+            <div class="equip-body">
+                
+                <h3>Boule à facettes 50 cm + spot LED</h3>
+                <p class="card-desc">Boule à facettes 50 cm motorisée avec spot LED dédié</p>
+                <div class="price">100 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/chauvet-colorband-t3bt.png" alt="Chauvet Colorband T3BT" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Chauvet DJ</span>
+                <h3>Chauvet Colorband T3BT</h3>
+                <p class="card-desc">Barre LED architecturale pour éclairage piste de danse</p>
+                <div class="price">à partir de 30 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/chauvet-gigbar-move-ils.png" alt="Chauvet GigBar Move + ILS" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Chauvet DJ</span>
+                <h3>Chauvet GigBar Move + ILS</h3>
+                <p class="card-desc">Système 5-en-1 : moving heads, derbies, washes, laser, strobes</p>
+                <div class="price">à partir de 50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/chauvet-swarm-fx.png" alt="Chauvet Swarm FX" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Chauvet DJ</span>
+                <h3>Chauvet Swarm FX</h3>
+                <p class="card-desc">Effet multi-fonctions 5-en-1 pour piste de danse</p>
+                <div class="price">à partir de 30 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/chauvet-h9-set-8.png" alt="Set de 4 PAR H9 (architectural)" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Chauvet DJ</span>
+                <h3>Set de 4 PAR H9 (architectural)</h3>
+                <p class="card-desc">Éclairage architectural sur batterie — 4 PARs LED autonomes</p>
+                <div class="price">à partir de 90 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Effets</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/chauvet-geyser-t6.jpg" alt="Chauvet Geyser T6" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Chauvet DJ</span>
+                <h3>Chauvet Geyser T6</h3>
+                <p class="card-desc">Machine à fumée verticale (effet pyrotechnique) avec 6 LEDs RGB</p>
+                <div class="price">à partir de 60 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/martin-magnum-2500.png" alt="Martin Magnum 2500 (machine à brouillard)" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Martin</span>
+                <h3>Martin Magnum 2500 (machine à brouillard)</h3>
+                <p class="card-desc">Machine à brouillard pour sublimer l&#x27;éclairage de la piste (inodore)</p>
+                <div class="price">50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Vidéo</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/insta360-x5.png" alt="Insta360 X5" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Insta360</span>
+                <h3>Insta360 X5</h3>
+                <p class="card-desc">Caméra 360° pour captation immersive</p>
+                <div class="price">Sur devis <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/ecran-kimex-150.png" alt="Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">KIMEX + EPSON</span>
+                <h3>Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</h3>
+                <p class="card-desc">Écran géant + vidéoprojecteur ultra courte focale (photos, paroles, diaporamas)</p>
+                <div class="price">250 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Photo / Booth</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/canon-r6-mark-ii.png" alt="Canon EOS R6 Mark II" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Canon</span>
+                <h3>Canon EOS R6 Mark II</h3>
+                <p class="card-desc">Appareil photo hybride plein format pour captation événementielle</p>
+                <div class="price">Sur devis <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/imprimante-canon-selphy.png" alt="Imprimante Canon Selphy CP" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Canon</span>
+                <h3>Imprimante Canon Selphy CP</h3>
+                <p class="card-desc">Imprimante à sublimation thermique compacte</p>
+                <div class="price">Sur devis <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/imprimante-dnp.png" alt="Imprimante DNP DS620" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">DNP</span>
+                <h3>Imprimante DNP DS620</h3>
+                <p class="card-desc">Imprimante professionnelle à sublimation thermique grande capacité</p>
+                <div class="price">Sur devis <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/mobile-booth.png" alt="Mobile Booth" loading="lazy"></div>
+            <div class="equip-body">
+                
+                <h3>Mobile Booth</h3>
+                <p class="card-desc">Rig mobile pour photobooth itinérant (smartphone + éclairage LED)</p>
+                <div class="price">100 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/photobooth-canon-5d.png" alt="Photobooth Canon 5D Mark III" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Canon</span>
+                <h3>Photobooth Canon 5D Mark III</h3>
+                <p class="card-desc">Photobooth complet sur trépied, fond photo + accessoires fun</p>
+                <div class="price">150 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div><div class="cat-group"><h3 class="cat-title">Énergie</h3><div class="card-grid equip-grid">
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/ecoflow-station-energetique.png" alt="Station énergétique portable EcoFlow" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">EcoFlow</span>
+                <h3>Station énergétique portable EcoFlow</h3>
+                <p class="card-desc">Station portable pour s&#x27;affranchir de tout problème électrique</p>
+                <div class="price">50 € <span class="price-unit">/ location</span></div>
+            </div>
+        </article></div></div>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:alexis.arokiassamy@gmail.com">alexis.arokiassamy@gmail.com</a></p>
+        <p class="maj">Catalogue mis à jour le 31/05/2026 · TVA non applicable, art. 293 B du CGI</p>
+    </div>
+</footer>
+
+</body>
+</html>
