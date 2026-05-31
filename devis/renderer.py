@@ -111,8 +111,74 @@ def render_devis_html(
                     "prix": prix,
                 })
 
+    # Contenu du pack groupé par catégorie (sans prix), pour l'afficher sous le pack.
+    # On prend la composition PROPRE du pack résolu (héritage inclus), PAS la
+    # composition globale de l'événement — sinon les suppléments/packs ajoutés
+    # (qui ont déjà leur propre ligne) feraient doublon.
+    pack_contenu = []
+    pack_obj = result.get("pack")
+    if pack_obj and catalogue:
+        CAT_LABELS = {
+            "son": "Son", "regie": "Régie DJ", "video": "Vidéo",
+            "lumiere": "Lumière", "effet": "Effets", "effets": "Effets",
+            "structure": "Structure", "energie": "Énergie", "autre": "Divers",
+        }
+        equipements = catalogue.get("equipements", {})
+        prestations = catalogue.get("prestations", {})
+
+        # Composition propre du pack (avec héritage), indépendante des ajouts
+        try:
+            from catalogue.packs import resoudre_pack
+            pack_id = pack_obj.get("id") or data.get("pack_id")
+            pack_resolu = resoudre_pack(pack_id, catalogue.get("packs", {}))
+            compo_pack = pack_resolu.get("composition_complete", {})
+        except Exception:
+            compo_pack = result.get("composition", {})
+
+        # Ids retirés (pour ne pas les lister comme inclus)
+        retr = result.get("retraits_appliques", {})
+        ids_retires_eq = {r["id"] for r in retr.get("equipements", [])}
+        ids_retires_pr = {r["id"] for r in retr.get("prestations", [])}
+
+        groupes = {}
+        for ligne in compo_pack.get("equipements", []):
+            if ligne["id"] in ids_retires_eq:
+                continue
+            eq = equipements.get(ligne["id"], {})
+            cat = eq.get("categorie", "autre")
+            label = CAT_LABELS.get(cat, cat.capitalize() if cat else "Divers")
+            groupes.setdefault(label, []).append(
+                f'{ligne["quantite"]}× {eq.get("nom", ligne["id"])}')
+        prest_items = []
+        # Pour l'animation DJ : remplacer le "(≈ 3h)" figé par l'horaire de fin réel.
+        # Moment selon la catégorie du pack : dj_prive → apéritif, mariage → vin d'honneur.
+        horaire_fin = (data.get("event", {}) or {}).get("horaire_fin", "").strip()
+        cat_pack = pack_obj.get("categorie") or ""
+        moment = "du vin d'honneur" if cat_pack == "mariage" else "de l'apéritif"
+        for ligne in compo_pack.get("prestations", []):
+            if ligne["id"] in ids_retires_pr:
+                continue
+            pr = prestations.get(ligne["id"], {})
+            nom = pr.get("nom", ligne["id"])
+            if pr.get("categorie") == "animation" and horaire_fin:
+                prest_items.append(
+                    f"Animation DJ {moment} jusqu'à approximativement {horaire_fin}")
+            else:
+                prest_items.append(nom)
+
+        ordre = ["Son", "Régie DJ", "Vidéo", "Lumière", "Effets", "Structure", "Énergie", "Divers"]
+        for label in ordre:
+            if label in groupes:
+                pack_contenu.append({"categorie": label, "elements": groupes[label]})
+        for label, items in groupes.items():
+            if label not in ordre:
+                pack_contenu.append({"categorie": label, "elements": items})
+        if prest_items:
+            pack_contenu.append({"categorie": "Prestations incluses", "elements": prest_items})
+
     tpl = env.get_template("devis.html.j2")
     return tpl.render(
+        pack_contenu=pack_contenu,
         # Métadonnées principales
         prestataire=data.get("prestataire", {}),
         electricite=data.get("electricite", {}),
