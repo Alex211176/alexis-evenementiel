@@ -210,6 +210,8 @@
         .pack-contenu-items { color: #555; }
         .prix-barre { text-decoration: line-through; color: #999; font-size: 11px; margin-right: 6px; }
         .prix-offert { color: var(--accent, #b5651d); font-weight: 600; }
+        .tva-cell { color: var(--ink-muted, #888); font-size: 10px; }
+        .total-ht .label, .total-ht .value { color: var(--ink-muted, #777); font-weight: 500; }
         .item-desc {
             font-size: 9.5pt;
             color: var(--ink-soft);
@@ -459,8 +461,9 @@
             <thead>
                 <tr>
                     <th>Désignation</th>
-                    <th style="width:80px">Qté</th>
-                    <th class="right" style="width:120px">Prix HT</th>
+                    <th style="width:60px">Qté</th>
+                    <th class="right" style="width:60px">TVA</th>
+                    <th class="right" style="width:110px">Prix HT</th>
                 </tr>
             </thead>
             <tbody>
@@ -484,6 +487,7 @@
                         {% endif %}
                     </td>
                     <td class="qte">1</td>
+                    <td class="right tva-cell">0 %</td>
                     <td class="right">{{ prix.pack_ttc | euro }}</td>
                 </tr>
                 {% endif %}
@@ -499,6 +503,7 @@
                         {% if supp.description %}<div class="item-desc">{{ supp.description }}</div>{% endif %}
                     </td>
                     <td class="qte">{{ supp.quantite }}</td>
+                    <td class="right tva-cell">0 %</td>
                     <td class="right">
                         {% if supp.offert %}
                             <span class="prix-barre">{{ supp.prix_plein | euro }}</span>
@@ -522,6 +527,7 @@
                         <div class="item-desc">À la demande du client, cet élément a été retiré du pack.</div>
                     </td>
                     <td class="qte">{{ r.quantite }}</td>
+                    <td class="right tva-cell"></td>
                     <td class="right">{% if not r.deduire %}—{% endif %}</td>
                 </tr>
                 {% endfor %}
@@ -531,6 +537,7 @@
                         <span class="item-title">− Retiré du pack : {{ r.nom }}</span>
                     </td>
                     <td class="qte">{{ r.quantite }}</td>
+                    <td class="right tva-cell"></td>
                     <td class="right">{% if not r.deduire %}—{% endif %}</td>
                 </tr>
                 {% endfor %}
@@ -563,6 +570,10 @@
                     <td class="value">− {{ prix.remise_commerciale | euro }}</td>
                 </tr>
                 {% endif %}
+                <tr class="total-ht">
+                    <td class="label">Total HT</td>
+                    <td class="value">{{ prix.total_ttc | euro }}</td>
+                </tr>
                 <tr class="total-final">
                     <td class="label">Total TTC</td>
                     <td class="value">{{ prix.total_ttc | euro }}</td>
