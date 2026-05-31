@@ -1112,3 +1112,23 @@ select.supp-qte {
     background: white;
     color: #166534;
 }
+
+/* ===== Harmonisation bandeau avec le site vitrine (touche dorée) ===== */
+.topnav {
+    border-bottom-color: #c9a55c; /* doré du site au lieu de l'ambré */
+}
+.brand-dot {
+    background: #c9a55c; /* point doré */
+}
+.brand-name {
+    color: #e6c986; /* nom en doré clair */
+    font-weight: 600;
+}
+.brand-sep {
+    color: rgba(201,165,92,0.5);
+    margin: 0 2px;
+}
+.brand-sub {
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+}
