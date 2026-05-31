@@ -1,3 +1,5 @@
+FICHIER : ./web/templates/catalogue/equipement_form.html
+================================================================
 {% extends "base.html" %}
 {% block content %}
 
@@ -165,6 +167,10 @@
             <input type="checkbox" name="visible_fiche_puissance" {% if equipement.visible_dans is not defined or equipement.visible_dans.fiche_puissance %}checked{% endif %}>
             <span>Comptabilisé dans le bilan de puissance électrique</span>
         </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_catalogue" {% if equipement.visible_dans is not defined or equipement.visible_dans.get('catalogue', True) %}checked{% endif %}>
+            <span>Visible dans le catalogue public (page location)</span>
+        </label>
     </fieldset>
 
     <fieldset>
@@ -203,3 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% endblock %}
+
+
+================================================================

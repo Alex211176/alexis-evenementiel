@@ -175,6 +175,7 @@ def equipement_save():
             "devis": _f("visible_devis", False, bool),
             "fiche_materiel": _f("visible_fiche_materiel", False, bool),
             "fiche_puissance": _f("visible_fiche_puissance", False, bool),
+            "catalogue": _f("visible_catalogue", False, bool),
         },
         "tags": [t.strip() for t in form.get("tags", "").split(",") if t.strip()],
     }
