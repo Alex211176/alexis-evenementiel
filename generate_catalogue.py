@@ -421,7 +421,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="wrap">
         <div class="brand">Alexis<span>.</span> Événementiel</div>
         <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
-        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:alexis.arokiassamy@gmail.com">alexis.arokiassamy@gmail.com</a></p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
         <p class="maj">Catalogue mis à jour le {maj} · TVA non applicable, art. 293 B du CGI</p>
     </div>
 </footer>
