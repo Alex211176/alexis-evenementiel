@@ -89,6 +89,13 @@ def equipement_visible_catalogue(e):
     return vd.get("catalogue", True)
 
 
+def prestation_visible_catalogue(p):
+    """La prestation est-elle affichée dans le catalogue public ?
+    Par défaut True ; on l'exclut seulement si visible_dans.catalogue == False."""
+    vd = p.get("visible_dans", {}) or {}
+    return vd.get("catalogue", True)
+
+
 def resoudre_pack_simple(pid, packs, _seen=None):
     """Résout l'héritage d'un pack pour lister son contenu (équipements + prestations)."""
     if _seen is None:
@@ -203,7 +210,7 @@ def generate(base: Path, out_path: Path):
     presta_html = ""
     for cat, label in PRESTA_CATEGORIES_VITRINE.items():
         cat_pr = [(pid, p) for pid, p in prestations.items()
-                  if p.get("categorie") == cat]
+                  if p.get("categorie") == cat and prestation_visible_catalogue(p)]
         if not cat_pr:
             continue
         cat_pr.sort(key=lambda x: (-(x[1].get("prix", 0) or 0), x[1].get("nom", "")))

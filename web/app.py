@@ -185,6 +185,10 @@ def _prepare_catalogue_context():
     for pid, pr in cat["prestations"].items():
         if pr.get("categorie") == "deplacement":
             continue
+        # Masquage : on n'expose pas les prestations marquées non visibles dans le devis
+        vd = pr.get("visible_dans", {}) or {}
+        if not vd.get("devis", True):
+            continue
         prestations_pour_js[pid] = pr
 
     # Packs complémentaires : compatibles en tête, puis le reste.

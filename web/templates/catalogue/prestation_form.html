@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<header class="page-header">
+    <h1>{% if presta_id %}Édition · {{ prestation.nom }}{% else %}Nouvelle prestation{% endif %}</h1>
+    <p class="subtitle">{% if presta_id %}<span class="mono">{{ presta_id }}</span>{% else %}L'id sera généré automatiquement à partir du nom{% endif %}</p>
+</header>
+
+<form action="{{ url_for('catalogue.prestation_save') }}" method="post" class="event-form">
+    <input type="hidden" name="prestation_id" value="{{ presta_id or '' }}">
+
+    <fieldset>
+        <legend>Identité</legend>
+        <label>
+            Nom de la prestation *
+            <input type="text" name="nom" value="{{ prestation.nom or '' }}" required>
+        </label>
+        <label>
+            Catégorie
+            <select name="categorie">
+                {% for c in categories %}
+                    <option value="{{ c }}" {% if prestation.categorie == c %}selected{% endif %}>{{ c | capitalize }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Description
+            <textarea name="description" rows="2">{{ prestation.description or '' }}</textarea>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tarification</legend>
+        <label>
+            Prix (€) <small class="muted">— 0 = inclus dans un pack / sur devis</small>
+            <input type="number" step="0.01" min="0" name="prix" value="{{ prestation.prix or 0 }}">
+        </label>
+        <label>
+            Unité de facturation
+            <input type="text" name="unite_facturation" value="{{ prestation.unite_facturation or 'forfait' }}" placeholder="forfait, heure, jour…">
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Visibilité</legend>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_devis" {% if prestation.visible_dans is not defined or prestation.visible_dans.get('devis', True) %}checked{% endif %}>
+            <span>Proposable dans les devis</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_catalogue" {% if prestation.visible_dans is not defined or prestation.visible_dans.get('catalogue', True) %}checked{% endif %}>
+            <span>Visible dans le catalogue public</span>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tags (recherche / filtrage)</legend>
+        <label>
+            Tags (séparés par des virgules)
+            <input type="text" name="tags" value="{{ prestation.tags | join(', ') if prestation.tags else '' }}" placeholder="dj, aperitif, mariage">
+        </label>
+    </fieldset>
+
+    <div class="form-actions">
+        <a href="{{ url_for('catalogue.prestations_list') }}" class="btn">Annuler</a>
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+    </div>
+</form>
+
+{% endblock %}

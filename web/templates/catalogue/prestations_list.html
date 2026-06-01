@@ -2,8 +2,15 @@
 {% block content %}
 
 <header class="page-header">
-    <h1>Catalogue — Prestations</h1>
-    <p class="subtitle">Services immatériels (animation, captation, déplacement…)</p>
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap: 24px;">
+        <div>
+            <h1>Catalogue — Prestations</h1>
+            <p class="subtitle">{{ prestations|length }} prestation(s) — services immatériels (animation, captation, déplacement…)</p>
+        </div>
+        <div>
+            <a href="{{ url_for('catalogue.prestation_new') }}" class="btn btn-primary">+ Nouvelle prestation</a>
+        </div>
+    </div>
 </header>
 
 <div class="cat-tabs">
@@ -20,6 +27,8 @@
             <th>Description</th>
             <th>Prix</th>
             <th>Unité</th>
+            <th>Visibilité</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -29,20 +38,28 @@
             <td><span class="tag">{{ p.categorie or 'autre' }}</span></td>
             <td>{{ p.description or '—' }}</td>
             <td class="mono">
-                {% if p.prix_min and p.prix_max %}
-                    {{ p.prix_min }} – {{ p.prix_max }} €
-                {% elif p.prix %}
+                {% if p.prix %}
                     {{ p.prix }} €
                 {% else %}
                     <span class="muted">inclus pack</span>
                 {% endif %}
             </td>
             <td>{{ p.unite_facturation or 'forfait' }}</td>
+            <td>
+                {% set vis = p.visible_dans if p.visible_dans is defined else {} %}
+                {% if vis.get('devis', True) %}<span class="tag" title="Visible dans les devis">D</span>{% else %}<span class="tag tag-off" title="Masqué des devis">D̶</span>{% endif %}
+                {% if vis.get('catalogue', True) %}<span class="tag" title="Visible dans le catalogue">C</span>{% else %}<span class="tag tag-off" title="Masqué du catalogue">C̶</span>{% endif %}
+            </td>
+            <td style="white-space:nowrap">
+                <a href="{{ url_for('catalogue.prestation_edit', presta_id=p.id) }}" class="btn btn-sm">Éditer</a>
+                <form action="{{ url_for('catalogue.prestation_delete', presta_id=p.id) }}" method="post" class="inline-form"
+                      onsubmit="return confirm('Supprimer {{ p.nom }} ?');">
+                    <button class="btn btn-sm btn-danger">×</button>
+                </form>
+            </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-
-<p class="muted" style="margin-top:24px"><em>L'édition des prestations via UI sera ajoutée prochainement. Pour l'instant, édite directement <code>data/catalogue/prestations.json</code>.</em></p>
 
 {% endblock %}

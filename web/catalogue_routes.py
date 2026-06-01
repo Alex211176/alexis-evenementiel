@@ -363,3 +363,94 @@ def prestations_list():
     prestations.sort(key=lambda x: (x.get("categorie", ""), x.get("nom", "")))
     return render_template("catalogue/prestations_list.html",
                            prestations=prestations, title="Catalogue — Prestations")
+
+
+PRESTATION_CATEGORIES = ["animation", "captation", "consommable", "deplacement", "service"]
+
+
+@catalogue_bp.route("/prestations/new")
+def prestation_new():
+    return render_template("catalogue/prestation_form.html",
+                           prestation={}, presta_id=None,
+                           categories=PRESTATION_CATEGORIES,
+                           title="Nouvelle prestation")
+
+
+@catalogue_bp.route("/prestations/<presta_id>/edit")
+def prestation_edit(presta_id):
+    cat = _load()
+    if presta_id not in cat["prestations"]:
+        abort(404)
+    p = cat["prestations"][presta_id]
+    return render_template("catalogue/prestation_form.html",
+                           prestation=p, presta_id=presta_id,
+                           categories=PRESTATION_CATEGORIES,
+                           title=f"Édition · {p.get('nom', presta_id)}")
+
+
+@catalogue_bp.route("/prestations/save", methods=["POST"])
+def prestation_save():
+    form = request.form
+    cat = _load()
+
+    presta_id = form.get("prestation_id", "").strip()
+    is_new = not presta_id
+
+    if is_new:
+        nom = form.get("nom", "").strip()
+        slug = unicodedata.normalize("NFKD", nom).encode("ascii", "ignore").decode()
+        slug = re.sub(r"[^\w\s-]", "", slug).strip().lower()
+        slug = re.sub(r"[-\s]+", "-", slug)
+        presta_id = slug
+        if not presta_id:
+            flash("Le nom est obligatoire", "error")
+            return redirect(url_for("catalogue.prestation_new"))
+        if presta_id in cat["prestations"]:
+            flash(f"Une prestation avec cet id existe déjà : {presta_id}", "error")
+            return redirect(url_for("catalogue.prestation_new"))
+
+    def _f(key, default="", typ=str):
+        val = form.get(key, default)
+        if typ == int:
+            try: return int(val) if val else None
+            except ValueError: return None
+        if typ == float:
+            try: return float(val) if val else None
+            except ValueError: return None
+        if typ == bool:
+            return val == "on"
+        return val.strip() if isinstance(val, str) else val
+
+    # Préserver les clés existantes non gérées par le formulaire
+    existing = cat["prestations"].get(presta_id, {}) if not is_new else {}
+
+    prestation = {
+        **existing,
+        "nom": _f("nom"),
+        "categorie": _f("categorie", "service"),
+        "description": _f("description") or "",
+        "prix": _f("prix", 0, float) or 0,
+        "unite_facturation": _f("unite_facturation", "forfait"),
+        "visible_dans": {
+            "devis": _f("visible_devis", False, bool),
+            "catalogue": _f("visible_catalogue", False, bool),
+        },
+        "tags": [t.strip() for t in form.get("tags", "").split(",") if t.strip()],
+    }
+
+    cat["prestations"][presta_id] = prestation
+    storage_io.save_catalogue_section(STORAGE, cat, "prestations")
+    flash(f"Prestation sauvegardée : {prestation['nom']}", "success")
+    return redirect(url_for("catalogue.prestations_list"))
+
+
+@catalogue_bp.route("/prestations/<presta_id>/delete", methods=["POST"])
+def prestation_delete(presta_id):
+    cat = _load()
+    if presta_id not in cat["prestations"]:
+        abort(404)
+    nom = cat["prestations"][presta_id].get("nom", presta_id)
+    del cat["prestations"][presta_id]
+    storage_io.save_catalogue_section(STORAGE, cat, "prestations")
+    flash(f"Prestation supprimée : {nom}", "success")
+    return redirect(url_for("catalogue.prestations_list"))
