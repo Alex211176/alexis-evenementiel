@@ -8,7 +8,7 @@ FICHIER : ./web/templates/catalogue/equipement_form.html
     <p class="subtitle">{% if equipement_id %}<span class="mono">{{ equipement_id }}</span>{% else %}L'id sera généré automatiquement à partir du nom{% endif %}</p>
 </header>
 
-<form action="{{ url_for('catalogue.equipement_save') }}" method="post" class="event-form">
+<form action="{{ url_for('catalogue.equipement_save') }}" method="post" class="event-form" enctype="multipart/form-data">
     <input type="hidden" name="equipement_id" value="{{ equipement_id or '' }}">
 
     <fieldset>
@@ -52,8 +52,16 @@ FICHIER : ./web/templates/catalogue/equipement_form.html
     <fieldset>
         <legend>Photo</legend>
         <label>
-            Nom du fichier photo (à placer dans data/catalogue/photos/)
+            Importer une photo (JPG, PNG, HEIC… — convertie en PNG, redimensionnée à 1200px)
+            <input type="file" name="photo_upload" accept="image/*">
+        </label>
+        <label>
+            Nom du fichier photo
             <input type="text" name="photo" value="{{ equipement.photo or '' }}" placeholder="ex: bose-f1-systeme.png">
+            <small style="color:var(--muted, #888)">
+                Laisse vide pour générer automatiquement depuis le nom de l'équipement.
+                Si tu importes une photo, ce nom (sans accent/espace) sera utilisé ; l'extension devient .png.
+            </small>
         </label>
         {% if equipement.photo %}
             <div style="margin-top:8px">

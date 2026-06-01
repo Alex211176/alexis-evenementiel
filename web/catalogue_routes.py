@@ -36,6 +36,67 @@ catalogue_bp = Blueprint("catalogue", __name__, url_prefix="/catalogue")
 _PHOTO_CACHE: dict = {}
 _PHOTO_CACHE_MAX = 200
 
+# Traitement des photos uploadées
+_PHOTO_MAX_SIDE = 1200  # px, plus grand côté
+
+
+def _slugifier(texte: str) -> str:
+    """Transforme un texte en slug propre : sans accent, minuscules, tirets."""
+    s = unicodedata.normalize("NFKD", texte or "").encode("ascii", "ignore").decode()
+    s = re.sub(r"[^\w\s-]", "", s).strip().lower()
+    s = re.sub(r"[-\s]+", "-", s)
+    return s
+
+
+def _traiter_photo_uploadee(file_storage, nom_fichier_voulu: str) -> str:
+    """
+    Convertit l'image uploadée en PNG, la redimensionne (max 1200px sur le
+    plus grand côté) et l'écrit dans catalogue/photos/ via le storage.
+    Retourne le nom de fichier final (toujours en .png), ou lève une erreur.
+    """
+    import io
+    from PIL import Image
+
+    # Nom de fichier final : slug + .png (on ignore l'extension d'origine)
+    base = _slugifier(Path(nom_fichier_voulu).stem) if nom_fichier_voulu else ""
+    if not base:
+        raise ValueError("Nom de fichier photo vide après nettoyage.")
+    nom_final = f"{base}.png"
+
+    # Ouverture + conversion
+    data_in = file_storage.read()
+    img = Image.open(io.BytesIO(data_in))
+
+    # Aplatir la transparence sur fond blanc si nécessaire (RGBA/P -> RGB)
+    if img.mode in ("RGBA", "LA", "P"):
+        img = img.convert("RGBA")
+        fond = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        fond.paste(img, mask=img.split()[-1])
+        img = fond.convert("RGB")
+    else:
+        img = img.convert("RGB")
+
+    # Redimensionnement proportionnel si trop grand
+    w, h = img.size
+    cote = max(w, h)
+    if cote > _PHOTO_MAX_SIDE:
+        ratio = _PHOTO_MAX_SIDE / float(cote)
+        img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+
+    # Export PNG
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    data_out = buf.getvalue()
+
+    # Écriture via le storage (Dropbox ou local, même canal que les JSON)
+    rel = f"catalogue/photos/{nom_final}"
+    STORAGE.write_bytes(rel, data_out)
+
+    # Purge du cache mémoire pour ce fichier (au cas où il existait déjà)
+    _PHOTO_CACHE.pop(nom_final, None)
+
+    return nom_final
+
 
 def _load():
     return storage_io.load_catalogue(STORAGE)
@@ -155,6 +216,23 @@ def equipement_save():
         except json.JSONDecodeError:
             vente["paliers"] = []
 
+    # ---- Traitement de la photo ----
+    # Priorité : si un fichier est uploadé, on le convertit/redimensionne et
+    # on l'écrit dans le storage. Sinon, on garde le nom de fichier saisi.
+    photo_nom = _f("photo")
+    fichier = request.files.get("photo_upload")
+    if fichier and fichier.filename:
+        # Nom voulu : champ "photo" si rempli, sinon slug de l'id équipement
+        nom_voulu = photo_nom or f"{eq_id}.png"
+        try:
+            photo_nom = _traiter_photo_uploadee(fichier, nom_voulu)
+            flash(f"Photo importée : {photo_nom}", "success")
+        except Exception as exc:
+            flash(f"Échec de l'import de la photo : {exc}", "error")
+            # On ne bloque pas la sauvegarde de l'équipement pour autant.
+    if not photo_nom:
+        photo_nom = f"{eq_id}.png"
+
     equipement = {
         "nom": _f("nom"),
         "marque": _f("marque") or None,
@@ -163,7 +241,7 @@ def equipement_save():
         "sous_categorie": _f("sous_categorie") or None,
         "description_courte": _f("description_courte") or None,
         "description_longue": _f("description_longue") or None,
-        "photo": _f("photo") or f"{eq_id}.png",
+        "photo": photo_nom,
         "puissance_w": _f("puissance_w", 0, float) or 0,
         "poids_kg": _f("poids_kg", 0, float) or 0,
         "dimensions": _f("dimensions") or None,
