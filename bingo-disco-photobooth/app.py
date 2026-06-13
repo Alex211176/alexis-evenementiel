@@ -119,7 +119,9 @@ def _sse(event: str, data: dict) -> str:
 # --------------------------------------------------------------------------
 @app.route("/api/capture", methods=["POST"])
 def api_capture():
-    if not store.photo_mode_enabled:
+    # L'opérateur (PIN valide) peut importer une photo de test même mode fermé.
+    operator = (request.headers.get("X-Operator-Pin") == os.environ.get("OPERATOR_PIN", "2468"))
+    if not store.photo_mode_enabled and not operator:
         return jsonify(error="Le mode photo n'est pas ouvert pour le moment."), 423
 
     payload = request.get_json(silent=True) or {}

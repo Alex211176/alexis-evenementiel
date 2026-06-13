@@ -51,6 +51,8 @@
       <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
       <a href="/screen" target="_blank"><button>Écran ↗</button></a>
       <a href="/selfie" target="_blank"><button>Page selfie ↗</button></a>
+      <button id="testBtn" title="Importer une photo de test (démo sans téléphone)">＋ Photo test</button>
+      <input id="testFile" type="file" accept="image/*" style="display:none">
     </div>
   </header>
   <main>
@@ -135,6 +137,23 @@
     $('#theme').addEventListener('change', async e=>{
       try { await api('/api/theme',{theme_id:e.target.value}); toast('Thème : '+themeLabel(e.target.value)); }
       catch(err){ toast('❌ '+err.message); }
+    });
+
+    // Import d'une photo de test (démo sur une seule machine, sans téléphone)
+    $('#testBtn').addEventListener('click', ()=> $('#testFile').click());
+    $('#testFile').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = async ()=>{
+        try {
+          await fetch('/api/capture',{ method:'POST', headers:H,
+            body: JSON.stringify({ player_name:'Test', image:r.result }) })
+            .then(res=>res.json()).then(j=>{ if(j.error) throw new Error(j.error); });
+          toast('Photo de test importée — clique « Générer »');
+        } catch(err){ toast('❌ '+err.message); }
+        $('#testFile').value='';
+      };
+      r.readAsDataURL(f);
     });
 
     // Temps réel

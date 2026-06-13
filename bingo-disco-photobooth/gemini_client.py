@@ -56,7 +56,7 @@ def stylize(image_bytes: bytes, theme: dict, mime_type: str = "image/jpeg") -> b
                                  "data": base64.b64encode(image_bytes).decode()}},
             ]
         }],
-        "generationConfig": {"responseModalities": ["IMAGE"]},
+        "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
     }
 
     try:

@@ -31,13 +31,36 @@ c'est fermé, la page selfie affiche « pas encore ouvert ».
 
 ---
 
+## Voir le workflow en 2 minutes (sur un seul Mac, sans téléphone)
+
+Pour valider la boucle **captation → Gemini → écran** sans rien installer côté
+téléphone :
+
+```bash
+cd bingo-disco-photobooth
+cp .env.example .env        # mets ta GEMINI_API_KEY dedans (sinon : mode démo)
+./run.sh                    # crée le venv, installe, démarre
+```
+
+1. Ouvre **deux onglets** : `http://localhost:5055/console` et `http://localhost:5055/screen`.
+2. Dans la console, clique **« ＋ Photo test »** et choisis une photo (un portrait) → elle apparaît dans la grille. *(Pas besoin d'ouvrir le mode photo : le bouton test passe outre via le PIN.)*
+3. Clique **« Générer ✨ »** : la photo part chez Gemini avec le prompt du thème choisi (menu en haut), l'image stylisée revient dans la 2ᵉ vignette.
+4. Clique **« Écran 🖥️ »** : l'onglet `/screen` affiche l'image, animée, avec le prénom.
+
+C'est exactement le workflow joueur, mais déclenché depuis la console. Côté
+joueur réel, c'est la page `/selfie` (caméra) qui remplace l'étape 2.
+
+> Sans clé Gemini, l'étape 3 renvoie ta photo avec un bandeau « MODE DÉMO » :
+> tu vois quand même toute la mécanique (capture → traitement → retour écran).
+
 ## Lancer en local (MacBook)
 
 ```bash
 cd bingo-disco-photobooth
+./run.sh                    # raccourci tout-en-un
+# — ou à la main —
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
 cp .env.example .env        # puis édite .env (au minimum GEMINI_API_KEY)
 set -a; source .env; set +a # charge les variables dans le shell
 python app.py
