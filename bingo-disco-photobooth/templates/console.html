@@ -48,6 +48,9 @@
       <select id="theme">
         {% for t in themes %}<option value="{{t.id}}">{{t.label}}</option>{% endfor %}
       </select>
+      <button id="themeModeBtn" title="Thème imposé par l'animateur, ou libre (chaque joueur choisit)">Thème : imposé</button>
+      <input id="eventText" type="text" placeholder="Texte événement / lieu" style="min-width:200px">
+      <button id="eventTextBtn">Appliquer le texte</button>
       <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
       <a href="/screen" target="_blank"><button>Écran ↗</button></a>
       <a href="/selfie" target="_blank"><button>Page selfie ↗</button></a>
@@ -90,6 +93,12 @@
       $('#toggleMode').textContent = on?'Fermer le mode photo':'Ouvrir le mode photo';
       $('#demoPill').style.display = state.demo ? 'inline-block':'none';
       if(state.settings.current_theme_id) $('#theme').value = state.settings.current_theme_id;
+      const free = state.settings.theme_mode === 'free';
+      $('#themeModeBtn').textContent = free ? 'Thème : libre (joueur)' : 'Thème : imposé';
+      $('#theme').title = free ? 'Thème par défaut proposé aux joueurs' : 'Thème imposé à tous';
+      // On ne réécrit pas le champ texte pendant la frappe.
+      if(document.activeElement !== $('#eventText'))
+        $('#eventText').value = state.settings.event_text || '';
     }
 
     function render(){
@@ -136,6 +145,17 @@
     });
     $('#theme').addEventListener('change', async e=>{
       try { await api('/api/theme',{theme_id:e.target.value}); toast('Thème : '+themeLabel(e.target.value)); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#themeModeBtn').addEventListener('click', async ()=>{
+      const next = state.settings.theme_mode === 'free' ? 'imposed' : 'free';
+      try { await api('/api/theme_mode',{theme_mode:next});
+        toast(next==='free' ? 'Thème libre : chaque joueur choisit' : 'Thème imposé à tous'); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#eventTextBtn').addEventListener('click', async ()=>{
+      try { await api('/api/event_text',{event_text:$('#eventText').value});
+        toast('Texte appliqué à toutes les photos'); }
       catch(err){ toast('❌ '+err.message); }
     });
 

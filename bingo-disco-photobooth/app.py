@@ -131,7 +131,12 @@ def api_capture():
         return jsonify(error="Image manquante ou invalide."), 400
 
     raw = base64.b64decode(data_url.split(",", 1)[1])
-    theme_id = store.current_theme_id
+    # Thème : imposé par l'animateur, ou choisi par le joueur si mode "libre".
+    requested = payload.get("theme_id")
+    if store.theme_mode == "free" and requested in THEME_BY_ID:
+        theme_id = requested
+    else:
+        theme_id = store.current_theme_id
     pid_name = f"{int(time.time())}_{os.urandom(3).hex()}.jpg"
     (CAPTURES_DIR / pid_name).write_bytes(raw)
 
@@ -172,6 +177,22 @@ def api_theme():
     return jsonify(ok=True, theme_id=theme_id)
 
 
+def _finalize(photo) -> None:
+    """Reconstruit l'image finale = sortie Gemini + template + texte événement.
+
+    Repart toujours de la sortie brute Gemini (base_file) pour que le texte et
+    le template restent cohérents même après changement du texte d'événement.
+    """
+    if not photo.base_file:
+        return
+    img = (GENERATED_DIR / photo.base_file).read_bytes()
+    img = compositor.apply_template(img, photo.template_name)
+    img = compositor.draw_caption(img, store.event_text)
+    out_name = photo.generated_file or f"gen_{photo.id}.jpg"
+    (GENERATED_DIR / out_name).write_bytes(img)
+    store.update(photo, generated_file=out_name)
+
+
 @app.route("/api/generate", methods=["POST"])
 @operator_required
 def api_generate():
@@ -185,9 +206,11 @@ def api_generate():
     try:
         src = (CAPTURES_DIR / photo.capture_file).read_bytes()
         out = gemini_client.stylize(src, theme)
-        out_name = f"gen_{photo.id}.jpg"
-        (GENERATED_DIR / out_name).write_bytes(out)
-        store.update(photo, status="generated", generated_file=out_name)
+        base_name = f"gen_{photo.id}_base.jpg"
+        (GENERATED_DIR / base_name).write_bytes(out)
+        store.update(photo, status="generated", base_file=base_name,
+                     generated_file=f"gen_{photo.id}.jpg")
+        _finalize(photo)  # applique template + texte événement
         return jsonify(ok=True, photo=photo.public())
     except Exception as exc:
         store.update(photo, status="captured", error=str(exc))
@@ -199,14 +222,31 @@ def api_generate():
 def api_template():
     body = request.get_json(silent=True) or {}
     photo = store.get(body.get("photo_id"))
-    template_name = body.get("template")
-    if not photo or not photo.generated_file:
+    if not photo or not photo.base_file:
         return jsonify(error="Photo non générée."), 400
-    src = (GENERATED_DIR / photo.generated_file).read_bytes()
-    out = compositor.apply_template(src, template_name)
-    (GENERATED_DIR / photo.generated_file).write_bytes(out)
-    store.update(photo, status="generated")
+    store.update(photo, template_name=body.get("template") or None)
+    _finalize(photo)
     return jsonify(ok=True, photo=photo.public())
+
+
+@app.route("/api/event_text", methods=["POST"])
+@operator_required
+def api_event_text():
+    text = (request.get_json(silent=True) or {}).get("event_text", "")
+    store.set_event_text(text)
+    # Ré-applique le texte sur toutes les photos déjà générées (même rendu partout).
+    for photo in list(store.photos.values()):
+        if photo.base_file:
+            _finalize(photo)
+    return jsonify(ok=True, event_text=store.event_text)
+
+
+@app.route("/api/theme_mode", methods=["POST"])
+@operator_required
+def api_theme_mode():
+    mode = (request.get_json(silent=True) or {}).get("theme_mode")
+    store.set_theme_mode(mode)
+    return jsonify(ok=True, theme_mode=store.theme_mode)
 
 
 @app.route("/api/screen", methods=["POST"])

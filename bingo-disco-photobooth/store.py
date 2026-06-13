@@ -18,6 +18,8 @@ from typing import Optional
 BASE_DIR = Path(__file__).resolve().parent
 CAPTURES_DIR = BASE_DIR / "data" / "captures"
 GENERATED_DIR = BASE_DIR / "data" / "generated"
+# Réglages "événement" persistés (survivent à un redémarrage du serveur).
+SETTINGS_FILE = BASE_DIR / "data" / "settings.json"
 
 
 @dataclass
@@ -29,7 +31,9 @@ class Photo:
     theme_id: str
     status: str = "captured"  # captured -> generating -> generated -> on_screen
     capture_file: Optional[str] = None     # nom de fichier dans data/captures
-    generated_file: Optional[str] = None   # nom de fichier dans data/generated
+    base_file: Optional[str] = None        # sortie brute Gemini (avant template/texte)
+    generated_file: Optional[str] = None   # image finale affichée (template + texte)
+    template_name: Optional[str] = None    # template choisi pour cette photo
     error: Optional[str] = None
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
@@ -82,8 +86,29 @@ class Store:
         self.bus = EventBus()
         # Réglages pilotés par l'opérateur depuis la console.
         self.photo_mode_enabled: bool = False   # le mode photo est-il ouvert aux joueurs ?
-        self.current_theme_id: str = "pixar"
         self.current_on_screen: Optional[str] = None  # photo id affichée sur screen.html
+        # --- Réglages "événement" (persistés) ---
+        self.current_theme_id: str = "pixar"
+        self.theme_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
+        self.event_text: str = ""               # texte fixe incrusté sur chaque photo (nom / lieu)
+        self._load_persisted()
+
+    # --- Persistance des réglages événement ---------------------------
+    def _load_persisted(self) -> None:
+        try:
+            data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+            self.current_theme_id = data.get("current_theme_id", self.current_theme_id)
+            self.theme_mode = data.get("theme_mode", self.theme_mode)
+            self.event_text = data.get("event_text", self.event_text)
+        except (FileNotFoundError, ValueError):
+            pass
+
+    def _save_persisted(self) -> None:
+        SETTINGS_FILE.write_text(json.dumps({
+            "current_theme_id": self.current_theme_id,
+            "theme_mode": self.theme_mode,
+            "event_text": self.event_text,
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # --- Photos -------------------------------------------------------
     def add_photo(self, player_name: str, theme_id: str, capture_file: str) -> Photo:
@@ -126,12 +151,27 @@ class Store:
     def set_theme(self, theme_id: str) -> None:
         with self.lock:
             self.current_theme_id = theme_id
+            self._save_persisted()
         self.bus.publish("theme_changed", {"theme_id": theme_id})
+
+    def set_theme_mode(self, mode: str) -> None:
+        with self.lock:
+            self.theme_mode = "free" if mode == "free" else "imposed"
+            self._save_persisted()
+        self.bus.publish("theme_mode_changed", {"theme_mode": self.theme_mode})
+
+    def set_event_text(self, text: str) -> None:
+        with self.lock:
+            self.event_text = (text or "")[:60]
+            self._save_persisted()
+        self.bus.publish("event_text_changed", {"event_text": self.event_text})
 
     def settings(self) -> dict:
         return {
             "photo_mode_enabled": self.photo_mode_enabled,
             "current_theme_id": self.current_theme_id,
+            "theme_mode": self.theme_mode,
+            "event_text": self.event_text,
             "current_on_screen": self.current_on_screen,
         }
 

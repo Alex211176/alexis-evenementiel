@@ -42,6 +42,9 @@
       <div class="field">
         <input id="name" type="text" placeholder="Ton prénom (optionnel)" autocomplete="off">
       </div>
+      <div id="themeField" class="field hidden">
+        <select id="theme" style="width:100%; padding:14px; border-radius:12px; border:1px solid #333; background:#1a1a26; color:#fff; font-size:16px;"></select>
+      </div>
       <div class="stage">
         <video id="video" autoplay playsinline muted></video>
         <img id="preview" class="preview hidden" alt="aperçu">
@@ -64,10 +67,17 @@
     let captured = null;
 
     async function init(){
-      // Le mode photo est-il ouvert ?
+      // Le mode photo est-il ouvert ? Le joueur choisit-il son thème ?
       try {
         const st = await (await fetch('/api/state')).json();
         if(!st.settings.photo_mode_enabled){ $('#closed').classList.remove('hidden'); return; }
+        if(st.settings.theme_mode === 'free'){
+          const sel = $('#theme');
+          for(const t of st.themes.filter(t=>t.active))
+            sel.add(new Option(t.label, t.id));
+          if(st.settings.current_theme_id) sel.value = st.settings.current_theme_id;
+          $('#themeField').classList.remove('hidden');
+        }
       } catch(e){}
       $('#capture').classList.remove('hidden');
       startCamera();
@@ -119,9 +129,11 @@
       if(!captured) return;
       send.disabled=true; msg.className='msg'; msg.textContent='Envoi en cours…';
       try {
+        const themeSel = document.getElementById('theme');
+        const themeId = (themeSel && !$('#themeField').classList.contains('hidden')) ? themeSel.value : undefined;
         const r = await fetch('/api/capture', { method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ player_name:$('#name').value, image:captured }) });
+          body: JSON.stringify({ player_name:$('#name').value, image:captured, theme_id:themeId }) });
         const j = await r.json();
         if(!r.ok) throw new Error(j.error||'Erreur');
         msg.className='msg ok';

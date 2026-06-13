@@ -96,15 +96,16 @@ def _demo_image(image_bytes: bytes, theme: dict) -> bytes:
     top = (img.height - side) // 2
     img = img.crop((left, top, left + side, top + side)).resize((1024, 1024))
 
+    # Bandeau en HAUT pour ne pas chevaucher le texte d'événement (incrusté en bas).
     draw = ImageDraw.Draw(img, "RGBA")
-    draw.rectangle([0, 880, 1024, 1024], fill=(0, 0, 0, 160))
+    draw.rectangle([0, 0, 1024, 130], fill=(0, 0, 0, 160))
     try:
-        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 44)
-        small = ImageFont.truetype("DejaVuSans.ttf", 28)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 40)
+        small = ImageFont.truetype("DejaVuSans.ttf", 26)
     except Exception:
         font = small = ImageFont.load_default()
-    draw.text((30, 905), "MODE DÉMO (pas de clé Gemini)", fill=(255, 215, 0), font=font)
-    draw.text((30, 965), f"Thème : {theme.get('label', theme.get('id', '?'))}",
+    draw.text((30, 20), "MODE DÉMO (pas de clé Gemini)", fill=(255, 215, 0), font=font)
+    draw.text((30, 75), f"Thème : {theme.get('label', theme.get('id', '?'))}",
               fill=(255, 255, 255), font=small)
 
     out = io.BytesIO()

@@ -112,11 +112,32 @@ Tu obtiens une URL publique `https://xxxx.trycloudflare.com`. Donne
 | `DNP_MEDIA` | format papier (ex. `4x6`), optionnel. |
 | `DNP_HOTFOLDER` | alternative : dossier surveillé par le logiciel DNP. |
 
-### Thèmes
+### Thèmes : imposé ou libre
 
-Édite `themes.json` : chaque thème a un `character_prompt` (stylisation de la
-personne) et un `background_prompt` (le fond). `active: true` = proposé sur la
-page selfie. Le thème **appliqué** est celui choisi dans la console.
+Bouton **« Thème : imposé / libre »** dans la console :
+
+- **Imposé** (défaut) : l'animateur choisit un thème dans le menu, il s'applique
+  à **tous** les joueurs.
+- **Libre** : chaque joueur choisit son thème sur la page selfie (parmi les
+  thèmes `active`). Le menu de la console sert alors de thème **par défaut**.
+
+Ce réglage est **persistant** (par événement). Édite les thèmes dans
+`themes.json` : chaque thème a un `character_prompt` (stylisation de la
+personne) et un `background_prompt` (le fond). `active: true` = proposé aux
+joueurs en mode libre.
+
+### Texte d'événement / lieu (incrusté sur chaque photo)
+
+Champ **« Texte événement / lieu »** dans la console : le texte saisi (ex.
+« Mariage de Léa & Max — Château de Rabastens ») est incrusté **à l'identique
+en bas de chaque photo générée**. Il est :
+
+- **persistant** (survit à un redémarrage) — tu le règles une fois par soirée ;
+- **rétro-appliqué** : si tu le modifies, toutes les photos déjà générées sont
+  refaites avec le nouveau texte (rendu strictement identique partout) ;
+- **combinable avec un template** : l'image finale = sortie Gemini → template
+  (optionnel) → texte. Si ton template PNG contient déjà le texte, laisse le
+  champ vide.
 
 ### Templates (incrustation)
 
@@ -163,7 +184,9 @@ musique).
 | GET | `/api/state` | public | état complet (photos, réglages, thèmes) |
 | GET | `/events` | public | flux SSE temps réel |
 | POST | `/api/mode` | PIN | ouvrir/fermer le mode photo |
-| POST | `/api/theme` | PIN | changer le thème courant |
+| POST | `/api/theme` | PIN | changer le thème courant / par défaut |
+| POST | `/api/theme_mode` | PIN | basculer thème imposé / libre |
+| POST | `/api/event_text` | PIN | définir le texte incrusté (événement / lieu) |
 | POST | `/api/generate` | PIN | styliser via Gemini |
 | POST | `/api/template` | PIN | incruster dans un template |
 | POST | `/api/screen` | PIN | envoyer (ou retirer) une photo de l'écran |
