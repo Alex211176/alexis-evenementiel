@@ -30,7 +30,8 @@ def is_demo_mode() -> bool:
     return not os.environ.get("GEMINI_API_KEY")
 
 
-def _build_prompt(theme: dict) -> str:
+def build_theme_prompt(theme: dict) -> str:
+    """Construit le prompt à partir d'un thème (personnage + fond + cadrage)."""
     parts = [
         theme.get("character_prompt", "").strip(),
         theme.get("background_prompt", "").strip(),
@@ -39,10 +40,11 @@ def _build_prompt(theme: dict) -> str:
     return "\n".join(p for p in parts if p)
 
 
-def stylize(image_bytes: bytes, theme: dict, mime_type: str = "image/jpeg") -> bytes:
-    """Renvoie les octets PNG/JPEG de l'image stylisée."""
+def stylize(image_bytes: bytes, prompt: str, demo_label: str = "",
+            mime_type: str = "image/jpeg") -> bytes:
+    """Renvoie les octets de l'image stylisée à partir d'un prompt en clair."""
     if is_demo_mode():
-        return _demo_image(image_bytes, theme)
+        return _demo_image(image_bytes, demo_label)
 
     model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")
     api_key = os.environ["GEMINI_API_KEY"]
@@ -51,7 +53,7 @@ def stylize(image_bytes: bytes, theme: dict, mime_type: str = "image/jpeg") -> b
     body = {
         "contents": [{
             "parts": [
-                {"text": _build_prompt(theme)},
+                {"text": prompt},
                 {"inline_data": {"mime_type": mime_type,
                                  "data": base64.b64encode(image_bytes).decode()}},
             ]
@@ -83,7 +85,7 @@ def _extract_image(data: dict) -> Optional[str]:
     return None
 
 
-def _demo_image(image_bytes: bytes, theme: dict) -> bytes:
+def _demo_image(image_bytes: bytes, demo_label: str = "") -> bytes:
     """Image factice : photo d'origine + bandeau indiquant le mode démo et le thème."""
     try:
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -105,8 +107,7 @@ def _demo_image(image_bytes: bytes, theme: dict) -> bytes:
     except Exception:
         font = small = ImageFont.load_default()
     draw.text((30, 20), "MODE DÉMO (pas de clé Gemini)", fill=(255, 215, 0), font=font)
-    draw.text((30, 75), f"Thème : {theme.get('label', theme.get('id', '?'))}",
-              fill=(255, 255, 255), font=small)
+    draw.text((30, 75), demo_label or "Aperçu", fill=(255, 255, 255), font=small)
 
     out = io.BytesIO()
     img.save(out, format="JPEG", quality=92)

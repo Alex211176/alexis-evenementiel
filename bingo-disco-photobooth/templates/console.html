@@ -59,6 +59,15 @@
     </div>
   </header>
   <main>
+    <details id="promptPanel" style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
+      <summary style="cursor:pointer; font-weight:600;">🧪 Prompt personnalisé <span id="promptState" style="font-weight:400; font-size:13px; opacity:.7;"></span></summary>
+      <p style="font-size:13px; opacity:.7; margin:8px 0;">S'il est rempli, ce prompt est utilisé tel quel et <b>prime sur le thème</b>. Astuce : pour parler de la photo, écris « this image » (pas un nom de fichier).</p>
+      <textarea id="customPrompt" rows="5" placeholder="Colle ton prompt ici…" style="width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#1a1a26; color:#fff; font-size:14px; font-family:inherit;"></textarea>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button id="applyPrompt" class="primary">Appliquer ce prompt</button>
+        <button id="clearPrompt">Effacer (revenir au thème)</button>
+      </div>
+    </details>
     <div id="grid" class="grid"></div>
     <div id="empty" class="empty">En attente des premières photos des joueurs…</div>
   </main>
@@ -99,6 +108,9 @@
       // On ne réécrit pas le champ texte pendant la frappe.
       if(document.activeElement !== $('#eventText'))
         $('#eventText').value = state.settings.event_text || '';
+      const cp = state.settings.custom_prompt || '';
+      if(document.activeElement !== $('#customPrompt')) $('#customPrompt').value = cp;
+      $('#promptState').textContent = cp ? '— actif (prime sur le thème)' : '— inactif (thème utilisé)';
     }
 
     function render(){
@@ -156,6 +168,16 @@
     $('#eventTextBtn').addEventListener('click', async ()=>{
       try { await api('/api/event_text',{event_text:$('#eventText').value});
         toast('Texte appliqué à toutes les photos'); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#applyPrompt').addEventListener('click', async ()=>{
+      try { await api('/api/custom_prompt',{custom_prompt:$('#customPrompt').value});
+        toast('Prompt appliqué — clique « Générer »'); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#clearPrompt').addEventListener('click', async ()=>{
+      $('#customPrompt').value='';
+      try { await api('/api/custom_prompt',{custom_prompt:''}); toast('Prompt effacé — retour au thème'); }
       catch(err){ toast('❌ '+err.message); }
     });
 

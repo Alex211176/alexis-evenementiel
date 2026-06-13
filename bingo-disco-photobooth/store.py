@@ -91,6 +91,7 @@ class Store:
         self.current_theme_id: str = "pixar"
         self.theme_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
         self.event_text: str = ""               # texte fixe incrusté sur chaque photo (nom / lieu)
+        self.custom_prompt: str = ""             # prompt libre : s'il est défini, il prime sur le thème
         self._load_persisted()
 
     # --- Persistance des réglages événement ---------------------------
@@ -100,6 +101,7 @@ class Store:
             self.current_theme_id = data.get("current_theme_id", self.current_theme_id)
             self.theme_mode = data.get("theme_mode", self.theme_mode)
             self.event_text = data.get("event_text", self.event_text)
+            self.custom_prompt = data.get("custom_prompt", self.custom_prompt)
         except (FileNotFoundError, ValueError):
             pass
 
@@ -108,6 +110,7 @@ class Store:
             "current_theme_id": self.current_theme_id,
             "theme_mode": self.theme_mode,
             "event_text": self.event_text,
+            "custom_prompt": self.custom_prompt,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # --- Photos -------------------------------------------------------
@@ -166,12 +169,19 @@ class Store:
             self._save_persisted()
         self.bus.publish("event_text_changed", {"event_text": self.event_text})
 
+    def set_custom_prompt(self, text: str) -> None:
+        with self.lock:
+            self.custom_prompt = (text or "").strip()
+            self._save_persisted()
+        self.bus.publish("custom_prompt_changed", {"custom_prompt": self.custom_prompt})
+
     def settings(self) -> dict:
         return {
             "photo_mode_enabled": self.photo_mode_enabled,
             "current_theme_id": self.current_theme_id,
             "theme_mode": self.theme_mode,
             "event_text": self.event_text,
+            "custom_prompt": self.custom_prompt,
             "current_on_screen": self.current_on_screen,
         }
 

@@ -202,10 +202,15 @@ def api_generate():
         return jsonify(error="Photo introuvable."), 404
 
     store.update(photo, status="generating", error=None)
-    theme = THEME_BY_ID.get(photo.theme_id, THEMES[0])
+    # Prompt personnalisé (testé en direct) prioritaire, sinon prompt du thème.
+    if store.custom_prompt:
+        prompt, label = store.custom_prompt, "Prompt perso"
+    else:
+        theme = THEME_BY_ID.get(photo.theme_id, THEMES[0])
+        prompt, label = gemini_client.build_theme_prompt(theme), theme["label"]
     try:
         src = (CAPTURES_DIR / photo.capture_file).read_bytes()
-        out = gemini_client.stylize(src, theme)
+        out = gemini_client.stylize(src, prompt, demo_label=label)
         base_name = f"gen_{photo.id}_base.jpg"
         (GENERATED_DIR / base_name).write_bytes(out)
         store.update(photo, status="generated", base_file=base_name,
@@ -247,6 +252,14 @@ def api_theme_mode():
     mode = (request.get_json(silent=True) or {}).get("theme_mode")
     store.set_theme_mode(mode)
     return jsonify(ok=True, theme_mode=store.theme_mode)
+
+
+@app.route("/api/custom_prompt", methods=["POST"])
+@operator_required
+def api_custom_prompt():
+    text = (request.get_json(silent=True) or {}).get("custom_prompt", "")
+    store.set_custom_prompt(text)
+    return jsonify(ok=True, custom_prompt=store.custom_prompt)
 
 
 @app.route("/api/screen", methods=["POST"])
