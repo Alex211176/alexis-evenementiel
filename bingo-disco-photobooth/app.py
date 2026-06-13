@@ -284,4 +284,6 @@ if __name__ == "__main__":
     print(f"  Console opérateur : http://localhost:{port}/console")
     print(f"  Page selfie       : http://localhost:{port}/selfie")
     print(f"  Écran public      : http://localhost:{port}/screen\n")
-    app.run(host=host, port=port, threaded=True, debug=True)
+    # debug=False : sinon Werkzeug réserve l'URL /console pour son propre
+    # débogueur (et l'expose, ce qui est risqué). On garde threaded pour le SSE.
+    app.run(host=host, port=port, threaded=True, debug=False)
