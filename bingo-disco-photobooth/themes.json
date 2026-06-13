@@ -1,0 +1,33 @@
+{
+  "_comment": "Thèmes de stylisation. Chaque thème = un prompt envoyé à Gemini avec la photo du joueur. 'character_prompt' stylise la personne, 'background_prompt' décrit le fond. Le prompt final demande à Gemini de garder le visage reconnaissable.",
+  "themes": [
+    {
+      "id": "pixar",
+      "label": "Personnage Pixar",
+      "character_prompt": "Transforme la ou les personnes de cette photo en personnages de film d'animation 3D façon Pixar : grands yeux expressifs, peau lisse stylisée, rendu cinématographique chaleureux. Garde leur coiffure, leurs vêtements et surtout leurs traits du visage reconnaissables.",
+      "background_prompt": "Place-les dans un décor de fête disco coloré avec boule à facettes et lumières scintillantes.",
+      "active": true
+    },
+    {
+      "id": "annees80",
+      "label": "Disco années 80",
+      "character_prompt": "Restyle la ou les personnes en look disco des années 80 : paillettes, néons, coiffure volumineuse, ambiance studio photo glamour. Garde les visages reconnaissables.",
+      "background_prompt": "Fond de piste de danse rétro avec néons roses et bleus, sol lumineux à damier.",
+      "active": true
+    },
+    {
+      "id": "superheros",
+      "label": "Super-héros",
+      "character_prompt": "Transforme la ou les personnes en super-héros de bande dessinée moderne, costume héroïque, pose dynamique, style comic. Garde les visages reconnaissables.",
+      "background_prompt": "Skyline de ville la nuit avec faisceaux lumineux et confettis.",
+      "active": true
+    },
+    {
+      "id": "aquarelle",
+      "label": "Aquarelle artistique",
+      "character_prompt": "Transforme la photo en portrait peint à l'aquarelle, coups de pinceau visibles, couleurs douces. Garde les visages reconnaissables.",
+      "background_prompt": "Fond aquarelle abstrait aux teintes festives.",
+      "active": false
+    }
+  ]
+}

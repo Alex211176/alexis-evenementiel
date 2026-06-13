@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bingo Disco — Écran</title>
+  <style>
+    html,body { margin:0; height:100%; background:#05050a; overflow:hidden;
+                font-family:system-ui,sans-serif; color:#fff; }
+    #stage { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    #photo { max-width:92vw; max-height:88vh; border-radius:18px; opacity:0;
+             transform:scale(.92); transition:opacity .6s ease, transform .6s ease;
+             box-shadow:0 0 80px rgba(232,193,74,.35); }
+    #photo.show { opacity:1; transform:scale(1); }
+    #name { position:fixed; bottom:6vh; left:50%; transform:translateX(-50%);
+            font-size:clamp(22px,4vw,46px); font-weight:800; letter-spacing:1px;
+            text-shadow:0 4px 24px #000; opacity:0; transition:opacity .6s .2s; }
+    #name.show { opacity:1; }
+    #idle { position:fixed; inset:0; display:flex; flex-direction:column; gap:10px;
+            align-items:center; justify-content:center; text-align:center; }
+    #idle h1 { font-size:clamp(28px,6vw,72px); margin:0; }
+    #idle h1 span { color:#e8c14a; }
+    #idle p { opacity:.6; font-size:clamp(16px,2.5vw,26px); }
+    .glow { position:fixed; inset:0; background:
+      radial-gradient(circle at 20% 20%, rgba(232,193,74,.10), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(120,80,255,.12), transparent 45%); }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div id="idle">
+    <h1>Bingo <span>Disco</span></h1>
+    <p>Prends ton selfie… il va apparaître ici ✨</p>
+  </div>
+  <div id="stage" style="display:none">
+    <img id="photo" alt="">
+  </div>
+  <div id="name"></div>
+
+  <script>
+    const stage=document.getElementById('stage'), idle=document.getElementById('idle'),
+          photo=document.getElementById('photo'), nameEl=document.getElementById('name');
+
+    function show(p){
+      if(!p || p.cleared || !p.generated_url){ clear(); return; }
+      idle.style.display='none'; stage.style.display='flex';
+      photo.classList.remove('show'); nameEl.classList.remove('show');
+      const img=new Image();
+      img.onload=()=>{ photo.src=img.src;
+        requestAnimationFrame(()=>{ photo.classList.add('show');
+          if(p.player_name){ nameEl.textContent=p.player_name; nameEl.classList.add('show'); }
+          else nameEl.textContent=''; }); };
+      img.src=p.generated_url + '?t=' + Date.now(); // anti-cache après régénération
+    }
+    function clear(){ photo.classList.remove('show'); nameEl.classList.remove('show');
+      setTimeout(()=>{ stage.style.display='none'; idle.style.display='flex'; },600); }
+
+    const es=new EventSource('/events');
+    es.onmessage = ev=>{
+      const m=JSON.parse(ev.data);
+      if(m.event==='hello'){
+        if(m.data.current_on_screen) fetch('/api/state').then(r=>r.json())
+          .then(s=>{ const p=s.photos.find(x=>x.id===s.settings.current_on_screen); if(p) show(p); });
+      }
+      if(m.event==='screen_show') show(m.data);
+      if(m.event==='photo_updated' && m.data.id && m.data.status==='on_screen') show(m.data);
+    };
+  </script>
+</body>
+</html>

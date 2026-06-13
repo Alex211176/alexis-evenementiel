@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Console opérateur — Bingo Disco Photo</title>
+  <style>
+    :root { --or:#e8c14a; --bg:#0d0d16; --card:#16161f; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:#fff; }
+    header { display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+             padding:14px 20px; border-bottom:1px solid #24243a; position:sticky; top:0;
+             background:#0d0d16ee; backdrop-filter:blur(6px); z-index:10; }
+    header h1 { margin:0; font-size:18px; } header h1 span{color:var(--or)}
+    .pill { padding:5px 12px; border-radius:20px; font-size:13px; font-weight:600; }
+    .on { background:#1f5e2f; } .off { background:#5e1f1f; } .demo{ background:#5e4a1f; }
+    .controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-left:auto; }
+    button { padding:9px 14px; border:0; border-radius:10px; font-weight:600; cursor:pointer;
+             background:#23233a; color:#fff; font-size:14px; }
+    button.primary { background:var(--or); color:#1a1206; }
+    button.danger { background:#7a2030; }
+    select, input { padding:9px; border-radius:9px; border:1px solid #333; background:#1a1a26; color:#fff; }
+    main { padding:18px 20px; }
+    .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); }
+    .card { background:var(--card); border:1px solid #24243a; border-radius:14px; overflow:hidden;
+            display:flex; flex-direction:column; }
+    .card .imgs { display:flex; }
+    .card .imgs img { width:50%; aspect-ratio:1; object-fit:cover; background:#000; }
+    .card .body { padding:10px 12px; }
+    .card .name { font-weight:700; }
+    .card .status { font-size:12px; opacity:.7; }
+    .card .err { font-size:12px; color:#ff8a8a; }
+    .card .actions { display:flex; gap:6px; flex-wrap:wrap; padding:0 12px 12px; }
+    .card .actions button { flex:1; min-width:70px; font-size:13px; padding:8px; }
+    .empty { opacity:.5; text-align:center; padding:60px; }
+    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+             background:#23233a; padding:12px 18px; border-radius:10px; opacity:0;
+             transition:.3s; pointer-events:none; }
+    .toast.show { opacity:1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bingo <span>Disco</span> · Console</h1>
+    <span id="modePill" class="pill off">Mode photo : fermé</span>
+    <span id="demoPill" class="pill demo" style="display:none">MODE DÉMO</span>
+    <div class="controls">
+      <select id="theme">
+        {% for t in themes %}<option value="{{t.id}}">{{t.label}}</option>{% endfor %}
+      </select>
+      <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
+      <a href="/screen" target="_blank"><button>Écran ↗</button></a>
+      <a href="/selfie" target="_blank"><button>Page selfie ↗</button></a>
+    </div>
+  </header>
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty">En attente des premières photos des joueurs…</div>
+  </main>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const PIN = localStorage.getItem('op_pin') || prompt('PIN opérateur :') || '';
+    localStorage.setItem('op_pin', PIN);
+    const H = { 'Content-Type':'application/json', 'X-Operator-Pin':PIN };
+    const $ = s=>document.querySelector(s);
+    let state = { settings:{}, photos:[], templates:[] };
+
+    function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),2500); }
+
+    async function api(url, body){
+      const r = await fetch(url,{method:'POST',headers:H,body:JSON.stringify(body||{})});
+      const j = await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+      return j;
+    }
+
+    async function load(){
+      state = await (await fetch('/api/state')).json();
+      render(); renderHeader();
+    }
+
+    function renderHeader(){
+      const on = state.settings.photo_mode_enabled;
+      const p=$('#modePill'); p.textContent = on?'Mode photo : OUVERT':'Mode photo : fermé';
+      p.className = 'pill '+(on?'on':'off');
+      $('#toggleMode').textContent = on?'Fermer le mode photo':'Ouvrir le mode photo';
+      $('#demoPill').style.display = state.demo ? 'inline-block':'none';
+      if(state.settings.current_theme_id) $('#theme').value = state.settings.current_theme_id;
+    }
+
+    function render(){
+      const g=$('#grid'); g.innerHTML='';
+      $('#empty').style.display = state.photos.length? 'none':'block';
+      for(const p of state.photos){
+        const onScreen = state.settings.current_on_screen===p.id;
+        const div=document.createElement('div'); div.className='card';
+        div.innerHTML = `
+          <div class="imgs">
+            <img src="${p.capture_url||''}" alt="">
+            <img src="${p.generated_url||''}" alt="" style="${p.generated_url?'':'opacity:.15'}">
+          </div>
+          <div class="body">
+            <div class="name">${esc(p.player_name)} ${onScreen?'🖥️':''}</div>
+            <div class="status">${labelStatus(p.status)} · ${themeLabel(p.theme_id)}</div>
+            ${p.error?`<div class="err">${esc(p.error)}</div>`:''}
+          </div>
+          <div class="actions">
+            <button data-act="generate" data-id="${p.id}" class="primary">${p.generated_url?'Régénérer':'Générer ✨'}</button>
+            <button data-act="screen" data-id="${p.id}" ${p.generated_url?'':'disabled'}>Écran 🖥️</button>
+            ${state.print_enabled?`<button data-act="print" data-id="${p.id}" ${p.generated_url?'':'disabled'}>Imprimer 🖨️</button>`:''}
+          </div>`;
+        g.appendChild(div);
+      }
+    }
+    const esc = s => (s||'').replace(/[<>&]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const themeLabel = id => (state.themes||[]).find(t=>t.id===id)?.label||id;
+    const labelStatus = s => ({captured:'📷 reçue',generating:'⏳ génération…',generated:'✅ générée',on_screen:'🖥️ à l\'écran'}[s]||s);
+
+    document.addEventListener('click', async e=>{
+      const b=e.target.closest('button[data-act]'); if(!b) return;
+      const id=b.dataset.id, act=b.dataset.act; b.disabled=true;
+      try {
+        if(act==='generate'){ await api('/api/generate',{photo_id:id}); toast('Image générée'); }
+        if(act==='screen'){ await api('/api/screen',{photo_id:id}); toast('Envoyée à l\'écran'); }
+        if(act==='print'){ const j=await api('/api/print',{photo_id:id}); toast(j.message||'Impression lancée'); }
+      } catch(err){ toast('❌ '+err.message); } finally { b.disabled=false; }
+    });
+
+    $('#toggleMode').addEventListener('click', async ()=>{
+      try { await api('/api/mode',{enabled:!state.settings.photo_mode_enabled}); }
+      catch(e){ toast('❌ '+e.message); }
+    });
+    $('#theme').addEventListener('change', async e=>{
+      try { await api('/api/theme',{theme_id:e.target.value}); toast('Thème : '+themeLabel(e.target.value)); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+
+    // Temps réel
+    const es = new EventSource('/events');
+    es.onmessage = ev => { try { load(); } catch(e){} };
+
+    load();
+  </script>
+</body>
+</html>
