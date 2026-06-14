@@ -167,10 +167,13 @@
     .univers-head .section-label::before { display: none; }
     .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
     .service {
-        background: var(--noir); padding: 50px 38px; transition: background 0.4s ease;
+        display: block; text-decoration: none; color: inherit;
+        background: var(--noir); padding: 50px 38px; transition: background 0.4s ease, transform 0.3s ease;
         position: relative; overflow: hidden;
     }
-    .service:hover { background: var(--noir-3); }
+    .service:hover { background: var(--noir-3); transform: translateY(-4px); }
+    .service .go { margin-top: 18px; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--or); opacity: 0; transform: translateX(-6px); transition: 0.3s; }
+    .service:hover .go { opacity: 1; transform: none; }
     .service .icon {
         font-size: 1.6rem; color: var(--or); margin-bottom: 22px;
         width: 56px; height: 56px; border: 1px solid var(--line); border-radius: 50%;
@@ -239,6 +242,14 @@
         .footer-grid { grid-template-columns: 1fr; gap: 36px; }
         .nav-links { display: none; }
         .burger { display: flex; }
+        nav.open { background: rgba(10,10,12,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+        nav.open .nav-links { display: flex; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 6px 0 14px; background: rgba(10,10,12,0.98); border-bottom: 1px solid var(--line); }
+        nav.open .nav-links a { padding: 14px 32px; font-size: 0.92rem; }
+        nav.open .nav-links a::after { display: none; }
+        nav.open .nav-cta { margin: 10px 32px 0; text-align: center; }
+        .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .burger.open span:nth-child(2) { opacity: 0; }
+        .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     }
     @media (max-width: 560px) {
         .section-pad { padding: 90px 0; }
@@ -308,12 +319,12 @@
             <h2 class="section-title">Tout ce qui fait <span class="italic">un grand</span> événement</h2>
         </div>
         <div class="services-grid">
-            <div class="service reveal"><div class="num-bg">01</div><div class="icon">♪</div><h3>DJ & Animation</h3><p>Sets sur-mesure, lecture de piste, micro et mise en ambiance pour faire vivre chaque instant.</p></div>
-            <div class="service reveal"><div class="num-bg">02</div><div class="icon">◍</div><h3>Sonorisation</h3><p>Systèmes Bose & RCF calibrés selon le lieu et l'affluence, du cocktail intime à la grande salle.</p></div>
-            <div class="service reveal"><div class="num-bg">03</div><div class="icon">✦</div><h3>Lumière & Scénographie</h3><p>Création d'ambiances lumineuses, effets et mise en valeur des espaces et des moments forts.</p></div>
-            <div class="service reveal"><div class="num-bg">04</div><div class="icon">❏</div><h3>Photobooth</h3><p>Borne photo premium, impressions instantanées et souvenirs personnalisés pour vos invités.</p></div>
-            <div class="service reveal"><div class="num-bg">05</div><div class="icon">▷</div><h3>Captation Photo & Vidéo</h3><p>Immortalisez l'événement : reportage, captation 360° et films souvenirs cinématiques.</p></div>
-            <div class="service reveal"><div class="num-bg">06</div><div class="icon">⬚</div><h3>Location de matériel</h3><p>Son, lumière et vidéo professionnels à louer pour vos propres événements.</p></div>
+            <a class="service reveal" href="catalogue.html#packs"><div class="num-bg">01</div><div class="icon">♪</div><h3>DJ & Animation</h3><p>Sets sur-mesure, lecture de piste, micro et mise en ambiance pour faire vivre chaque instant.</p><div class="go">Voir les formules →</div></a>
+            <a class="service reveal" href="catalogue.html#location"><div class="num-bg">02</div><div class="icon">◍</div><h3>Sonorisation</h3><p>Systèmes Bose & RCF calibrés selon le lieu et l'affluence, du cocktail intime à la grande salle.</p><div class="go">Voir le matériel →</div></a>
+            <a class="service reveal" href="catalogue.html#location"><div class="num-bg">03</div><div class="icon">✦</div><h3>Lumière & Scénographie</h3><p>Création d'ambiances lumineuses, effets et mise en valeur des espaces et des moments forts.</p><div class="go">Voir le matériel →</div></a>
+            <a class="service reveal" href="templates-photobooth.html"><div class="num-bg">04</div><div class="icon">❏</div><h3>Photobooth</h3><p>Borne photo premium, impressions instantanées et souvenirs personnalisés pour vos invités.</p><div class="go">Voir les 850+ templates →</div></a>
+            <a class="service reveal" href="catalogue.html#prestations"><div class="num-bg">05</div><div class="icon">▷</div><h3>Captation Photo & Vidéo</h3><p>Immortalisez l'événement : reportage, captation 360° et films souvenirs cinématiques.</p><div class="go">Voir les prestations →</div></a>
+            <a class="service reveal" href="catalogue.html#location"><div class="num-bg">06</div><div class="icon">⬚</div><h3>Location de matériel</h3><p>Son, lumière et vidéo professionnels à louer pour vos propres événements.</p><div class="go">Voir le catalogue →</div></a>
         </div>
         <div style="text-align:center; margin-top:60px" class="reveal">
             <a href="catalogue.html" class="btn btn-ghost">Voir le catalogue complet</a>
@@ -422,6 +433,18 @@
     window.addEventListener('scroll', () => {
         nav.classList.toggle('scrolled', window.scrollY > 60);
     });
+    // Menu mobile (burger)
+    const burger = document.querySelector('.burger');
+    if (burger) {
+        burger.addEventListener('click', () => {
+            nav.classList.toggle('open');
+            burger.classList.toggle('open');
+        });
+        nav.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
+            nav.classList.remove('open');
+            burger.classList.remove('open');
+        }));
+    }
     // Reveal au scroll
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
