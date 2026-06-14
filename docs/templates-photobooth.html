@@ -39,6 +39,8 @@ header.hero{padding:150px 0 50px;text-align:center;position:relative;overflow:hi
 .pb-search input::placeholder{color:var(--gris)}
 .pb-search input:focus{border-color:var(--or-sombre)}
 .pb-count{color:var(--gris);font-size:0.85rem;white-space:nowrap;letter-spacing:.04em}
+.pb-reset{background:transparent;border:1px solid var(--or-sombre);color:var(--or-clair);border-radius:999px;padding:9px 16px;font-size:0.8rem;letter-spacing:.04em;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s}
+.pb-reset:hover{background:var(--or);border-color:var(--or);color:var(--noir)}
 .pb-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .pb-fgroup{margin-top:10px}
 .pb-fgroup>summary{display:flex;align-items:center;list-style:none;cursor:default;pointer-events:none;font-size:0.7rem;color:var(--or);text-transform:uppercase;letter-spacing:.18em;margin-bottom:8px}
@@ -144,6 +146,7 @@ footer .maj{margin-top:18px;font-size:0.76rem;color:var(--gris)}
  <div class="wrap">
   <div class="pb-search">
    <input id="pb-q" type="search" placeholder="Rechercher : mariage, doré, fleurs, vintage…" autocomplete="off">
+   <button id="pb-reset" class="pb-reset" type="button" style="display:none">↺ Réinitialiser</button>
    <span class="pb-count" id="pb-count"></span>
   </div>
   <details class="pb-fgroup" open><summary><span class="pb-gl">Thème</span><span class="pb-cur" id="pb-cur-cat">Tous</span><span class="pb-chev">▾</span></summary><div class="pb-row" id="pb-cats"></div></details>
@@ -208,6 +211,14 @@ function render(){
  $('pb-count').textContent=list.length+' / '+T.length+' modèles';
  syncSummaries();
  facetCounts();
+ $('pb-reset').style.display=(fCat||fCol>=0||fFmt.size>0||fQ)?'':'none';
+}
+function resetFilters(){
+ fCat="";fCol=-1;fFmt.clear();fQ="";$('pb-q').value='';
+ document.querySelectorAll('#pb-cats .pb-chip').forEach(x=>x.classList.toggle('pb-on',x.dataset.cat===''));
+ document.querySelectorAll('#pb-cols .pb-cchip').forEach(x=>x.classList.toggle('pb-on',x.dataset.col==='-1'));
+ document.querySelectorAll('#pb-fmts .pb-fchip').forEach(x=>x.classList.toggle('pb-on',x.dataset.fmt===''));
+ render();
 }
 function matchSearch(t){if(!fQ)return true;const hay=(t.name+' '+t.category+' '+(t.styles||[]).join(' ')+' '+(t.keywords||[]).join(' ')).toLowerCase();return hay.includes(fQ);}
 function facetCounts(){
@@ -277,6 +288,7 @@ $('pb-cats').addEventListener('click',e=>{const b=e.target.closest('.pb-chip');i
 $('pb-cols').addEventListener('click',e=>{const b=e.target.closest('.pb-cchip');if(!b)return;document.querySelectorAll('#pb-cols .pb-cchip').forEach(x=>x.classList.remove('pb-on'));b.classList.add('pb-on');fCol=+b.dataset.col;render();closeGroup(b)});
 $('pb-fmts').addEventListener('click',e=>{const b=e.target.closest('.pb-fchip');if(!b)return;const v=b.dataset.fmt;if(v===''){fFmt.clear();}else{fFmt.has(v)?fFmt.delete(v):fFmt.add(v);}document.querySelectorAll('#pb-fmts .pb-fchip').forEach(x=>x.classList.toggle('pb-on',x.dataset.fmt===''?fFmt.size===0:fFmt.has(x.dataset.fmt)));if(curPos>=0)openModal(curPos);});
 let tmr;$('pb-q').addEventListener('input',e=>{clearTimeout(tmr);tmr=setTimeout(()=>{fQ=e.target.value.trim().toLowerCase();render()},120)});
+$('pb-reset').addEventListener('click',resetFilters);
 mq.addEventListener('change',applyResponsive);
 buildChips();applyResponsive();render();
 </script>
