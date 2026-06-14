@@ -87,6 +87,11 @@ main{padding:40px 0 90px}
 .pb-li{padding:9px 11px}
 .pb-ln{font-size:0.82rem;color:var(--creme);line-height:1.25}
 .pb-ld{font-size:0.72rem;color:var(--gris);margin-top:3px}
+.pb-lb{position:fixed;inset:0;background:rgba(5,5,7,.96);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.pb-lb.pb-open{display:flex}
+.pb-lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 10px 50px rgba(0,0,0,.6)}
+.pb-lb-close{position:fixed;top:16px;right:16px;background:var(--noir-3);border:1px solid var(--line);color:var(--creme);border-radius:8px;width:44px;height:44px;font-size:20px;cursor:pointer;z-index:2001}
+.pb-lb-cap{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:var(--gris-clair);font-size:0.8rem;letter-spacing:.05em;pointer-events:none}
 footer{background:var(--noir);border-top:1px solid var(--line);padding:60px 0 36px;text-align:center}
 footer .brand{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--creme);margin-bottom:10px}
 footer .brand span{color:var(--or)}
@@ -149,6 +154,7 @@ footer .maj{margin-top:18px;font-size:0.76rem;color:var(--gris)}
 </main>
 
 <div class="pb-ov" id="pb-ov"><div class="pb-modal" id="pb-modal"></div></div>
+<div class="pb-lb" id="pb-lb"><button class="pb-lb-close" type="button" aria-label="Fermer">✕</button><img id="pb-lb-img" src="" alt=""><div class="pb-lb-cap" id="pb-lb-cap"></div></div>
 
 <footer>
  <div class="wrap">
@@ -206,14 +212,18 @@ function openModal(idx){
  const layouts=LAYOUTS.filter(l=>fFmt.size===0||fFmt.has(l.fmt));
  const kws=(t.keywords||[]).slice(0,16).map(k=>'<span>'+esc(k)+'</span>').join('');
  const cols=(t.cl||[]).map(i=>'<span class="pb-mc"><span class="pb-sw" style="background:'+COLORS[i].sw+'"></span>'+esc(COLORS[i].name)+'</span>').join('');
- const lc=layouts.map(l=>'<a class="pb-lcard" href="'+mkUrl(t.slug,l.file,0)+'" target="_blank" rel="noopener"><div class="pb-lthumb"><img loading="lazy" src="'+mkUrl(t.slug,l.file,300)+'" alt="'+esc(l.name)+'" onerror="this.closest(\'.pb-lcard\').style.display=\'none\'"></div><div class="pb-li"><div class="pb-ln">'+esc(l.name)+'</div><div class="pb-ld">'+l.dim+' px</div></div></a>').join('');
+ const lc=layouts.map(l=>'<a class="pb-lcard" href="'+mkUrl(t.slug,l.file,1400)+'" data-cap="'+esc(t.name+' — '+l.name+' · '+l.dim+' px')+'" target="_blank" rel="noopener"><div class="pb-lthumb"><img loading="lazy" src="'+mkUrl(t.slug,l.file,300)+'" alt="'+esc(l.name)+'" onerror="this.closest(\'.pb-lcard\').style.display=\'none\'"></div><div class="pb-li"><div class="pb-ln">'+esc(l.name)+'</div><div class="pb-ld">'+l.dim+' px</div></div></a>').join('');
  $('pb-modal').innerHTML='<div class="pb-mhead"><img src="'+mkUrl(t.slug,"marketing-photo-layout.png",400)+'" alt="" onerror="this.style.opacity=0"><div class="pb-mhinfo"><h2>'+esc(t.name)+'</h2><div class="pb-mcat">'+esc(CATFR[t.category]||t.category)+'</div>'+(cols?'<div class="pb-mcolors">'+cols+'</div>':'')+(kws?'<div class="pb-kw">'+kws+'</div>':'')+'</div><button class="pb-close" type="button" aria-label="Fermer">✕</button></div><div class="pb-mbody"><h3>Déclinaisons disponibles ('+layouts.length+')</h3><div class="pb-lgrid">'+lc+'</div></div>';
  $('pb-ov').classList.add('pb-open');document.body.style.overflow='hidden';
 }
 function closeModal(){curModal=-1;$('pb-ov').classList.remove('pb-open');document.body.style.overflow='';}
+function openLightbox(url,cap){$('pb-lb-img').src=url;$('pb-lb-cap').textContent=cap||'';$('pb-lb').classList.add('pb-open');document.body.style.overflow='hidden';}
+function closeLightbox(){$('pb-lb').classList.remove('pb-open');$('pb-lb-img').removeAttribute('src');}
 $('pb-grid').addEventListener('click',e=>{const c=e.target.closest('.pb-card');if(c)openModal(+c.dataset.i)});
 $('pb-ov').addEventListener('click',e=>{if(e.target.id==='pb-ov'||e.target.closest('.pb-close'))closeModal()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+$('pb-modal').addEventListener('click',e=>{const a=e.target.closest('.pb-lcard');if(a){e.preventDefault();openLightbox(a.getAttribute('href'),a.dataset.cap||'');}});
+$('pb-lb').addEventListener('click',()=>closeLightbox());
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('pb-lb').classList.contains('pb-open'))closeLightbox();else closeModal();}});
 $('pb-cats').addEventListener('click',e=>{const b=e.target.closest('.pb-chip');if(!b)return;document.querySelectorAll('#pb-cats .pb-chip').forEach(x=>x.classList.remove('pb-on'));b.classList.add('pb-on');fCat=b.dataset.cat;render();closeGroup(b)});
 $('pb-cols').addEventListener('click',e=>{const b=e.target.closest('.pb-cchip');if(!b)return;document.querySelectorAll('#pb-cols .pb-cchip').forEach(x=>x.classList.remove('pb-on'));b.classList.add('pb-on');fCol=+b.dataset.col;render();closeGroup(b)});
 $('pb-fmts').addEventListener('click',e=>{const b=e.target.closest('.pb-fchip');if(!b)return;const v=b.dataset.fmt;if(v===''){fFmt.clear();}else{fFmt.has(v)?fFmt.delete(v):fFmt.add(v);}document.querySelectorAll('#pb-fmts .pb-fchip').forEach(x=>x.classList.toggle('pb-on',x.dataset.fmt===''?fFmt.size===0:fFmt.has(x.dataset.fmt)));if(curModal>=0)openModal(curModal);});
