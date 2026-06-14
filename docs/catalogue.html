@@ -225,7 +225,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>2× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360°</li><li>Clip vidéo résumé cinématique</li></ul>
             </details>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
+        </article></div></div><div class="cat-group" id="photobooth" style="scroll-margin-top:130px"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
         <article class="card pack-card">
             <div class="card-head">
                 <h3>Photobooth Basic</h3>
@@ -532,6 +532,17 @@
         <p class="maj">Catalogue mis à jour le 01/06/2026 · TVA non applicable, art. 293 B du CGI</p>
     </div>
 </footer>
+
+<script>
+    // Scroll fiable vers l'ancre (#photobooth, etc.) une fois la page chargée
+    function scrollToHash() {
+        if (!location.hash) return;
+        var el = document.querySelector(location.hash);
+        if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+    window.addEventListener('load', function () { setTimeout(scrollToHash, 80); });
+    window.addEventListener('hashchange', scrollToHash);
+</script>
 
 </body>
 </html>
