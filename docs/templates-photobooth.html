@@ -79,11 +79,11 @@ main{padding:40px 0 90px}
 .pb-close:hover{border-color:var(--or-sombre)}
 .pb-mbody{padding:26px}
 .pb-mbody h3{font-size:0.75rem;color:var(--or);font-weight:400;margin:0 0 16px;text-transform:uppercase;letter-spacing:.16em}
-.pb-lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.pb-lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;align-items:start}
 .pb-lcard{background:var(--noir-3);border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:.2s;display:block}
 .pb-lcard:hover{border-color:var(--or-sombre);transform:translateY(-2px)}
-.pb-lthumb{aspect-ratio:1;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.pb-lthumb img{max-width:100%;max-height:100%;object-fit:contain}
+.pb-lthumb{background:#fff;overflow:hidden}
+.pb-lthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pb-li{padding:9px 11px}
 .pb-ln{font-size:0.82rem;color:var(--creme);line-height:1.25}
 .pb-ld{font-size:0.72rem;color:var(--gris);margin-top:3px}
@@ -218,7 +218,7 @@ function openModal(idx){
  curPos=idx;const t=curList[idx];
  const layouts=LAYOUTS.filter(l=>fFmt.size===0||fFmt.has(l.fmt));
  const cols=(t.cl||[]).map(i=>'<span class="pb-mc"><span class="pb-sw" style="background:'+COLORS[i].sw+'"></span>'+esc(COLORS[i].name)+'</span>').join('');
- const lc=layouts.map(l=>'<a class="pb-lcard" href="'+mkUrl(t.slug,l.file,1400)+'" data-cap="'+esc(t.name+' — '+l.name+' · '+l.dim+' px')+'" target="_blank" rel="noopener"><div class="pb-lthumb"><img loading="lazy" src="'+mkUrl(t.slug,l.file,300)+'" alt="'+esc(l.name)+'" onerror="this.closest(\'.pb-lcard\').style.display=\'none\'"></div><div class="pb-li"><div class="pb-ln">'+esc(l.name)+'</div><div class="pb-ld">'+l.dim+' px</div></div></a>').join('');
+ const lc=layouts.map(l=>{const m=l.dim.match(/(\d+)\D+(\d+)/);const r=m?(+m[1]/+m[2]):0.667;return '<a class="pb-lcard" href="'+mkUrl(t.slug,l.file,1400)+'" data-cap="'+esc(t.name+' — '+l.name+' · '+l.dim+' px')+'" target="_blank" rel="noopener"><div class="pb-lthumb" style="aspect-ratio:'+r.toFixed(4)+'"><img loading="lazy" src="'+mkUrl(t.slug,l.file,300)+'" alt="'+esc(l.name)+'" onerror="this.closest(\'.pb-lcard\').style.display=\'none\'"></div><div class="pb-li"><div class="pb-ln">'+esc(l.name)+'</div><div class="pb-ld">'+l.dim+' px</div></div></a>';}).join('');
  $('pb-modal').innerHTML='<div class="pb-mhead"><img src="'+mkUrl(t.slug,"marketing-photo-layout.png",400)+'" alt="" onerror="this.style.opacity=0"><div class="pb-mhinfo"><h2>'+esc(t.name)+'</h2><div class="pb-mcat">'+esc(CATFR[t.category]||t.category)+'</div>'+(cols?'<div class="pb-mcolors">'+cols+'</div>':'')+'</div><span class="pb-pos">'+(idx+1)+' / '+curList.length+'</span><button class="pb-close" type="button" aria-label="Fermer">✕</button></div><div class="pb-mbody"><h3>Déclinaisons disponibles ('+layouts.length+')</h3><div class="pb-lgrid">'+lc+'</div></div>';
  $('pb-prev').style.display=$('pb-next').style.display=curList.length>1?'flex':'none';
  $('pb-ov').scrollTop=0;
