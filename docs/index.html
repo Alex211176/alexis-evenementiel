@@ -196,7 +196,7 @@
         background: linear-gradient(135deg, var(--noir-3), var(--noir)); border: 1px solid var(--line);
         background-size: cover; background-position: center;
         display: flex; align-items: flex-end; padding: 24px; cursor: pointer;
-        transition: transform 0.5s ease;
+        transition: transform 0.5s ease; text-decoration: none; color: inherit;
     }
     .galerie-item::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(10,10,12,0.85)); transition: background 0.4s; }
     .galerie-item:hover::before { background: linear-gradient(180deg, rgba(201,165,92,0.1) 0%, transparent 40%, rgba(10,10,12,0.8)); }
@@ -342,7 +342,7 @@
         <div class="galerie-grid">
             <div class="galerie-item big reveal" style="background-image:url('photos/hero-danse.jpg')"><div class="shine"></div><span class="tag">Soirée dansante</span></div>
             <div class="galerie-item reveal" style="background-image:url('photos/couple-cave.jpg')"><div class="shine"></div><span class="tag">Mariage</span></div>
-            <div class="galerie-item reveal" style="background-image:url('photos/photobooth.jpg')"><div class="shine"></div><span class="tag">Photobooth</span></div>
+            <a class="galerie-item reveal" href="catalogue.html#photobooth" style="background-image:url('photos/photobooth.jpg')"><div class="shine"></div><span class="tag">Photobooth →</span></a>
             <div class="galerie-item reveal" style="background-image:url('photos/danse-rose.jpg')"><div class="shine"></div><span class="tag">Ambiance</span></div>
             <div class="galerie-item reveal" style="background-image:url('photos/ronde.jpg')"><div class="shine"></div><span class="tag">Piste de danse</span></div>
         </div>
