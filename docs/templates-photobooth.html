@@ -207,6 +207,26 @@ function render(){
  $('pb-empty').style.display=list.length?'none':'block';
  $('pb-count').textContent=list.length+' / '+T.length+' modèles';
  syncSummaries();
+ facetCounts();
+}
+function matchSearch(t){if(!fQ)return true;const hay=(t.name+' '+t.category+' '+(t.styles||[]).join(' ')+' '+(t.keywords||[]).join(' ')).toLowerCase();return hay.includes(fQ);}
+function facetCounts(){
+ // Couleurs disponibles selon thème + recherche (en ignorant le filtre couleur)
+ const baseCol=T.filter(t=>(!fCat||t.category===fCat)&&matchSearch(t));
+ document.querySelectorAll('#pb-cols .pb-cchip').forEach(b=>{
+  const ci=+b.dataset.col;
+  const n=ci<0?baseCol.length:baseCol.filter(t=>(t.cl||[]).includes(ci)).length;
+  const ct=b.querySelector('.pb-ct');if(ct)ct.textContent=n;
+  if(ci>=0)b.style.display=(n>0||b.classList.contains('pb-on'))?'':'none';
+ });
+ // Thèmes disponibles selon couleur + recherche (en ignorant le filtre thème)
+ const baseCat=T.filter(t=>(fCol<0||(t.cl||[]).includes(fCol))&&matchSearch(t));
+ document.querySelectorAll('#pb-cats .pb-chip').forEach(b=>{
+  const cat=b.dataset.cat;
+  const n=cat?baseCat.filter(t=>t.category===cat).length:baseCat.length;
+  const ct=b.querySelector('.pb-ct');if(ct)ct.textContent=n;
+  if(cat)b.style.display=(n>0||b.classList.contains('pb-on'))?'':'none';
+ });
 }
 function applyResponsive(){document.querySelectorAll('.pb-fgroup').forEach(d=>{d.open=!mq.matches});}
 function syncSummaries(){
