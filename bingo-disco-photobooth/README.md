@@ -144,8 +144,14 @@ en bas de chaque photo générée**. Il est :
 
 ### Templates / bande photo
 
-Dépose tes PNG dans `data/templates/`, puis choisis-en un dans le menu
-**« Template »** de la console (persistant ; ré-appliqué à toutes les photos).
+Dépose tes PNG dans le **dossier des templates**, puis choisis-en un dans le
+panneau **« 🖼 Template »** de la console (avec aperçu + bouton « Rafraîchir » ;
+choix persistant, ré-appliqué à toutes les photos).
+
+Le dossier est **configurable** via `TEMPLATES_DIR` dans `.env` (par défaut
+`data/templates/`). Tu peux pointer ton propre dossier, ex. :
+`TEMPLATES_DIR=/Users/macbookpro/Desktop/templates_bingo`. La console affiche le
+dossier surveillé et le type détecté (bande photo / cadre simple).
 
 Deux modes, détectés automatiquement :
 

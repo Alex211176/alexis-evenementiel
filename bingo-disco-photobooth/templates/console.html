@@ -48,7 +48,6 @@
       <select id="model" title="Modèle Gemini (qualité / prix par photo)"></select>
       <select id="style" title="Style appliqué (édite-le dans le gestionnaire ci-dessous)"></select>
       <button id="styleModeBtn" title="Style imposé par l'animateur, ou libre (chaque joueur choisit)">Style : imposé</button>
-      <select id="template" title="Template / cadre (bande photo à repères rouge/vert)"></select>
       <input id="eventText" type="text" placeholder="Texte événement / lieu" style="min-width:200px">
       <button id="eventTextBtn">Appliquer le texte</button>
       <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
@@ -69,6 +68,15 @@
         <button id="newStyle">➕ Nouveau</button>
         <button id="deleteStyle" class="danger">🗑 Supprimer</button>
       </div>
+    </details>
+    <details id="templatePanel" open style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
+      <summary style="cursor:pointer; font-weight:600;">🖼 Template / bande photo <span id="tplKind" style="font-weight:400; font-size:13px; opacity:.8;"></span></summary>
+      <p style="font-size:13px; opacity:.7; margin:8px 0;">Dossier surveillé : <code id="tplDir" style="background:#1a1a26; padding:2px 6px; border-radius:5px;">…</code><br>Dépose tes PNG dedans (repères <b style="color:#ef5350;">rouge</b> = photo 1 / originale, <b style="color:#9ccc65;">vert</b> = photo 2 / modifiée), puis « Rafraîchir ».</p>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <select id="template" style="min-width:220px;"></select>
+        <button id="tplRefresh">🔄 Rafraîchir la liste</button>
+      </div>
+      <img id="tplPreview" alt="aperçu du template" style="max-height:320px; margin-top:12px; display:none; border-radius:8px; border:1px solid #333;">
     </details>
     <details id="simPanel" style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
       <summary style="cursor:pointer; font-weight:600;">🧪 Simulation template <span style="font-weight:400; font-size:13px; opacity:.7;">— sans Gemini, gratuit</span></summary>
@@ -142,10 +150,12 @@
       if(!styleLoaded){ loadEditor(keep); styleLoaded = true; }
       const free = state.settings.style_mode === 'free';
       $('#styleModeBtn').textContent = free ? 'Style : libre (joueur)' : 'Style : imposé';
-      // Templates disponibles (dossier data/templates/).
+      // Templates disponibles (dossier configurable).
       const tsel=$('#template'); tsel.innerHTML='<option value="">— Sans template —</option>';
       for(const t of (state.templates||[])) tsel.add(new Option(t, t));
       tsel.value = state.settings.active_template || '';
+      $('#tplDir').textContent = state.templates_dir || '';
+      updateTemplatePreview(state.settings.active_template, state.active_is_photostrip);
       // On ne réécrit pas le champ texte d'événement pendant la frappe.
       if(document.activeElement !== $('#eventText'))
         $('#eventText').value = state.settings.event_text || '';
@@ -216,11 +226,21 @@
         toast('Texte appliqué à toutes les photos'); }
       catch(err){ toast('❌ '+err.message); }
     });
+    function updateTemplatePreview(name, isStrip){
+      const img=$('#tplPreview'), kind=$('#tplKind');
+      if(name){
+        img.src='/media/templates/'+encodeURIComponent(name)+'?t='+Date.now();
+        img.style.display='block';
+        kind.textContent = (isStrip===undefined) ? '' : (isStrip ? '— bande photo ✅' : '— cadre simple');
+      } else { img.style.display='none'; kind.textContent='— aucun'; }
+    }
     $('#template').addEventListener('change', async e=>{
       try { const j=await api('/api/active_template',{template:e.target.value});
+        updateTemplatePreview(e.target.value, j.is_photostrip);
         toast(e.target.value ? ('Template : '+e.target.value+(j.is_photostrip?' (bande photo ✅)':'')) : 'Sans template'); }
       catch(err){ toast('❌ '+err.message); }
     });
+    $('#tplRefresh').addEventListener('click', ()=>{ load(); toast('Liste des templates rafraîchie'); });
 
     // --- Gestionnaire de styles (bibliothèque de prompts) ---
     $('#newStyle').addEventListener('click', ()=>{

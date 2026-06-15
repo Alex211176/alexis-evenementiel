@@ -99,6 +99,11 @@ def media_generated(name):
     return send_from_directory(GENERATED_DIR, name)
 
 
+@app.route("/media/templates/<path:name>")
+def media_template(name):
+    return send_from_directory(compositor.TEMPLATES_DIR, name)
+
+
 # --------------------------------------------------------------------------
 # Flux d'événements temps réel (SSE) -> console + écran
 # --------------------------------------------------------------------------
@@ -170,6 +175,8 @@ def api_state():
         demo=gemini_client.is_demo_mode(),
         print_enabled=printer.is_enabled(),
         templates=compositor.list_templates(),
+        templates_dir=str(compositor.TEMPLATES_DIR),
+        active_is_photostrip=compositor.is_photostrip(store.active_template),
     )
 
 

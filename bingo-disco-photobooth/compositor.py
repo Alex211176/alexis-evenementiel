@@ -12,12 +12,20 @@ fourni, on renvoie l'image telle quelle.
 from __future__ import annotations
 
 import io
+import os
 from pathlib import Path
 from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
-TEMPLATES_DIR = Path(__file__).resolve().parent / "data" / "templates"
+# Dossier des templates : configurable via la variable d'environnement
+# TEMPLATES_DIR (ex. un dossier sur le Bureau), sinon data/templates/.
+_DEFAULT_TEMPLATES = Path(__file__).resolve().parent / "data" / "templates"
+TEMPLATES_DIR = Path(os.environ.get("TEMPLATES_DIR") or _DEFAULT_TEMPLATES)
+try:
+    TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 # Polices candidates (Mac puis Linux) ; repli sur la police bitmap de Pillow.
 _FONT_CANDIDATES = [
@@ -169,14 +177,23 @@ def detect_slots(template: Image.Image) -> dict:
 
 
 def is_photostrip(template_name: Optional[str]) -> bool:
-    """True si le template contient les deux repères couleur (rouge + vert)."""
+    """True si le template contient les deux repères couleur (rouge + vert).
+    Résultat mis en cache par (nom, date de modification) pour rester rapide."""
     if not template_name:
         return False
     path = TEMPLATES_DIR / template_name
     if not path.exists():
         return False
+    key = (template_name, path.stat().st_mtime)
+    if key in _strip_cache:
+        return _strip_cache[key]
     slots = detect_slots(Image.open(path).convert("RGB"))
-    return "slot1" in slots and "slot2" in slots
+    val = "slot1" in slots and "slot2" in slots
+    _strip_cache[key] = val
+    return val
+
+
+_strip_cache: dict = {}
 
 
 def build_photostrip(template_name: str, original_bytes: bytes,
