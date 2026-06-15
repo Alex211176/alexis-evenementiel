@@ -48,6 +48,7 @@
       <select id="model" title="Modèle Gemini (qualité / prix par photo)"></select>
       <select id="style" title="Style appliqué (édite-le dans le gestionnaire ci-dessous)"></select>
       <button id="styleModeBtn" title="Style imposé par l'animateur, ou libre (chaque joueur choisit)">Style : imposé</button>
+      <select id="template" title="Template / cadre (bande photo à repères rouge/vert)"></select>
       <input id="eventText" type="text" placeholder="Texte événement / lieu" style="min-width:200px">
       <button id="eventTextBtn">Appliquer le texte</button>
       <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
@@ -131,6 +132,10 @@
       if(!styleLoaded){ loadEditor(keep); styleLoaded = true; }
       const free = state.settings.style_mode === 'free';
       $('#styleModeBtn').textContent = free ? 'Style : libre (joueur)' : 'Style : imposé';
+      // Templates disponibles (dossier data/templates/).
+      const tsel=$('#template'); tsel.innerHTML='<option value="">— Sans template —</option>';
+      for(const t of (state.templates||[])) tsel.add(new Option(t, t));
+      tsel.value = state.settings.active_template || '';
       // On ne réécrit pas le champ texte d'événement pendant la frappe.
       if(document.activeElement !== $('#eventText'))
         $('#eventText').value = state.settings.event_text || '';
@@ -199,6 +204,11 @@
     $('#eventTextBtn').addEventListener('click', async ()=>{
       try { await api('/api/event_text',{event_text:$('#eventText').value});
         toast('Texte appliqué à toutes les photos'); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#template').addEventListener('change', async e=>{
+      try { const j=await api('/api/active_template',{template:e.target.value});
+        toast(e.target.value ? ('Template : '+e.target.value+(j.is_photostrip?' (bande photo ✅)':'')) : 'Sans template'); }
       catch(err){ toast('❌ '+err.message); }
     });
 

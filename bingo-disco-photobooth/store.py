@@ -94,6 +94,7 @@ class Store:
         self.active_style_id: str = "pixar"     # style actif (id dans la bibliothèque)
         self.style_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
         self.event_text: str = ""               # texte fixe incrusté sur chaque photo (nom / lieu)
+        self.active_template: str = ""           # template/cadre PNG appliqué (vide = aucun)
         self.model: str = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")  # modèle image
         self._load_persisted()
 
@@ -104,6 +105,7 @@ class Store:
             self.active_style_id = data.get("active_style_id", self.active_style_id)
             self.style_mode = data.get("style_mode", self.style_mode)
             self.event_text = data.get("event_text", self.event_text)
+            self.active_template = data.get("active_template", self.active_template)
             self.model = data.get("model", self.model)
         except (FileNotFoundError, ValueError):
             pass
@@ -113,6 +115,7 @@ class Store:
             "active_style_id": self.active_style_id,
             "style_mode": self.style_mode,
             "event_text": self.event_text,
+            "active_template": self.active_template,
             "model": self.model,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -178,12 +181,19 @@ class Store:
             self._save_persisted()
         self.bus.publish("model_changed", {"model": self.model})
 
+    def set_template(self, name: str) -> None:
+        with self.lock:
+            self.active_template = name or ""
+            self._save_persisted()
+        self.bus.publish("template_changed", {"active_template": self.active_template})
+
     def settings(self) -> dict:
         return {
             "photo_mode_enabled": self.photo_mode_enabled,
             "active_style_id": self.active_style_id,
             "style_mode": self.style_mode,
             "event_text": self.event_text,
+            "active_template": self.active_template,
             "model": self.model,
             "current_on_screen": self.current_on_screen,
         }

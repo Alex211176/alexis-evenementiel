@@ -192,16 +192,24 @@ def api_style():
 
 
 def _finalize(photo) -> None:
-    """Reconstruit l'image finale = sortie Gemini + template + texte événement.
+    """Reconstruit l'image finale à partir de la sortie brute Gemini (base_file).
 
-    Repart toujours de la sortie brute Gemini (base_file) pour que le texte et
-    le template restent cohérents même après changement du texte d'événement.
+    - Template "bande photo" (repères rouge/vert) : photo originale dans
+      l'emplacement 1, photo modifiée dans l'emplacement 2.
+    - Template classique (cadre PNG) : cadre superposé + texte événement.
+    - Sans template : sortie Gemini + texte événement.
     """
     if not photo.base_file:
         return
-    img = (GENERATED_DIR / photo.base_file).read_bytes()
-    img = compositor.apply_template(img, photo.template_name)
-    img = compositor.draw_caption(img, store.event_text)
+    template = store.active_template
+    if template and photo.capture_file and compositor.is_photostrip(template):
+        original = (CAPTURES_DIR / photo.capture_file).read_bytes()
+        stylized = (GENERATED_DIR / photo.base_file).read_bytes()
+        img = compositor.build_photostrip(template, original, stylized)
+    else:
+        img = (GENERATED_DIR / photo.base_file).read_bytes()
+        img = compositor.apply_template(img, template or None)
+        img = compositor.draw_caption(img, store.event_text)
     out_name = photo.generated_file or f"gen_{photo.id}.jpg"
     (GENERATED_DIR / out_name).write_bytes(img)
     store.update(photo, generated_file=out_name)
@@ -233,16 +241,17 @@ def api_generate():
         return jsonify(error=str(exc)), 502
 
 
-@app.route("/api/template", methods=["POST"])
+@app.route("/api/active_template", methods=["POST"])
 @operator_required
-def api_template():
-    body = request.get_json(silent=True) or {}
-    photo = store.get(body.get("photo_id"))
-    if not photo or not photo.base_file:
-        return jsonify(error="Photo non générée."), 400
-    store.update(photo, template_name=body.get("template") or None)
-    _finalize(photo)
-    return jsonify(ok=True, photo=photo.public())
+def api_active_template():
+    name = (request.get_json(silent=True) or {}).get("template", "")
+    store.set_template(name)
+    # Ré-applique sur les photos déjà générées (rendu cohérent partout).
+    for photo in list(store.photos.values()):
+        if photo.base_file:
+            _finalize(photo)
+    return jsonify(ok=True, active_template=store.active_template,
+                   is_photostrip=compositor.is_photostrip(store.active_template))
 
 
 @app.route("/api/event_text", methods=["POST"])

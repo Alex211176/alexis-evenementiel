@@ -119,3 +119,88 @@ def _cover(img: Image.Image, size: tuple[int, int]) -> Image.Image:
     left = (img.width - tw) // 2
     top = (img.height - th) // 2
     return img.crop((left, top, left + tw, top + th))
+
+
+# --------------------------------------------------------------------------
+# Bande photo : détection des emplacements par couleur (rouge / vert)
+# --------------------------------------------------------------------------
+def _marker_bbox(img: Image.Image, predicate, sample: int = 240):
+    """Boîte englobante des pixels validant `predicate`, mesurée sur une
+    miniature (rapide) puis remise à l'échelle de l'image d'origine."""
+    w, h = img.size
+    scale = max(w, h) / sample
+    small = img.resize((max(1, int(w / scale)), max(1, int(h / scale)))).convert("RGB")
+    px = small.load()
+    sw, sh = small.size
+    minx = miny = 10**9
+    maxx = maxy = -1
+    for y in range(sh):
+        for x in range(sw):
+            if predicate(*px[x, y]):
+                minx, miny = min(minx, x), min(miny, y)
+                maxx, maxy = max(maxx, x), max(maxy, y)
+    if maxx < 0:
+        return None
+    # Remise à l'échelle + petite marge (= 1 pixel de miniature) pour couvrir
+    # entièrement le repère couleur malgré l'arrondi de la détection.
+    pad = int(scale) + 1
+    return (max(0, int(minx * scale) - pad), max(0, int(miny * scale) - pad),
+            min(w, int((maxx + 1) * scale) + pad), min(h, int((maxy + 1) * scale) + pad))
+
+
+def _is_red(r, g, b):
+    return r > 150 and g < 120 and b < 120 and r - max(g, b) > 50
+
+
+def _is_green(r, g, b):
+    return g > 130 and b < 130 and g - r > 25 and g - b > 25
+
+
+def detect_slots(template: Image.Image) -> dict:
+    """Renvoie {'slot1': bbox_rouge, 'slot2': bbox_vert} si détectés."""
+    slots = {}
+    red = _marker_bbox(template, _is_red)
+    green = _marker_bbox(template, _is_green)
+    if red:
+        slots["slot1"] = red
+    if green:
+        slots["slot2"] = green
+    return slots
+
+
+def is_photostrip(template_name: Optional[str]) -> bool:
+    """True si le template contient les deux repères couleur (rouge + vert)."""
+    if not template_name:
+        return False
+    path = TEMPLATES_DIR / template_name
+    if not path.exists():
+        return False
+    slots = detect_slots(Image.open(path).convert("RGB"))
+    return "slot1" in slots and "slot2" in slots
+
+
+def build_photostrip(template_name: str, original_bytes: bytes,
+                     stylized_bytes: bytes) -> bytes:
+    """Compose la bande finale : photo originale dans le repère rouge (emplacement 1),
+    photo modifiée dans le repère vert (emplacement 2). Renvoie un JPEG."""
+    template = Image.open(TEMPLATES_DIR / template_name).convert("RGBA")
+    slots = detect_slots(template.convert("RGB"))
+    result = template.copy()
+
+    def paste(slot_key, img_bytes):
+        box = slots.get(slot_key)
+        if not box:
+            return
+        x0, y0, x1, y1 = box
+        size = (max(1, x1 - x0), max(1, y1 - y0))
+        photo = Image.open(io.BytesIO(img_bytes)).convert("RGBA")
+        result.paste(_cover(photo, size), (x0, y0))
+
+    paste("slot1", original_bytes)   # emplacement 1 = originale
+    paste("slot2", stylized_bytes)   # emplacement 2 = modifiée
+    # Les photos recouvrent les repères couleur ; tout le décor du template
+    # (cadres, fond, titres) autour des repères reste intact.
+
+    out = io.BytesIO()
+    result.convert("RGB").save(out, format="JPEG", quality=95)
+    return out.getvalue()

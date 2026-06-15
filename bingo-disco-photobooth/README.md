@@ -142,11 +142,26 @@ en bas de chaque photo générée**. Il est :
   (optionnel) → texte. Si ton template PNG contient déjà le texte, laisse le
   champ vide.
 
-### Templates (incrustation)
+### Templates / bande photo
 
-Dépose des PNG (idéalement avec une découpe transparente) dans
-`data/templates/`. Le bouton « Template » de la console incruste l'image
-générée dedans (cadrage *cover*). Sans template, l'image reste telle quelle.
+Dépose tes PNG dans `data/templates/`, puis choisis-en un dans le menu
+**« Template »** de la console (persistant ; ré-appliqué à toutes les photos).
+
+Deux modes, détectés automatiquement :
+
+1. **Bande photo (2 emplacements)** — recommandé. Sur ton template, marque les
+   zones photo avec **deux aplats de couleur** :
+   - **rouge** = emplacement 1 → la **photo originale** ;
+   - **vert** = emplacement 2 → la **photo modifiée (Gemini)**.
+   Le code détecte ces zones (à n'importe quelle résolution) et y colle les
+   photos (cadrage *cover*). Tout le décor autour (cadres, fond, titres) est
+   conservé. C'est la convention de la « trame nue » fournie.
+2. **Cadre simple** — un PNG sans repère couleur : il est superposé à l'image
+   générée (utile pour un logo/cadre avec découpe transparente).
+
+> Astuce : pour la bande photo, les deux repères doivent être des aplats de
+> rouge vif et de vert vif distincts. Le titre/les noms peuvent être dessinés
+> directement dans le PNG, autour des emplacements.
 
 ### Impression DNP DS620
 
@@ -193,8 +208,8 @@ musique).
 | POST | `/api/prompts/delete` | PIN | supprimer un style |
 | POST | `/api/model` | PIN | changer le modèle Gemini (Nano Banana / 2 / Pro) |
 | POST | `/api/event_text` | PIN | définir le texte incrusté (événement / lieu) |
+| POST | `/api/active_template` | PIN | choisir le template / la bande photo |
 | POST | `/api/generate` | PIN | styliser via Gemini |
-| POST | `/api/template` | PIN | incruster dans un template |
 | POST | `/api/screen` | PIN | envoyer (ou retirer) une photo de l'écran |
 | POST | `/api/print` | PIN | imprimer sur la DNP |
 
