@@ -318,6 +318,30 @@ def api_screen():
     return jsonify(ok=True, photo=photo.public())
 
 
+@app.route("/api/simulate", methods=["POST"])
+@operator_required
+def api_simulate():
+    """Compose le template avec deux images fournies (avant/après), SANS appeler
+    Gemini : permet de régler le template gratuitement, autant qu'on veut."""
+    body = request.get_json(silent=True) or {}
+
+    def decode(key):
+        d = body.get(key, "")
+        return base64.b64decode(d.split(",", 1)[1]) if "," in d else None
+
+    original, modified = decode("original"), decode("modified")
+    if not modified:
+        return jsonify(error="Fournis au moins la photo « après »."), 400
+    template = store.active_template
+    if template and original and compositor.is_photostrip(template):
+        img = compositor.build_photostrip(template, original, modified)
+    else:
+        img = compositor.apply_template(modified, template or None)
+        img = compositor.draw_caption(img, store.event_text)
+    (GENERATED_DIR / "_simulation.jpg").write_bytes(img)
+    return jsonify(ok=True, url="/media/generated/_simulation.jpg")
+
+
 @app.route("/api/print", methods=["POST"])
 @operator_required
 def api_print():

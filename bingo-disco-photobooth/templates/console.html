@@ -70,6 +70,16 @@
         <button id="deleteStyle" class="danger">🗑 Supprimer</button>
       </div>
     </details>
+    <details id="simPanel" style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
+      <summary style="cursor:pointer; font-weight:600;">🧪 Simulation template <span style="font-weight:400; font-size:13px; opacity:.7;">— sans Gemini, gratuit</span></summary>
+      <p style="font-size:13px; opacity:.7; margin:8px 0;">Teste le <b>template actif</b> avec deux photos déjà existantes (« avant » = originale, « après » = modifiée), sans payer de génération. Idéal pour régler tes repères rouge/vert.</p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+        <label style="font-size:13px;">Avant (originale) :<br><input type="file" id="simBefore" accept="image/*"></label>
+        <label style="font-size:13px;">Après (modifiée) :<br><input type="file" id="simAfter" accept="image/*"></label>
+        <button id="simRun" class="primary">Simuler</button>
+      </div>
+      <img id="simPreview" alt="aperçu simulation" style="max-height:420px; margin-top:12px; display:none; border-radius:8px; border:1px solid #333;">
+    </details>
     <div id="grid" class="grid"></div>
     <div id="empty" class="empty">En attente des premières photos des joueurs…</div>
   </main>
@@ -238,6 +248,19 @@
         fillStyleSelect(first); loadEditor(first);
         if(first){ await api('/api/style',{style_id:first}); state.settings.active_style_id=first; }
         toast('Style supprimé');
+      } catch(err){ toast('❌ '+err.message); }
+    });
+
+    // Simulation du template (avant/après) sans appeler Gemini
+    const readFile = f => new Promise(res=>{ if(!f){res(null);return;} const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
+    $('#simRun').addEventListener('click', async ()=>{
+      const after = $('#simAfter').files[0];
+      if(!after){ toast('Choisis au moins la photo « après »'); return; }
+      try {
+        const [original, modified] = await Promise.all([readFile($('#simBefore').files[0]), readFile(after)]);
+        const j = await api('/api/simulate', {original, modified});
+        const img = $('#simPreview'); img.src = j.url + '?t=' + Date.now(); img.style.display='block';
+        toast('Simulation générée (gratuite)');
       } catch(err){ toast('❌ '+err.message); }
     });
 
