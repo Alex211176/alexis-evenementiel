@@ -112,19 +112,22 @@ Tu obtiens une URL publique `https://xxxx.trycloudflare.com`. Donne
 | `DNP_MEDIA` | format papier (ex. `4x6`), optionnel. |
 | `DNP_HOTFOLDER` | alternative : dossier surveillé par le logiciel DNP. |
 
-### Thèmes : imposé ou libre
+### Styles (gestionnaire de prompts) : imposé ou libre
 
-Bouton **« Thème : imposé / libre »** dans la console :
+Les **styles** sont gérés depuis une **seule liste** (le gestionnaire de styles
+de la console), persistée dans `data/prompts.json`. Chaque style = un **nom** +
+un **prompt** envoyé à Gemini. Au premier lancement, la bibliothèque contient
+Pixar, Disco années 80, Super-héros et Aquarelle (éditables / supprimables).
 
-- **Imposé** (défaut) : l'animateur choisit un thème dans le menu, il s'applique
-  à **tous** les joueurs.
-- **Libre** : chaque joueur choisit son thème sur la page selfie (parmi les
-  thèmes `active`). Le menu de la console sert alors de thème **par défaut**.
+- **Menu « Style »** (en haut) : choisit le style **actif** ; le gestionnaire en
+  dessous édite son prompt (Enregistrer / Nouveau / Supprimer).
+- Bouton **« Style : imposé / libre »** :
+  - **Imposé** (défaut) : le style actif s'applique à **tous** les joueurs.
+  - **Libre** : chaque joueur choisit son style sur la page selfie (dans la même
+    liste). Le style actif sert alors de **valeur par défaut**.
 
-Ce réglage est **persistant** (par événement). Édite les thèmes dans
-`themes.json` : chaque thème a un `character_prompt` (stylisation de la
-personne) et un `background_prompt` (le fond). `active: true` = proposé aux
-joueurs en mode libre.
+Tout est **persistant** (par événement). C'est cette unique liste qui sert à la
+fois à l'opérateur et aux joueurs (plus de `themes.json` séparé).
 
 ### Texte d'événement / lieu (incrusté sur chaque photo)
 
@@ -184,8 +187,10 @@ musique).
 | GET | `/api/state` | public | état complet (photos, réglages, thèmes) |
 | GET | `/events` | public | flux SSE temps réel |
 | POST | `/api/mode` | PIN | ouvrir/fermer le mode photo |
-| POST | `/api/theme` | PIN | changer le thème courant / par défaut |
-| POST | `/api/theme_mode` | PIN | basculer thème imposé / libre |
+| POST | `/api/style` | PIN | choisir le style actif (id de la bibliothèque) |
+| POST | `/api/style_mode` | PIN | basculer style imposé / libre |
+| POST | `/api/prompts/save` | PIN | créer / mettre à jour un style |
+| POST | `/api/prompts/delete` | PIN | supprimer un style |
 | POST | `/api/model` | PIN | changer le modèle Gemini (Nano Banana / 2 / Pro) |
 | POST | `/api/event_text` | PIN | définir le texte incrusté (événement / lieu) |
 | POST | `/api/generate` | PIN | styliser via Gemini |

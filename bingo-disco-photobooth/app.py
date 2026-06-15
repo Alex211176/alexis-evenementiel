@@ -31,9 +31,6 @@ from store import store, CAPTURES_DIR, GENERATED_DIR, BASE_DIR
 
 app = Flask(__name__)
 
-THEMES = json.loads((BASE_DIR / "themes.json").read_text(encoding="utf-8"))["themes"]
-THEME_BY_ID = {t["id"]: t for t in THEMES}
-
 # Modèles image disponibles (du moins cher au plus qualitatif), affichés dans la console.
 MODELS = [
     {"id": "gemini-2.5-flash-image", "label": "Nano Banana", "price": "~0,04 €/photo",
@@ -70,13 +67,18 @@ def home():
 @app.route("/selfie")
 @app.route("/p")
 def selfie_page():
-    return render_template("selfie.html",
-                           themes=[t for t in THEMES if t.get("active")])
+    return render_template("selfie.html")
 
 
 @app.route("/console")
 def console_page():
-    return render_template("console.html", themes=THEMES)
+    return render_template("console.html")
+
+
+def _style(style_id: str) -> dict:
+    """Renvoie l'entrée de bibliothèque pour un id, avec repli sur la 1re/Pixar."""
+    return (library.get(style_id) or library.get(store.active_style_id)
+            or (library.list() or [{"id": "", "name": "?", "text": ""}])[0])
 
 
 @app.route("/screen")
@@ -142,16 +144,16 @@ def api_capture():
         return jsonify(error="Image manquante ou invalide."), 400
 
     raw = base64.b64decode(data_url.split(",", 1)[1])
-    # Thème : imposé par l'animateur, ou choisi par le joueur si mode "libre".
-    requested = payload.get("theme_id")
-    if store.theme_mode == "free" and requested in THEME_BY_ID:
-        theme_id = requested
+    # Style : imposé par l'animateur, ou choisi par le joueur si mode "libre".
+    requested = payload.get("style_id")
+    if store.style_mode == "free" and library.get(requested):
+        style_id = requested
     else:
-        theme_id = store.current_theme_id
+        style_id = store.active_style_id
     pid_name = f"{int(time.time())}_{os.urandom(3).hex()}.jpg"
     (CAPTURES_DIR / pid_name).write_bytes(raw)
 
-    photo = store.add_photo(player_name, theme_id, pid_name)
+    photo = store.add_photo(player_name, style_id, pid_name)
     return jsonify(ok=True, photo=photo.public())
 
 
@@ -163,7 +165,6 @@ def api_state():
     return jsonify(
         settings=store.settings(),
         photos=store.all_photos(),
-        themes=THEMES,
         models=MODELS,
         prompts=library.list(),
         demo=gemini_client.is_demo_mode(),
@@ -180,14 +181,14 @@ def api_mode():
     return jsonify(ok=True, enabled=enabled)
 
 
-@app.route("/api/theme", methods=["POST"])
+@app.route("/api/style", methods=["POST"])
 @operator_required
-def api_theme():
-    theme_id = (request.get_json(silent=True) or {}).get("theme_id")
-    if theme_id not in THEME_BY_ID:
-        return jsonify(error="Thème inconnu."), 400
-    store.set_theme(theme_id)
-    return jsonify(ok=True, theme_id=theme_id)
+def api_style():
+    style_id = (request.get_json(silent=True) or {}).get("style_id")
+    if not library.get(style_id):
+        return jsonify(error="Style inconnu."), 400
+    store.set_active_style(style_id)
+    return jsonify(ok=True, active_style_id=style_id)
 
 
 def _finalize(photo) -> None:
@@ -215,12 +216,9 @@ def api_generate():
         return jsonify(error="Photo introuvable."), 404
 
     store.update(photo, status="generating", error=None)
-    # Prompt personnalisé (testé en direct) prioritaire, sinon prompt du thème.
-    if store.custom_prompt:
-        prompt, label = store.custom_prompt, "Prompt perso"
-    else:
-        theme = THEME_BY_ID.get(photo.theme_id, THEMES[0])
-        prompt, label = gemini_client.build_theme_prompt(theme), theme["label"]
+    # Le prompt vient du style de la photo (bibliothèque de prompts).
+    style = _style(photo.style_id)
+    prompt, label = style["text"], style["name"]
     try:
         src = (CAPTURES_DIR / photo.capture_file).read_bytes()
         out = gemini_client.stylize(src, prompt, demo_label=label, model=store.model)
@@ -259,20 +257,12 @@ def api_event_text():
     return jsonify(ok=True, event_text=store.event_text)
 
 
-@app.route("/api/theme_mode", methods=["POST"])
+@app.route("/api/style_mode", methods=["POST"])
 @operator_required
-def api_theme_mode():
-    mode = (request.get_json(silent=True) or {}).get("theme_mode")
-    store.set_theme_mode(mode)
-    return jsonify(ok=True, theme_mode=store.theme_mode)
-
-
-@app.route("/api/custom_prompt", methods=["POST"])
-@operator_required
-def api_custom_prompt():
-    text = (request.get_json(silent=True) or {}).get("custom_prompt", "")
-    store.set_custom_prompt(text)
-    return jsonify(ok=True, custom_prompt=store.custom_prompt)
+def api_style_mode():
+    mode = (request.get_json(silent=True) or {}).get("style_mode")
+    store.set_style_mode(mode)
+    return jsonify(ok=True, style_mode=store.style_mode)
 
 
 @app.route("/api/model", methods=["POST"])

@@ -28,7 +28,23 @@ _PIXAR = (
     "pour faire ressortir le personnage. Respecte fidèlement les couleurs (cheveux, "
     "yeux, vêtements) de la personne sur la photo."
 )
-_SEED = [{"id": "pixar", "name": "Pixar (caricature 3D)", "text": _PIXAR}]
+_SEED = [
+    {"id": "pixar", "name": "Pixar (caricature 3D)", "text": _PIXAR},
+    {"id": "annees80", "name": "Disco années 80",
+     "text": ("Restyle la ou les personnes en look disco des années 80 : paillettes, "
+              "néons, coiffure volumineuse, ambiance studio photo glamour. Garde les "
+              "visages reconnaissables. Fond de piste de danse rétro avec néons roses "
+              "et bleus, sol lumineux à damier.")},
+    {"id": "superheros", "name": "Super-héros",
+     "text": ("Transforme la ou les personnes en super-héros de bande dessinée moderne, "
+              "costume héroïque, pose dynamique, style comic. Garde les visages "
+              "reconnaissables. Fond : skyline de ville la nuit avec faisceaux lumineux "
+              "et confettis.")},
+    {"id": "aquarelle", "name": "Aquarelle artistique",
+     "text": ("Transforme la photo en portrait peint à l'aquarelle, coups de pinceau "
+              "visibles, couleurs douces. Garde les visages reconnaissables. Fond "
+              "aquarelle abstrait aux teintes festives.")},
+]
 
 
 class PromptLibrary:

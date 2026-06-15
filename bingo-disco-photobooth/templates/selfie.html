@@ -71,11 +71,11 @@
       try {
         const st = await (await fetch('/api/state')).json();
         if(!st.settings.photo_mode_enabled){ $('#closed').classList.remove('hidden'); return; }
-        if(st.settings.theme_mode === 'free'){
+        if(st.settings.style_mode === 'free'){
           const sel = $('#theme');
-          for(const t of st.themes.filter(t=>t.active))
-            sel.add(new Option(t.label, t.id));
-          if(st.settings.current_theme_id) sel.value = st.settings.current_theme_id;
+          for(const p of (st.prompts||[]))
+            sel.add(new Option(p.name, p.id));
+          if(st.settings.active_style_id) sel.value = st.settings.active_style_id;
           $('#themeField').classList.remove('hidden');
         }
       } catch(e){}
@@ -130,10 +130,10 @@
       send.disabled=true; msg.className='msg'; msg.textContent='Envoi en cours…';
       try {
         const themeSel = document.getElementById('theme');
-        const themeId = (themeSel && !$('#themeField').classList.contains('hidden')) ? themeSel.value : undefined;
+        const styleId = (themeSel && !$('#themeField').classList.contains('hidden')) ? themeSel.value : undefined;
         const r = await fetch('/api/capture', { method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ player_name:$('#name').value, image:captured, theme_id:themeId }) });
+          body: JSON.stringify({ player_name:$('#name').value, image:captured, style_id:styleId }) });
         const j = await r.json();
         if(!r.ok) throw new Error(j.error||'Erreur');
         msg.className='msg ok';

@@ -19,7 +19,7 @@
              background:#23233a; color:#fff; font-size:14px; }
     button.primary { background:var(--or); color:#1a1206; }
     button.danger { background:#7a2030; }
-    select, input { padding:9px; border-radius:9px; border:1px solid #333; background:#1a1a26; color:#fff; }
+    select, input, textarea { padding:9px; border-radius:9px; border:1px solid #333; background:#1a1a26; color:#fff; }
     main { padding:18px 20px; }
     .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); }
     .card { background:var(--card); border:1px solid #24243a; border-radius:14px; overflow:hidden;
@@ -46,10 +46,8 @@
     <span id="demoPill" class="pill demo" style="display:none">MODE DÉMO</span>
     <div class="controls">
       <select id="model" title="Modèle Gemini (qualité / prix par photo)"></select>
-      <select id="theme">
-        {% for t in themes %}<option value="{{t.id}}">{{t.label}}</option>{% endfor %}
-      </select>
-      <button id="themeModeBtn" title="Thème imposé par l'animateur, ou libre (chaque joueur choisit)">Thème : imposé</button>
+      <select id="style" title="Style appliqué (édite-le dans le gestionnaire ci-dessous)"></select>
+      <button id="styleModeBtn" title="Style imposé par l'animateur, ou libre (chaque joueur choisit)">Style : imposé</button>
       <input id="eventText" type="text" placeholder="Texte événement / lieu" style="min-width:200px">
       <button id="eventTextBtn">Appliquer le texte</button>
       <button id="toggleMode" class="primary">Ouvrir le mode photo</button>
@@ -60,19 +58,15 @@
     </div>
   </header>
   <main>
-    <details id="promptPanel" open style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
-      <summary style="cursor:pointer; font-weight:600;">🧪 Gestionnaire de prompts <span id="promptState" style="font-weight:400; font-size:13px; opacity:.7;"></span></summary>
-      <p style="font-size:13px; opacity:.7; margin:8px 0;">Le prompt <b>actif</b> est envoyé tel quel à Gemini et <b>prime sur le thème</b>. Astuce : pour parler de la photo, écris « this image ».</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-        <select id="promptSelect" style="min-width:220px;"></select>
-        <input id="promptName" placeholder="Nom du prompt" style="flex:1; min-width:180px;">
-      </div>
-      <textarea id="customPrompt" rows="6" placeholder="Écris ou colle ton prompt ici…" style="width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#1a1a26; color:#fff; font-size:14px; font-family:inherit;"></textarea>
+    <details id="stylePanel" open style="margin-bottom:16px; background:var(--card); border:1px solid #24243a; border-radius:12px; padding:12px;">
+      <summary style="cursor:pointer; font-weight:600;">🎨 Gestionnaire de styles</summary>
+      <p style="font-size:13px; opacity:.7; margin:8px 0;">Le style choisi en haut est celui <b>appliqué à la génération</b> (mode imposé) ou <b>proposé aux joueurs</b> (mode libre). Ici tu édites son prompt. Astuce : pour parler de la photo, écris « this image ».</p>
+      <input id="styleName" placeholder="Nom du style" style="width:100%; margin-bottom:8px;">
+      <textarea id="styleText" rows="6" placeholder="Écris ou colle le prompt du style ici…" style="width:100%; font-size:14px; font-family:inherit;"></textarea>
       <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
-        <button id="applyPrompt" class="primary">✅ Appliquer (rendre actif)</button>
-        <button id="savePrompt">💾 Enregistrer</button>
-        <button id="deletePrompt" class="danger">🗑 Supprimer</button>
-        <button id="clearPrompt">Effacer (revenir au thème)</button>
+        <button id="saveStyle" class="primary">💾 Enregistrer</button>
+        <button id="newStyle">➕ Nouveau</button>
+        <button id="deleteStyle" class="danger">🗑 Supprimer</button>
       </div>
     </details>
     <div id="grid" class="grid"></div>
@@ -85,9 +79,9 @@
     localStorage.setItem('op_pin', PIN);
     const H = { 'Content-Type':'application/json', 'X-Operator-Pin':PIN };
     const $ = s=>document.querySelector(s);
-    let state = { settings:{}, photos:[], templates:[] };
-    let promptLoaded = false;   // n'écraser le champ prompt qu'au tout premier chargement
-    let modelLoaded = false;    // ne remplir la liste des modèles qu'une fois
+    let state = { settings:{}, photos:[], prompts:[] };
+    let modelLoaded = false;    // remplir la liste des modèles une seule fois
+    let styleLoaded = false;    // charger le style actif dans l'éditeur au 1er chargement
 
     function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show');
       setTimeout(()=>t.classList.remove('show'),2500); }
@@ -104,32 +98,42 @@
       render(); renderHeader();
     }
 
+    const styleName = id => (state.prompts||[]).find(p=>p.id===id)?.name || id || '?';
+
+    function fillStyleSelect(selectedId){
+      const ssel=$('#style'); ssel.innerHTML='';
+      for(const p of (state.prompts||[])) ssel.add(new Option(p.name, p.id));
+      ssel.add(new Option('➕ Nouveau style…', ''));
+      ssel.value = selectedId || '';
+    }
+    function loadEditor(id){
+      const p = (state.prompts||[]).find(x=>x.id===id);
+      $('#styleName').value = p ? p.name : '';
+      $('#styleText').value = p ? p.text : '';
+    }
+
     function renderHeader(){
       const on = state.settings.photo_mode_enabled;
       const p=$('#modePill'); p.textContent = on?'Mode photo : OUVERT':'Mode photo : fermé';
       p.className = 'pill '+(on?'on':'off');
       $('#toggleMode').textContent = on?'Fermer le mode photo':'Ouvrir le mode photo';
       $('#demoPill').style.display = state.demo ? 'inline-block':'none';
-      // Liste des modèles (id + libellé + prix), remplie une seule fois.
+      // Modèles (id + libellé + prix), une seule fois.
       const msel = $('#model');
       if(!modelLoaded && state.models){
         for(const m of state.models) msel.add(new Option(`${m.label} · ${m.price}`, m.id));
         modelLoaded = true;
       }
       if(state.settings.model) msel.value = state.settings.model;
-      if(state.settings.current_theme_id) $('#theme').value = state.settings.current_theme_id;
-      const free = state.settings.theme_mode === 'free';
-      $('#themeModeBtn').textContent = free ? 'Thème : libre (joueur)' : 'Thème : imposé';
-      $('#theme').title = free ? 'Thème par défaut proposé aux joueurs' : 'Thème imposé à tous';
-      // On ne réécrit pas le champ texte pendant la frappe.
+      // Styles : on préserve la sélection courante (sauf au tout 1er chargement).
+      const keep = styleLoaded ? $('#style').value : state.settings.active_style_id;
+      fillStyleSelect(keep);
+      if(!styleLoaded){ loadEditor(keep); styleLoaded = true; }
+      const free = state.settings.style_mode === 'free';
+      $('#styleModeBtn').textContent = free ? 'Style : libre (joueur)' : 'Style : imposé';
+      // On ne réécrit pas le champ texte d'événement pendant la frappe.
       if(document.activeElement !== $('#eventText'))
         $('#eventText').value = state.settings.event_text || '';
-      const cp = state.settings.custom_prompt || '';
-      // On ne remplit le champ qu'une seule fois (au 1er chargement), pour ne JAMAIS
-      // écraser ce que l'opérateur est en train de taper/coller (bug du prompt effacé).
-      if(!promptLoaded){ $('#customPrompt').value = cp; promptLoaded = true; }
-      $('#promptState').textContent = cp ? '— actif (prime sur le thème)' : '— inactif (thème utilisé)';
-      fillPromptSelect($('#promptSelect').value);  // liste des prompts enregistrés
     }
 
     function render(){
@@ -145,7 +149,7 @@
           </div>
           <div class="body">
             <div class="name">${esc(p.player_name)} ${onScreen?'🖥️':''}</div>
-            <div class="status">${labelStatus(p.status)} · ${themeLabel(p.theme_id)}</div>
+            <div class="status">${labelStatus(p.status)} · ${esc(styleName(p.style_id))}</div>
             ${p.error?`<div class="err">${esc(p.error)}</div>`:''}
           </div>
           <div class="actions">
@@ -157,7 +161,6 @@
       }
     }
     const esc = s => (s||'').replace(/[<>&]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-    const themeLabel = id => (state.themes||[]).find(t=>t.id===id)?.label||id;
     const labelStatus = s => ({captured:'📷 reçue',generating:'⏳ génération…',generated:'✅ générée',on_screen:'🖥️ à l\'écran'}[s]||s);
 
     document.addEventListener('click', async e=>{
@@ -174,19 +177,23 @@
       try { await api('/api/mode',{enabled:!state.settings.photo_mode_enabled}); }
       catch(e){ toast('❌ '+e.message); }
     });
-    $('#theme').addEventListener('change', async e=>{
-      try { await api('/api/theme',{theme_id:e.target.value}); toast('Thème : '+themeLabel(e.target.value)); }
-      catch(err){ toast('❌ '+err.message); }
-    });
     $('#model').addEventListener('change', async e=>{
       try { await api('/api/model',{model:e.target.value});
         toast('Modèle : '+e.target.options[e.target.selectedIndex].text); }
       catch(err){ toast('❌ '+err.message); }
     });
-    $('#themeModeBtn').addEventListener('click', async ()=>{
-      const next = state.settings.theme_mode === 'free' ? 'imposed' : 'free';
-      try { await api('/api/theme_mode',{theme_mode:next});
-        toast(next==='free' ? 'Thème libre : chaque joueur choisit' : 'Thème imposé à tous'); }
+    // Choisir un style : charge son prompt dans l'éditeur, et le rend actif (sauf "Nouveau").
+    $('#style').addEventListener('change', async e=>{
+      const id = e.target.value;
+      loadEditor(id);
+      if(!id){ $('#styleName').focus(); return; }
+      try { await api('/api/style',{style_id:id}); toast('Style actif : '+styleName(id)); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#styleModeBtn').addEventListener('click', async ()=>{
+      const next = state.settings.style_mode === 'free' ? 'imposed' : 'free';
+      try { await api('/api/style_mode',{style_mode:next});
+        toast(next==='free' ? 'Style libre : chaque joueur choisit' : 'Style imposé à tous'); }
       catch(err){ toast('❌ '+err.message); }
     });
     $('#eventTextBtn').addEventListener('click', async ()=>{
@@ -194,43 +201,34 @@
         toast('Texte appliqué à toutes les photos'); }
       catch(err){ toast('❌ '+err.message); }
     });
-    function fillPromptSelect(selectedId){
-      const psel=$('#promptSelect');
-      psel.innerHTML='<option value="">— Nouveau prompt —</option>';
-      for(const p of (state.prompts||[])) psel.add(new Option(p.name, p.id));
-      psel.value = selectedId || '';
-    }
-    // Choisir un prompt enregistré → charge son nom + texte (ne l'applique pas encore)
-    $('#promptSelect').addEventListener('change', e=>{
-      const p = (state.prompts||[]).find(x=>x.id===e.target.value);
-      $('#promptName').value = p ? p.name : '';
-      $('#customPrompt').value = p ? p.text : '';
+
+    // --- Gestionnaire de styles (bibliothèque de prompts) ---
+    $('#newStyle').addEventListener('click', ()=>{
+      $('#style').value=''; loadEditor(''); $('#styleName').focus();
     });
-    $('#applyPrompt').addEventListener('click', async ()=>{
-      try { await api('/api/custom_prompt',{custom_prompt:$('#customPrompt').value});
-        toast('Prompt actif — clique « Générer / Régénérer »'); }
-      catch(err){ toast('❌ '+err.message); }
-    });
-    $('#savePrompt').addEventListener('click', async ()=>{
+    $('#saveStyle').addEventListener('click', async ()=>{
       try {
         const j = await api('/api/prompts/save',
-          {id:$('#promptSelect').value, name:$('#promptName').value, text:$('#customPrompt').value});
-        state.prompts = j.prompts; fillPromptSelect(j.preset.id);
-        toast('Prompt enregistré : '+j.preset.name);
+          {id:$('#style').value, name:$('#styleName').value, text:$('#styleText').value});
+        state.prompts = j.prompts; fillStyleSelect(j.preset.id); loadEditor(j.preset.id);
+        await api('/api/style',{style_id:j.preset.id});  // le style enregistré devient actif
+        state.settings.active_style_id = j.preset.id;
+        toast('Style enregistré : '+j.preset.name);
       } catch(err){ toast('❌ '+err.message); }
     });
-    $('#deletePrompt').addEventListener('click', async ()=>{
-      const id=$('#promptSelect').value;
-      if(!id){ toast('Sélectionne d\'abord un prompt enregistré'); return; }
-      if(!confirm('Supprimer définitivement ce prompt enregistré ?')) return;
-      try { const j=await api('/api/prompts/delete',{id});
-        state.prompts=j.prompts; fillPromptSelect(''); $('#promptName').value=''; $('#customPrompt').value='';
-        toast('Prompt supprimé'); }
-      catch(err){ toast('❌ '+err.message); }
-    });
-    $('#clearPrompt').addEventListener('click', async ()=>{
-      try { await api('/api/custom_prompt',{custom_prompt:''}); toast('Prompt actif effacé — retour au thème'); }
-      catch(err){ toast('❌ '+err.message); }
+    $('#deleteStyle').addEventListener('click', async ()=>{
+      const id=$('#style').value;
+      if(!id){ toast('Sélectionne d\'abord un style à supprimer'); return; }
+      if((state.prompts||[]).length<=1){ toast('Garde au moins un style'); return; }
+      if(!confirm('Supprimer définitivement ce style ?')) return;
+      try {
+        const j=await api('/api/prompts/delete',{id});
+        state.prompts=j.prompts;
+        const first=(j.prompts[0]||{}).id||'';
+        fillStyleSelect(first); loadEditor(first);
+        if(first){ await api('/api/style',{style_id:first}); state.settings.active_style_id=first; }
+        toast('Style supprimé');
+      } catch(err){ toast('❌ '+err.message); }
     });
 
     // Import d'une photo de test (démo sur une seule machine, sans téléphone)

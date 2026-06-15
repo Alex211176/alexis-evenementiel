@@ -2,6 +2,9 @@
 
 Volontairement simple (un seul process Flask, animation d'une soirée).
 Pas de base de données : les images sont sur disque, les métadonnées en RAM.
+
+Modèle unifié : les "styles" proviennent de la bibliothèque de prompts
+(prompt_library). Le store retient juste le style actif et le mode (imposé/libre).
 """
 
 from __future__ import annotations
@@ -29,8 +32,8 @@ class Photo:
 
     id: str
     player_name: str
-    theme_id: str
-    status: str = "captured"  # captured -> generating -> generated -> on_screen
+    style_id: str                          # id du style (bibliothèque de prompts)
+    status: str = "captured"               # captured -> generating -> generated -> on_screen
     capture_file: Optional[str] = None     # nom de fichier dans data/captures
     base_file: Optional[str] = None        # sortie brute Gemini (avant template/texte)
     generated_file: Optional[str] = None   # image finale affichée (template + texte)
@@ -44,7 +47,6 @@ class Photo:
 
     def public(self) -> dict:
         d = asdict(self)
-        # URLs servies par Flask plutôt que les noms de fichiers bruts.
         d["capture_url"] = f"/media/captures/{self.capture_file}" if self.capture_file else None
         d["generated_url"] = f"/media/generated/{self.generated_file}" if self.generated_file else None
         return d
@@ -89,10 +91,9 @@ class Store:
         self.photo_mode_enabled: bool = False   # le mode photo est-il ouvert aux joueurs ?
         self.current_on_screen: Optional[str] = None  # photo id affichée sur screen.html
         # --- Réglages "événement" (persistés) ---
-        self.current_theme_id: str = "pixar"
-        self.theme_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
+        self.active_style_id: str = "pixar"     # style actif (id dans la bibliothèque)
+        self.style_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
         self.event_text: str = ""               # texte fixe incrusté sur chaque photo (nom / lieu)
-        self.custom_prompt: str = ""             # prompt libre : s'il est défini, il prime sur le thème
         self.model: str = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")  # modèle image
         self._load_persisted()
 
@@ -100,28 +101,26 @@ class Store:
     def _load_persisted(self) -> None:
         try:
             data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
-            self.current_theme_id = data.get("current_theme_id", self.current_theme_id)
-            self.theme_mode = data.get("theme_mode", self.theme_mode)
+            self.active_style_id = data.get("active_style_id", self.active_style_id)
+            self.style_mode = data.get("style_mode", self.style_mode)
             self.event_text = data.get("event_text", self.event_text)
-            self.custom_prompt = data.get("custom_prompt", self.custom_prompt)
             self.model = data.get("model", self.model)
         except (FileNotFoundError, ValueError):
             pass
 
     def _save_persisted(self) -> None:
         SETTINGS_FILE.write_text(json.dumps({
-            "current_theme_id": self.current_theme_id,
-            "theme_mode": self.theme_mode,
+            "active_style_id": self.active_style_id,
+            "style_mode": self.style_mode,
             "event_text": self.event_text,
-            "custom_prompt": self.custom_prompt,
             "model": self.model,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # --- Photos -------------------------------------------------------
-    def add_photo(self, player_name: str, theme_id: str, capture_file: str) -> Photo:
+    def add_photo(self, player_name: str, style_id: str, capture_file: str) -> Photo:
         pid = uuid.uuid4().hex[:10]
         photo = Photo(id=pid, player_name=player_name or "Invité",
-                      theme_id=theme_id, capture_file=capture_file)
+                      style_id=style_id, capture_file=capture_file)
         with self.lock:
             self.photos[pid] = photo
         self.bus.publish("photo_added", photo.public())
@@ -155,29 +154,23 @@ class Store:
             self.photo_mode_enabled = enabled
         self.bus.publish("mode_changed", {"enabled": enabled})
 
-    def set_theme(self, theme_id: str) -> None:
+    def set_active_style(self, style_id: str) -> None:
         with self.lock:
-            self.current_theme_id = theme_id
+            self.active_style_id = style_id
             self._save_persisted()
-        self.bus.publish("theme_changed", {"theme_id": theme_id})
+        self.bus.publish("style_changed", {"active_style_id": style_id})
 
-    def set_theme_mode(self, mode: str) -> None:
+    def set_style_mode(self, mode: str) -> None:
         with self.lock:
-            self.theme_mode = "free" if mode == "free" else "imposed"
+            self.style_mode = "free" if mode == "free" else "imposed"
             self._save_persisted()
-        self.bus.publish("theme_mode_changed", {"theme_mode": self.theme_mode})
+        self.bus.publish("style_mode_changed", {"style_mode": self.style_mode})
 
     def set_event_text(self, text: str) -> None:
         with self.lock:
             self.event_text = (text or "")[:60]
             self._save_persisted()
         self.bus.publish("event_text_changed", {"event_text": self.event_text})
-
-    def set_custom_prompt(self, text: str) -> None:
-        with self.lock:
-            self.custom_prompt = (text or "").strip()
-            self._save_persisted()
-        self.bus.publish("custom_prompt_changed", {"custom_prompt": self.custom_prompt})
 
     def set_model(self, model: str) -> None:
         with self.lock:
@@ -188,10 +181,9 @@ class Store:
     def settings(self) -> dict:
         return {
             "photo_mode_enabled": self.photo_mode_enabled,
-            "current_theme_id": self.current_theme_id,
-            "theme_mode": self.theme_mode,
+            "active_style_id": self.active_style_id,
+            "style_mode": self.style_mode,
             "event_text": self.event_text,
-            "custom_prompt": self.custom_prompt,
             "model": self.model,
             "current_on_screen": self.current_on_screen,
         }
