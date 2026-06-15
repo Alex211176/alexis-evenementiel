@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 # Dossier des templates : configurable via la variable d'environnement
 # TEMPLATES_DIR (ex. un dossier sur le Bureau), sinon data/templates/.
@@ -218,27 +218,56 @@ def is_photostrip(template_name: Optional[str]) -> bool:
 _strip_cache: dict = {}
 
 
+def _punch_holes(template: Image.Image) -> Image.Image:
+    """Rend transparents les pixels rouges/verts (les repères des emplacements),
+    en gardant opaque tout ce qui est dessiné par-dessus (ballons, déco au
+    premier plan). Renvoie le template "troué" en RGBA."""
+    r, g, b, a = template.split()
+
+    def m(band, fn):
+        return band.point(lambda v: 255 if fn(v) else 0)
+
+    def AND(*masks):
+        out = masks[0]
+        for mk in masks[1:]:
+            out = ImageChops.multiply(out, mk)   # 0/255 -> ET logique
+        return out
+
+    red = AND(m(r, lambda v: v > 150), m(g, lambda v: v < 120), m(b, lambda v: v < 120))
+    green = AND(m(g, lambda v: v > 130), m(r, lambda v: v < 140), m(b, lambda v: v < 140))
+    holes = ImageChops.lighter(red, green)          # 255 là où il y a un repère
+    new_alpha = ImageChops.subtract(a, holes)       # alpha -> 0 sur les repères
+    out = template.copy()
+    out.putalpha(new_alpha)
+    return out
+
+
 def build_photostrip(template_name: str, original_bytes: bytes,
                      stylized_bytes: bytes) -> bytes:
-    """Compose la bande finale : photo originale dans le repère rouge (emplacement 1),
-    photo modifiée dans le repère vert (emplacement 2). Renvoie un JPEG."""
+    """Compose la bande finale : on place les photos DERRIÈRE le template, qui
+    est troué aux emplacements couleur. Tout ce qui est dessiné par-dessus les
+    repères (ballons, etc.) reste au PREMIER PLAN devant les photos.
+
+    Emplacement 1 (rouge) = photo originale, emplacement 2 (vert) = modifiée."""
     template = Image.open(TEMPLATES_DIR / template_name).convert("RGBA")
     slots = detect_slots(template.convert("RGB"))
-    result = template.copy()
 
-    def paste(slot_key, img_bytes):
+    # 1) Calque du fond : photos collées aux emplacements détectés.
+    back = Image.new("RGBA", template.size, (255, 255, 255, 255))
+
+    def place(slot_key, img_bytes):
         box = slots.get(slot_key)
         if not box:
             return
         x0, y0, x1, y1 = box
-        size = (max(1, x1 - x0), max(1, y1 - y0))
         photo = Image.open(io.BytesIO(img_bytes)).convert("RGBA")
-        result.paste(_cover(photo, size), (x0, y0))
+        back.paste(_cover(photo, (max(1, x1 - x0), max(1, y1 - y0))), (x0, y0))
 
-    paste("slot1", original_bytes)   # emplacement 1 = originale
-    paste("slot2", stylized_bytes)   # emplacement 2 = modifiée
-    # Les photos recouvrent les repères couleur ; tout le décor du template
-    # (cadres, fond, titres) autour des repères reste intact.
+    place("slot1", original_bytes)
+    place("slot2", stylized_bytes)
+
+    # 2) Template troué (repères -> transparents) posé PAR-DESSUS les photos.
+    result = Image.alpha_composite(back, _punch_holes(template))
 
     out = io.BytesIO()
     result.convert("RGB").save(out, format="JPEG", quality=95)
