@@ -3,6 +3,7 @@
 __pycache__/
 *.pyc
 data/settings.json
+data/prompts.json
 data/captures/*
 data/generated/*
 !data/captures/.gitkeep

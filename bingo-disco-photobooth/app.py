@@ -26,6 +26,7 @@ from flask import (Flask, Response, abort, jsonify, redirect, render_template,
 import gemini_client
 import compositor
 import printer
+from prompt_library import library
 from store import store, CAPTURES_DIR, GENERATED_DIR, BASE_DIR
 
 app = Flask(__name__)
@@ -164,6 +165,7 @@ def api_state():
         photos=store.all_photos(),
         themes=THEMES,
         models=MODELS,
+        prompts=library.list(),
         demo=gemini_client.is_demo_mode(),
         print_enabled=printer.is_enabled(),
         templates=compositor.list_templates(),
@@ -281,6 +283,24 @@ def api_model():
         return jsonify(error="Modèle manquant."), 400
     store.set_model(model)
     return jsonify(ok=True, model=store.model)
+
+
+# --- Bibliothèque de prompts (gestionnaire) ---
+@app.route("/api/prompts/save", methods=["POST"])
+@operator_required
+def api_prompts_save():
+    body = request.get_json(silent=True) or {}
+    if not (body.get("text") or "").strip():
+        return jsonify(error="Le prompt est vide."), 400
+    preset = library.save(body.get("name", ""), body.get("text", ""), body.get("id"))
+    return jsonify(ok=True, preset=preset, prompts=library.list())
+
+
+@app.route("/api/prompts/delete", methods=["POST"])
+@operator_required
+def api_prompts_delete():
+    library.delete((request.get_json(silent=True) or {}).get("id", ""))
+    return jsonify(ok=True, prompts=library.list())
 
 
 @app.route("/api/screen", methods=["POST"])
