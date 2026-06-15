@@ -132,25 +132,47 @@ def _cover(img: Image.Image, size: tuple[int, int]) -> Image.Image:
 # --------------------------------------------------------------------------
 # Bande photo : détection des emplacements par couleur (rouge / vert)
 # --------------------------------------------------------------------------
-def _marker_bbox(img: Image.Image, predicate, sample: int = 240):
-    """Boîte englobante des pixels validant `predicate`, mesurée sur une
-    miniature (rapide) puis remise à l'échelle de l'image d'origine."""
+def _largest_blob_bbox(img: Image.Image, predicate, sample: int = 320):
+    """Boîte englobante du PLUS GRAND bloc connexe validant `predicate`.
+
+    On travaille sur une miniature (rapide), on isole les composantes connexes
+    (4-voisinage) et on garde la plus grande : ça ignore les petits éléments
+    parasites de la même couleur ailleurs dans le template (badges, logos…).
+    """
     w, h = img.size
     scale = max(w, h) / sample
     small = img.resize((max(1, int(w / scale)), max(1, int(h / scale)))).convert("RGB")
-    px = small.load()
     sw, sh = small.size
-    minx = miny = 10**9
-    maxx = maxy = -1
-    for y in range(sh):
-        for x in range(sw):
-            if predicate(*px[x, y]):
-                minx, miny = min(minx, x), min(miny, y)
-                maxx, maxy = max(maxx, x), max(maxy, y)
-    if maxx < 0:
+    px = small.load()
+    mask = [[predicate(*px[x, y]) for x in range(sw)] for y in range(sh)]
+    visited = [[False] * sw for _ in range(sh)]
+    best = None
+    best_count = 0
+    for sy in range(sh):
+        for sx in range(sw):
+            if not mask[sy][sx] or visited[sy][sx]:
+                continue
+            stack = [(sx, sy)]
+            visited[sy][sx] = True
+            minx = maxx = sx
+            miny = maxy = sy
+            count = 0
+            while stack:
+                cx, cy = stack.pop()
+                count += 1
+                minx, maxx = min(minx, cx), max(maxx, cx)
+                miny, maxy = min(miny, cy), max(maxy, cy)
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nx, ny = cx + dx, cy + dy
+                    if 0 <= nx < sw and 0 <= ny < sh and mask[ny][nx] and not visited[ny][nx]:
+                        visited[ny][nx] = True
+                        stack.append((nx, ny))
+            if count > best_count:
+                best_count, best = count, (minx, miny, maxx, maxy)
+    if not best:
         return None
-    # Remise à l'échelle + petite marge (= 1 pixel de miniature) pour couvrir
-    # entièrement le repère couleur malgré l'arrondi de la détection.
+    minx, miny, maxx, maxy = best
+    # Remise à l'échelle + petite marge pour couvrir entièrement le repère.
     pad = int(scale) + 1
     return (max(0, int(minx * scale) - pad), max(0, int(miny * scale) - pad),
             min(w, int((maxx + 1) * scale) + pad), min(h, int((maxy + 1) * scale) + pad))
@@ -167,8 +189,8 @@ def _is_green(r, g, b):
 def detect_slots(template: Image.Image) -> dict:
     """Renvoie {'slot1': bbox_rouge, 'slot2': bbox_vert} si détectés."""
     slots = {}
-    red = _marker_bbox(template, _is_red)
-    green = _marker_bbox(template, _is_green)
+    red = _largest_blob_bbox(template, _is_red)
+    green = _largest_blob_bbox(template, _is_green)
     if red:
         slots["slot1"] = red
     if green:
