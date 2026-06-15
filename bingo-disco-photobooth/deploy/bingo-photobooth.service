@@ -1,0 +1,17 @@
+[Unit]
+Description=Bingo Disco Photobooth (module photo IA)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adapte User/paths si besoin (install-pi.sh le génère automatiquement).
+User=pi
+WorkingDirectory=/home/pi/bingo-disco-photobooth
+EnvironmentFile=/home/pi/bingo-disco-photobooth/.env
+ExecStart=/home/pi/bingo-disco-photobooth/.venv/bin/python /home/pi/bingo-disco-photobooth/app.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+# Exemple de config pour un tunnel Cloudflare NOMMÉ (URL stable, idéale pour
+# imprimer le QR code à l'avance). À placer dans ~/.cloudflared/config.yml
+#
+# Remplace <TUNNEL_ID> et le domaine par les tiens.
+
+tunnel: <TUNNEL_ID>
+credentials-file: /home/pi/.cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  # Les invités scannent un QR vers https://photo.tondomaine.fr/selfie
+  - hostname: photo.tondomaine.fr
+    service: http://localhost:5055
+    # Server-Sent Events : pas de mise en tampon (écran temps réel).
+    originRequest:
+      noTLSVerify: false
+      disableChunkedEncoding: false
+  - service: http_status:404

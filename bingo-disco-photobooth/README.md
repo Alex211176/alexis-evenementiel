@@ -82,6 +82,12 @@ tester l'enchaînement capture → écran → impression avant de consommer du c
 
 ---
 
+## Déploiement Raspberry Pi (autonome)
+
+Pour faire tourner le moteur sur un **Raspberry Pi** (selfies des invités en 4G
+via Cloudflare, tablette console/écran, impression DNP) : voir le guide complet
+**[docs/RASPBERRY_PI.md](docs/RASPBERRY_PI.md)** (service au boot, tunnel, CUPS).
+
 ## Exposer aux téléphones via Cloudflare Tunnel
 
 Les joueurs ne sont pas sur ton réseau : il faut exposer le serveur local. Le
