@@ -41,14 +41,24 @@ def build_theme_prompt(theme: dict) -> str:
 
 
 def stylize(image_bytes: bytes, prompt: str, demo_label: str = "",
-            mime_type: str = "image/jpeg") -> bytes:
+            model: str = "", mime_type: str = "image/jpeg") -> bytes:
     """Renvoie les octets de l'image stylisée à partir d'un prompt en clair."""
     if is_demo_mode():
         return _demo_image(image_bytes, demo_label)
 
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")
+    model = model or os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")
     api_key = os.environ["GEMINI_API_KEY"]
     url = f"{API_BASE}/{model}:generateContent"
+
+    gen_config = {"responseModalities": ["TEXT", "IMAGE"]}
+    # Résolution / format de sortie (optionnels). imageSize : 1K / 2K / 4K.
+    image_config = {}
+    if os.environ.get("GEMINI_ASPECT_RATIO"):
+        image_config["aspectRatio"] = os.environ["GEMINI_ASPECT_RATIO"]
+    if os.environ.get("GEMINI_IMAGE_SIZE"):
+        image_config["imageSize"] = os.environ["GEMINI_IMAGE_SIZE"]
+    if image_config:
+        gen_config["imageConfig"] = image_config
 
     body = {
         "contents": [{
@@ -58,7 +68,7 @@ def stylize(image_bytes: bytes, prompt: str, demo_label: str = "",
                                  "data": base64.b64encode(image_bytes).decode()}},
             ]
         }],
-        "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]},
+        "generationConfig": gen_config,
     }
 
     try:

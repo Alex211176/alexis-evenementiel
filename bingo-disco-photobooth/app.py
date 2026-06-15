@@ -33,6 +33,16 @@ app = Flask(__name__)
 THEMES = json.loads((BASE_DIR / "themes.json").read_text(encoding="utf-8"))["themes"]
 THEME_BY_ID = {t["id"]: t for t in THEMES}
 
+# Modèles image disponibles (du moins cher au plus qualitatif), affichés dans la console.
+MODELS = [
+    {"id": "gemini-2.5-flash-image", "label": "Nano Banana", "price": "~0,04 €/photo",
+     "note": "rapide, conservateur (1K)"},
+    {"id": "gemini-3.1-flash-image", "label": "Nano Banana 2", "price": "~0,07 €/photo",
+     "note": "proche du Pro, jusqu'à 4K"},
+    {"id": "gemini-3-pro-image", "label": "Nano Banana Pro", "price": "~0,13 €/photo",
+     "note": "qualité max (≈ app Gemini), jusqu'à 4K"},
+]
+
 
 # --------------------------------------------------------------------------
 # Sécurité opérateur (PIN simple, suffisant pour une animation de soirée)
@@ -153,6 +163,7 @@ def api_state():
         settings=store.settings(),
         photos=store.all_photos(),
         themes=THEMES,
+        models=MODELS,
         demo=gemini_client.is_demo_mode(),
         print_enabled=printer.is_enabled(),
         templates=compositor.list_templates(),
@@ -210,7 +221,7 @@ def api_generate():
         prompt, label = gemini_client.build_theme_prompt(theme), theme["label"]
     try:
         src = (CAPTURES_DIR / photo.capture_file).read_bytes()
-        out = gemini_client.stylize(src, prompt, demo_label=label)
+        out = gemini_client.stylize(src, prompt, demo_label=label, model=store.model)
         base_name = f"gen_{photo.id}_base.jpg"
         (GENERATED_DIR / base_name).write_bytes(out)
         store.update(photo, status="generated", base_file=base_name,
@@ -260,6 +271,16 @@ def api_custom_prompt():
     text = (request.get_json(silent=True) or {}).get("custom_prompt", "")
     store.set_custom_prompt(text)
     return jsonify(ok=True, custom_prompt=store.custom_prompt)
+
+
+@app.route("/api/model", methods=["POST"])
+@operator_required
+def api_model():
+    model = (request.get_json(silent=True) or {}).get("model", "").strip()
+    if not model:
+        return jsonify(error="Modèle manquant."), 400
+    store.set_model(model)
+    return jsonify(ok=True, model=store.model)
 
 
 @app.route("/api/screen", methods=["POST"])

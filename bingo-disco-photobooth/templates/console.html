@@ -45,6 +45,7 @@
     <span id="modePill" class="pill off">Mode photo : fermé</span>
     <span id="demoPill" class="pill demo" style="display:none">MODE DÉMO</span>
     <div class="controls">
+      <select id="model" title="Modèle Gemini (qualité / prix par photo)"></select>
       <select id="theme">
         {% for t in themes %}<option value="{{t.id}}">{{t.label}}</option>{% endfor %}
       </select>
@@ -79,6 +80,8 @@
     const H = { 'Content-Type':'application/json', 'X-Operator-Pin':PIN };
     const $ = s=>document.querySelector(s);
     let state = { settings:{}, photos:[], templates:[] };
+    let promptLoaded = false;   // n'écraser le champ prompt qu'au tout premier chargement
+    let modelLoaded = false;    // ne remplir la liste des modèles qu'une fois
 
     function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show');
       setTimeout(()=>t.classList.remove('show'),2500); }
@@ -101,6 +104,13 @@
       p.className = 'pill '+(on?'on':'off');
       $('#toggleMode').textContent = on?'Fermer le mode photo':'Ouvrir le mode photo';
       $('#demoPill').style.display = state.demo ? 'inline-block':'none';
+      // Liste des modèles (id + libellé + prix), remplie une seule fois.
+      const msel = $('#model');
+      if(!modelLoaded && state.models){
+        for(const m of state.models) msel.add(new Option(`${m.label} · ${m.price}`, m.id));
+        modelLoaded = true;
+      }
+      if(state.settings.model) msel.value = state.settings.model;
       if(state.settings.current_theme_id) $('#theme').value = state.settings.current_theme_id;
       const free = state.settings.theme_mode === 'free';
       $('#themeModeBtn').textContent = free ? 'Thème : libre (joueur)' : 'Thème : imposé';
@@ -109,7 +119,9 @@
       if(document.activeElement !== $('#eventText'))
         $('#eventText').value = state.settings.event_text || '';
       const cp = state.settings.custom_prompt || '';
-      if(document.activeElement !== $('#customPrompt')) $('#customPrompt').value = cp;
+      // On ne remplit le champ qu'une seule fois (au 1er chargement), pour ne JAMAIS
+      // écraser ce que l'opérateur est en train de taper/coller (bug du prompt effacé).
+      if(!promptLoaded){ $('#customPrompt').value = cp; promptLoaded = true; }
       $('#promptState').textContent = cp ? '— actif (prime sur le thème)' : '— inactif (thème utilisé)';
     }
 
@@ -157,6 +169,11 @@
     });
     $('#theme').addEventListener('change', async e=>{
       try { await api('/api/theme',{theme_id:e.target.value}); toast('Thème : '+themeLabel(e.target.value)); }
+      catch(err){ toast('❌ '+err.message); }
+    });
+    $('#model').addEventListener('change', async e=>{
+      try { await api('/api/model',{model:e.target.value});
+        toast('Modèle : '+e.target.options[e.target.selectedIndex].text); }
       catch(err){ toast('❌ '+err.message); }
     });
     $('#themeModeBtn').addEventListener('click', async ()=>{

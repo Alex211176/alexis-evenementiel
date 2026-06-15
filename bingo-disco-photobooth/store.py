@@ -7,6 +7,7 @@ Pas de base de données : les images sont sur disque, les métadonnées en RAM.
 from __future__ import annotations
 
 import json
+import os
 import queue
 import threading
 import time
@@ -92,6 +93,7 @@ class Store:
         self.theme_mode: str = "imposed"        # "imposed" (animateur) | "free" (joueur choisit)
         self.event_text: str = ""               # texte fixe incrusté sur chaque photo (nom / lieu)
         self.custom_prompt: str = ""             # prompt libre : s'il est défini, il prime sur le thème
+        self.model: str = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-image")  # modèle image
         self._load_persisted()
 
     # --- Persistance des réglages événement ---------------------------
@@ -102,6 +104,7 @@ class Store:
             self.theme_mode = data.get("theme_mode", self.theme_mode)
             self.event_text = data.get("event_text", self.event_text)
             self.custom_prompt = data.get("custom_prompt", self.custom_prompt)
+            self.model = data.get("model", self.model)
         except (FileNotFoundError, ValueError):
             pass
 
@@ -111,6 +114,7 @@ class Store:
             "theme_mode": self.theme_mode,
             "event_text": self.event_text,
             "custom_prompt": self.custom_prompt,
+            "model": self.model,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # --- Photos -------------------------------------------------------
@@ -175,6 +179,12 @@ class Store:
             self._save_persisted()
         self.bus.publish("custom_prompt_changed", {"custom_prompt": self.custom_prompt})
 
+    def set_model(self, model: str) -> None:
+        with self.lock:
+            self.model = model
+            self._save_persisted()
+        self.bus.publish("model_changed", {"model": self.model})
+
     def settings(self) -> dict:
         return {
             "photo_mode_enabled": self.photo_mode_enabled,
@@ -182,6 +192,7 @@ class Store:
             "theme_mode": self.theme_mode,
             "event_text": self.event_text,
             "custom_prompt": self.custom_prompt,
+            "model": self.model,
             "current_on_screen": self.current_on_screen,
         }
 

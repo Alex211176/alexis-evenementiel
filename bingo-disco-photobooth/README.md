@@ -186,6 +186,7 @@ musique).
 | POST | `/api/mode` | PIN | ouvrir/fermer le mode photo |
 | POST | `/api/theme` | PIN | changer le thème courant / par défaut |
 | POST | `/api/theme_mode` | PIN | basculer thème imposé / libre |
+| POST | `/api/model` | PIN | changer le modèle Gemini (Nano Banana / 2 / Pro) |
 | POST | `/api/event_text` | PIN | définir le texte incrusté (événement / lieu) |
 | POST | `/api/generate` | PIN | styliser via Gemini |
 | POST | `/api/template` | PIN | incruster dans un template |
