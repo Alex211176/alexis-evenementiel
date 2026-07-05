@@ -789,6 +789,45 @@
                 "machine_fumee",
                 "vertical"
             ]
+        },
+        "algam-lighting-fmg1500": {
+            "nom": "Algam Lighting FMG1500",
+            "marque": "Algam Lighting",
+            "modele": "FMG1500",
+            "categorie": "effet",
+            "sous_categorie": "machine_fumee",
+            "description_courte": "Machine à fumée 1500W RGB portable",
+            "description_longue": null,
+            "photo": "algam-lighting-fmg1500.png",
+            "puissance_w": 1500.0,
+            "poids_kg": 0,
+            "dimensions": null,
+            "dmx": false,
+            "connecteurs": [
+                "powerCON"
+            ],
+            "vente": {
+                "mode": "forfaitaire",
+                "unite_label": "unité",
+                "quantites_autorisees": {
+                    "type": "unique"
+                },
+                "prix_unitaire": 50.0
+            },
+            "quantite_possedee": 1,
+            "visible_dans": {
+                "devis": true,
+                "fiche_materiel": true,
+                "fiche_puissance": true,
+                "catalogue": true
+            },
+            "tags": [
+                "effet",
+                "piste_danse",
+                "machine_fumee",
+                "rgb",
+                "portable"
+            ]
         }
     }
 }
