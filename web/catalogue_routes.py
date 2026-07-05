@@ -125,6 +125,32 @@ def photo(filename):
     return Response(data, mimetype=mime, headers={"Cache-Control": "public, max-age=86400"})
 
 
+@catalogue_bp.route("/publier-vitrine", methods=["POST"])
+def publier_vitrine():
+    """Régénère et publie la page catalogue du site vitrine (GitHub Pages).
+
+    Lit le catalogue en prod (storage), régénère docs/catalogue.html + les
+    photos manquantes et pousse le tout sur le repo GitHub. Aucune écriture
+    sur Dropbox/prod.
+    """
+    import vitrine_publisher
+    try:
+        res = vitrine_publisher.publier(STORAGE)
+        if res.get("no_change"):
+            flash("Vitrine déjà à jour — aucun changement à publier.", "success")
+        else:
+            msg = f"Catalogue vitrine publié ✅ ({res['equipements']} équipements"
+            if res.get("photos_ajoutees"):
+                msg += f", {len(res['photos_ajoutees'])} photo(s) ajoutée(s)"
+            msg += "). Le site se met à jour dans 1–2 min."
+            flash(msg, "success")
+    except vitrine_publisher.VitrinePublishError as e:
+        flash(f"Publication vitrine échouée : {e}", "error")
+    except Exception as e:  # noqa: BLE001
+        flash(f"Erreur inattendue lors de la publication : {e}", "error")
+    return redirect(url_for("catalogue.equipements_list"))
+
+
 # ==================== ÉQUIPEMENTS ====================
 
 @catalogue_bp.route("/equipements")

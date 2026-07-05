@@ -192,9 +192,13 @@ def render_equip_card(eid, e, photos_rel="photos"):
         </article>"""
 
 
-def generate(base: Path, out_path: Path):
-    equipements, prestations, packs = load_catalogue(base)
+def build_html(equipements, prestations, packs) -> str:
+    """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
 
+    Fonction pure (aucune I/O disque) réutilisée par la CLI `generate()` ET par
+    la publication vitrine côté serveur (web/vitrine_publisher.py), qui lit le
+    catalogue depuis le storage (Dropbox) au lieu des fichiers locaux.
+    """
     # --- Section PACKS, groupés par catégorie ---
     packs_html = ""
     for cat, label in PACK_CATEGORIES.items():
@@ -229,9 +233,14 @@ def generate(base: Path, out_path: Path):
         equip_html += f'<div class="cat-group"><h3 class="cat-title">{escape(label)}</h3><div class="card-grid equip-grid">{cards}</div></div>'
 
     maj = datetime.now().strftime("%d/%m/%Y")
-    html = HTML_TEMPLATE.format(
+    return HTML_TEMPLATE.format(
         packs=packs_html, prestations=presta_html, equipements=equip_html, maj=maj
     )
+
+
+def generate(base: Path, out_path: Path):
+    equipements, prestations, packs = load_catalogue(base)
+    html = build_html(equipements, prestations, packs)
 
     out_path.write_text(html, encoding="utf-8")
 

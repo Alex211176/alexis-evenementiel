@@ -7,7 +7,11 @@
             <h1>Catalogue — Équipements</h1>
             <p class="subtitle">{% set total = namespace(n=0) %}{% for g in groupes.values() %}{% set total.n = total.n + g|length %}{% endfor %}{{ total.n }} équipement(s) dans {{ groupes|length }} catégorie(s)</p>
         </div>
-        <div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <form action="{{ url_for('catalogue.publier_vitrine') }}" method="post" class="inline-form"
+                  onsubmit="return confirm('Publier le catalogue actuel sur le site vitrine (alexisevenementiel.fr) ?\n\nLe site se met à jour automatiquement en 1–2 min.');">
+                <button class="btn" title="Régénère et met en ligne la page catalogue du site vitrine">🌐 Publier le catalogue vitrine</button>
+            </form>
             <a href="{{ url_for('catalogue.equipement_new') }}" class="btn btn-primary">+ Nouvel équipement</a>
         </div>
     </div>
