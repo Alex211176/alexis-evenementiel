@@ -423,6 +423,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
         <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
         <p class="maj">Catalogue mis à jour le {maj} · TVA non applicable, art. 293 B du CGI</p>
+        <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
+        <script>
+        (function(){{
+            fetch('https://api.counterapi.dev/v1/alexis-evenementiel/visites-site/up')
+                .then(function(r){{ return r.json(); }})
+                .then(function(d){{ var el = document.getElementById('vc-val'); if (el && d && typeof d.count === 'number') {{ el.textContent = d.count.toLocaleString('fr-FR'); }} }})
+                .catch(function(){{ var p = document.querySelector('.visit-counter'); if (p) {{ p.style.display = 'none'; }} }});
+        }})();
+        </script>
     </div>
 </footer>
 
