@@ -115,35 +115,47 @@
         display:flex; align-items:center; gap:8px; }
     #cart-fab .count{ background:var(--noir); color:var(--or-clair); border-radius:50px; min-width:22px; height:22px;
         display:inline-flex; align-items:center; justify-content:center; font-size:0.78rem; padding:0 6px; }
-    #cart-fab.empty{ display:none; }
+    #cart-fab .count.hide{ display:none; }
     #cart-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:300; opacity:0; pointer-events:none; transition:opacity .3s; }
     #cart-overlay.open{ opacity:1; pointer-events:auto; }
-    #cart-panel{ position:fixed; top:0; right:0; bottom:0; width:min(420px,100%); background:var(--noir-2);
+    #cart-panel{ position:fixed; top:0; right:0; bottom:0; width:min(440px,100%); background:var(--noir-2);
         border-left:1px solid var(--line); z-index:301; transform:translateX(100%); transition:transform .3s ease;
         display:flex; flex-direction:column; }
     #cart-panel.open{ transform:translateX(0); }
-    #cart-panel .ch{ padding:22px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
-    #cart-panel .ch h3{ font-size:1.5rem; color:var(--creme); }
+    #cart-panel .ch{ padding:20px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+    #cart-panel .ch h3{ font-size:1.45rem; color:var(--creme); }
     #cart-panel .ch button{ background:none; border:none; color:var(--gris-clair); font-size:1.7rem; cursor:pointer; line-height:1; }
-    #cart-items{ flex:1; overflow-y:auto; padding:12px 24px; }
-    .cart-empty{ color:var(--gris); text-align:center; padding:44px 10px; font-size:0.9rem; }
-    .ci{ padding:14px 0; border-bottom:1px solid var(--line); }
+    #cart-form{ display:flex; flex-direction:column; flex:1; min-height:0; }
+    #cart-scroll{ flex:1; overflow-y:auto; padding:6px 24px 12px; }
+    .brief-grp{ margin-bottom:4px; }
+    .brief-lbl{ font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--or);
+        margin:16px 0 11px; padding-top:13px; border-top:1px solid var(--line); }
+    .brief-grp:first-child .brief-lbl{ border-top:none; padding-top:2px; margin-top:2px; }
+    .brief-lbl span{ color:var(--gris); text-transform:none; letter-spacing:0.01em; font-size:0.82em; font-style:italic; }
+    .cart-empty{ color:var(--gris); text-align:center; padding:26px 10px; font-size:0.88rem; line-height:1.6; }
+    .ci{ padding:12px 0; border-bottom:1px solid var(--line); }
     .ci-nom{ font-size:0.95rem; color:var(--creme); }
     .ci-line{ font-size:0.8rem; color:var(--or-clair); margin-top:2px; }
     .ci-ctrl{ display:flex; align-items:center; gap:8px; margin-top:8px; }
     .ci-ctrl button{ width:26px; height:26px; border:1px solid var(--line); background:transparent; color:var(--creme); border-radius:4px; cursor:pointer; font-size:1rem; }
     .ci-qty{ min-width:22px; text-align:center; font-size:0.85rem; }
     .ci-del{ background:none; border:none; color:var(--gris); cursor:pointer; font-size:0.76rem; text-decoration:underline; margin-top:8px; display:inline-block; }
-    #cart-foot{ border-top:1px solid var(--line); padding:18px 24px 24px; }
-    .cart-total{ display:flex; justify-content:space-between; font-size:1.05rem; color:var(--creme); margin-bottom:4px; }
+    .cart-total{ display:flex; justify-content:space-between; font-size:1.02rem; color:var(--creme); margin:14px 0 4px; }
     .cart-total b{ font-family:'Cormorant Garamond',serif; color:var(--or-clair); font-size:1.3rem; }
-    .cart-note{ font-size:0.72rem; color:var(--gris); margin-bottom:14px; }
-    #cart-form{ display:grid; gap:10px; }
-    #cart-form input, #cart-form textarea{ width:100%; background:var(--noir-3); border:1px solid var(--line);
-        border-radius:4px; padding:10px 12px; color:var(--creme); font-family:'Jost',sans-serif; font-size:0.85rem; }
-    #cart-form .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    #cart-form button[type=submit]{ background:var(--or); color:var(--noir); border:none; border-radius:4px; padding:13px;
-        font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-weight:500; margin-top:4px; }
+    .cart-note{ font-size:0.72rem; color:var(--gris); }
+    #cart-scroll input, #cart-scroll select, #cart-scroll textarea{ width:100%; background:var(--noir-3);
+        border:1px solid var(--line); border-radius:4px; padding:10px 12px; color:var(--creme);
+        font-family:'Jost',sans-serif; font-size:0.85rem; margin-bottom:8px; }
+    #cart-scroll input[type=checkbox], #cart-scroll input[type=radio]{ width:auto; margin:0; }
+    .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .fld{ display:flex; flex-direction:column; gap:3px; }
+    .fld > span{ font-size:0.66rem; color:var(--gris); letter-spacing:0.05em; text-transform:uppercase; }
+    .sub-q{ font-size:0.83rem; color:var(--gris-clair); margin:6px 0 8px; }
+    .opt-row{ display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:6px; }
+    .chk{ display:inline-flex; align-items:center; gap:6px; font-size:0.83rem; color:var(--gris-clair); cursor:pointer; }
+    #cart-foot{ border-top:1px solid var(--line); padding:14px 24px 20px; }
+    #cart-foot button[type=submit]{ background:var(--or); color:var(--noir); border:none; border-radius:4px; width:100%; padding:14px;
+        font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-weight:500; }
     #cart-msg{ font-size:0.85rem; text-align:center; padding:8px 0 0; }
 
 </style>
@@ -665,25 +677,78 @@
 </footer>
 
 
-<button id="cart-fab" class="empty" onclick="AECart.open()" aria-label="Voir ma sélection">
-  &#128722; Mon devis <span class="count" id="cart-count">0</span>
+<button id="cart-fab" onclick="AECart.open()" aria-label="Demander un devis">
+  &#128722; Demander un devis <span class="count hide" id="cart-count">0</span>
 </button>
 <div id="cart-overlay" onclick="AECart.close()"></div>
-<aside id="cart-panel" aria-label="Sélection pour devis">
-  <div class="ch"><h3>Ma sélection</h3><button onclick="AECart.close()" aria-label="Fermer">&times;</button></div>
-  <div id="cart-items"></div>
-  <div id="cart-foot">
-    <div class="cart-total"><span>Estimation à la carte</span><b id="cart-subtotal">0 &euro;</b></div>
-    <div class="cart-note">Montant indicatif. Vous recevrez un <strong>prix pack personnalisé</strong> en réponse à votre demande.</div>
-    <form id="cart-form" onsubmit="return AECart.submit(event)">
-      <div class="row2"><input name="prenom" placeholder="Prénom *" required><input name="nom" placeholder="Nom"></div>
-      <div class="row2"><input name="email" type="email" placeholder="Email *" required><input name="tel" placeholder="Téléphone"></div>
-      <div class="row2"><input name="date" placeholder="Date de l'événement"><input name="lieu" placeholder="Lieu / ville"></div>
-      <textarea name="message" rows="2" placeholder="Précisions (optionnel)"></textarea>
+<aside id="cart-panel" aria-label="Demande de devis">
+  <div class="ch"><h3>Ma demande de devis</h3><button type="button" onclick="AECart.close()" aria-label="Fermer">&times;</button></div>
+  <form id="cart-form" onsubmit="return AECart.submit(event)">
+    <div id="cart-scroll">
+
+      <div class="brief-grp">
+        <div class="brief-lbl">Ma sélection</div>
+        <div id="cart-items"></div>
+        <div class="cart-total"><span>Estimation à la carte</span><b id="cart-subtotal">0 &euro;</b></div>
+        <div class="cart-note">Montant indicatif — vous recevrez un <strong>prix pack personnalisé</strong> adapté à votre événement.</div>
+      </div>
+
+      <div class="brief-grp">
+        <div class="brief-lbl">Votre événement <span>— quelques infos, on affine ensemble</span></div>
+        <select name="occasion">
+          <option value="">Type d'occasion (facultatif)…</option>
+          <option>Mariage</option><option>Anniversaire</option><option>Soirée d'entreprise</option>
+          <option>Association / comité des fêtes</option><option>Bar / restaurant</option><option>Autre</option>
+        </select>
+        <div class="row2">
+          <label class="fld"><span>Date (si connue)</span><input name="date" type="date"></label>
+          <label class="fld"><span>Nombre de personnes</span>
+            <select name="pers"><option value="">—</option><option>Moins de 50</option><option>50 à 100</option><option>100 à 200</option><option>200 à 300</option><option>Plus de 300</option></select>
+          </label>
+        </div>
+        <div class="row2">
+          <label class="fld"><span>Début (approx.)</span><input name="debut" type="time"></label>
+          <label class="fld"><span>Fin (approx.)</span><input name="fin" type="time"></label>
+        </div>
+        <input name="lieu" placeholder="Lieu / ville de l'événement">
+      </div>
+
+      <div class="brief-grp">
+        <div class="brief-lbl">Vos besoins</div>
+        <div class="sub-q">Quelles prestations vous intéressent ?</div>
+        <div class="opt-row">
+          <label class="chk"><input type="checkbox" name="presta" value="DJ / Animateur"> DJ / Animateur</label>
+          <label class="chk"><input type="checkbox" name="presta" value="Photographe"> Photographe</label>
+          <label class="chk"><input type="checkbox" name="presta" value="Photobooth"> Photobooth</label>
+          <label class="chk"><input type="checkbox" name="presta" value="Sonorisation"> Sonorisation</label>
+          <label class="chk"><input type="checkbox" name="presta" value="Éclairage"> Éclairage</label>
+          <label class="chk"><input type="checkbox" name="presta" value="Autre"> Autre</label>
+        </div>
+        <div class="sub-q">Sonorisation déjà sur place&nbsp;?</div>
+        <div class="opt-row">
+          <label class="chk"><input type="radio" name="son" value="Oui, déjà fournie"> Oui, déjà là</label>
+          <label class="chk"><input type="radio" name="son" value="Non, à prévoir"> Non, à prévoir</label>
+        </div>
+        <div class="sub-q">Éclairage déjà sur place&nbsp;?</div>
+        <div class="opt-row">
+          <label class="chk"><input type="radio" name="eclairage" value="Oui, déjà fourni"> Oui, déjà là</label>
+          <label class="chk"><input type="radio" name="eclairage" value="Non, à prévoir"> Non, à prévoir</label>
+        </div>
+      </div>
+
+      <div class="brief-grp">
+        <div class="brief-lbl">Vos coordonnées</div>
+        <div class="row2"><input name="prenom" placeholder="Prénom *" required><input name="nom" placeholder="Nom"></div>
+        <div class="row2"><input name="email" type="email" placeholder="Email *" required><input name="tel" placeholder="Téléphone"></div>
+        <textarea name="message" rows="2" placeholder="Un mot sur votre projet (optionnel)"></textarea>
+      </div>
+
+    </div>
+    <div id="cart-foot">
       <button type="submit">Envoyer ma demande de devis</button>
       <div id="cart-msg"></div>
-    </form>
-  </div>
+    </div>
+  </form>
 </aside>
 
 <script>
@@ -715,11 +780,9 @@
   function q(k,d){ var it=find(k); if(!it) return; it.qty+=d; if(it.qty<1) it.qty=1; if(it.qty>it.max) it.qty=it.max; save(); render(); }
   function del(k){ cart=cart.filter(function(it){ return it.key!==k; }); save(); render(); }
   function render(){ var w=document.getElementById('cart-items'); if(!w) return;
-    var fab=document.getElementById('cart-fab');
-    document.getElementById('cart-count').textContent=count();
-    if(fab) fab.classList.toggle('empty', cart.length===0);
-    if(cart.length===0){ w.innerHTML='<div class="cart-empty">Votre sélection est vide.<br>Ajoutez des packs, prestations ou du matériel.</div>';
-      document.getElementById('cart-subtotal').textContent='0 \u20ac'; return; }
+    var badge=document.getElementById('cart-count'); if(badge){ badge.textContent=count(); badge.classList.toggle('hide', count()===0); }
+    if(cart.length===0){ w.innerHTML='<div class="cart-empty">Aucun matériel ajouté pour l\'instant.<br>Ajoutez des packs, prestations ou du matériel — ou décrivez simplement votre besoin ci-dessous.</div>';
+      var st=document.getElementById('cart-subtotal'); if(st) st.textContent='0 \u20ac'; return; }
     var html='', sub=0;
     cart.forEach(function(it){ var lt=lineTotal(it), ctrl='';
       if(it.kind==='tranches'||it.kind==='unitaire'){ ctrl='<div class="ci-ctrl"><button onclick="AECart.q(\''+it.key+'\',-1)">\u2212</button><span class="ci-qty">'+it.qty+'</span><button onclick="AECart.q(\''+it.key+'\',1)">+</button></div>'; }
@@ -728,24 +791,43 @@
     w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
   function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
   function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
-  function summary(){ var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt; l.push('- '+it.nom+' x'+it.qty+' : '+p); });
-    l.push(''); l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\n'); }
+  function cartLines(){ if(cart.length===0) return '(aucun matériel sélectionné — à définir ensemble)';
+    var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt; l.push('- '+it.nom+' x'+it.qty+' : '+p); });
+    l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\n'); }
+  function briefText(d){ var L=[];
+    L.push('=== ÉVÉNEMENT ===');
+    if(d.occasion) L.push('Occasion : '+d.occasion);
+    if(d.date) L.push('Date : '+d.date);
+    if(d.debut||d.fin) L.push('Horaires : '+(d.debut||'?')+' \u2192 '+(d.fin||'?'));
+    if(d.lieu) L.push('Lieu : '+d.lieu);
+    if(d.pers) L.push('Nombre de personnes : '+d.pers);
+    L.push(''); L.push('=== BESOINS ===');
+    L.push('Prestations souhaitées : '+(d.prestations.length?d.prestations.join(', '):'à définir'));
+    if(d.son) L.push('Sonorisation sur place : '+d.son);
+    if(d.eclairage) L.push('Éclairage sur place : '+d.eclairage);
+    L.push(''); L.push('=== SÉLECTION ==='); L.push(cartLines());
+    return L.join('\n'); }
   function msg(t,err){ var m=document.getElementById('cart-msg'); if(m){ m.textContent=t; m.style.color=err?'#e88':'var(--or-clair)'; } }
   function submit(ev){ ev.preventDefault();
-    if(cart.length===0){ msg('Votre sélection est vide.', true); return false; }
-    var f=ev.target, g=function(n){ var el=f.querySelector('[name="'+n+'"]'); return el?el.value.trim():''; };
-    var data={ prenom:g('prenom'), nom:g('nom'), email:g('email'), tel:g('tel'), date:g('date'), lieu:g('lieu'), message:g('message') };
-    var sel=summary(), b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Envoi…';
+    var f=ev.target;
+    var g=function(n){ var el=f.querySelector('[name="'+n+'"]'); return el?(''+el.value).trim():''; };
+    var checks=function(n){ var out=[], els=f.querySelectorAll('[name="'+n+'"]:checked'); for(var i=0;i<els.length;i++) out.push(els[i].value); return out; };
+    var rad=function(n){ var el=f.querySelector('[name="'+n+'"]:checked'); return el?el.value:''; };
+    var d={ occasion:g('occasion'), date:g('date'), debut:g('debut'), fin:g('fin'), lieu:g('lieu'), pers:g('pers'),
+      prestations:checks('presta'), son:rad('son'), eclairage:rad('eclairage'),
+      prenom:g('prenom'), nom:g('nom'), email:g('email'), tel:g('tel'), message:g('message') };
+    var brief=briefText(d);
+    var b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Envoi…';
     var done=function(ok){ b.disabled=false; b.textContent='Envoyer ma demande de devis';
-      if(ok){ cart=[]; save(); render(); f.reset(); msg('Demande envoyée. Nous revenons vers vous avec un prix pack personnalisé.', false); }
+      if(ok){ cart=[]; save(); render(); f.reset(); msg('Demande envoyée. Nous revenons vers vous avec une proposition de prix pack.', false); }
       else{ msg('Échec de l\'envoi. Réessayez ou écrivez à '+CONTACT, true); } };
     if(FORMSPREE_ENDPOINT){
-      fetch(FORMSPREE_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
-        body:JSON.stringify(Object.assign({},data,{selection:sel,_subject:'Demande de devis — '+data.prenom+' '+data.nom}))})
+      var payload=Object.assign({}, d, {prestations:d.prestations.join(', '), selection:cartLines(), brief:brief, _subject:'Demande de devis — '+d.prenom+' '+d.nom});
+      fetch(FORMSPREE_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'}, body:JSON.stringify(payload)})
         .then(function(r){ done(r.ok); }).catch(function(){ done(false); });
     } else {
-      var body='Bonjour,\n\nVoici ma demande de devis :\n\n'+sel+'\n\n--\nPrénom : '+data.prenom+'\nNom : '+data.nom+'\nEmail : '+data.email+'\nTéléphone : '+data.tel+'\nDate : '+data.date+'\nLieu : '+data.lieu+'\nMessage : '+data.message+'\n';
-      window.location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent('Demande de devis — '+data.prenom+' '+data.nom)+'&body='+encodeURIComponent(body);
+      var body='Bonjour,\n\nVoici ma demande de devis :\n\n'+brief+'\n\n=== CONTACT ===\n'+d.prenom+' '+d.nom+'\nEmail : '+d.email+'\nTéléphone : '+d.tel+(d.message?('\nMessage : '+d.message):'')+'\n';
+      window.location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent('Demande de devis — '+d.prenom+' '+d.nom)+'&body='+encodeURIComponent(body);
       setTimeout(function(){ done(true); }, 500);
     }
     return false; }
