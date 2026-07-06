@@ -269,7 +269,8 @@ def build_html(equipements, prestations, packs) -> str:
                         for pid, p in cat_packs)
         if cat == "photobooth":
             cards += IA_PROMO_CARD
-        packs_html += f'<div class="cat-group"><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
+        gid = ' id="photobooth"' if cat == "photobooth" else ''
+        packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
     # --- Section PRESTATIONS (vitrine seulement), avec prix > 0 ou sur devis ---
     presta_html = ""
@@ -280,7 +281,8 @@ def build_html(equipements, prestations, packs) -> str:
             continue
         cat_pr.sort(key=lambda x: (-(x[1].get("prix", 0) or 0), x[1].get("nom", "")))
         cards = "".join(render_presta_card(pid, p) for pid, p in cat_pr)
-        presta_html += f'<div class="cat-group"><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
+        gid = ' id="photo-video"' if cat == "captation" else ''
+        presta_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
     # --- Section LOCATION (équipements), groupés par catégorie ---
     equip_html = ""
@@ -380,7 +382,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .section-head h2 .italic {{ font-style: italic; color: var(--or-clair); }}
     .section-head p {{ color: var(--gris-clair); margin-top: 12px; max-width: 520px; margin-left: auto; margin-right: auto; }}
 
-    .cat-group {{ margin-bottom: 50px; }}
+    .cat-group {{ margin-bottom: 50px; scroll-margin-top: 120px; }}
     .cat-title {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }}
 
     .card-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }}
