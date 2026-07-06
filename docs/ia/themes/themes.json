@@ -1,8 +1,8 @@
 {
-  "_doc": "Registre des thèmes Photobooth IA. Un dossier par thème sous docs/ia/themes/<slug>/ avec apres.jpg (obligatoire), avant.jpg et montage.jpg (optionnels). Ce fichier donne le libellé affiché et l'ordre. Voir README.md.",
+  "_doc": "Registre des thèmes Photobooth IA. Un dossier par thème sous docs/ia/themes/<slug>/. Pour chaque rôle (avant, apres, montage) : le nom du fichier (ex: 'avant.jpg') ou null s'il n'existe pas. La galerie avant/après affiche automatiquement les thèmes ayant À LA FOIS avant et apres. Voir README.md.",
   "themes": [
-    { "slug": "foot", "label": "Supporter / Sport", "images": { "apres": false, "avant": false, "montage": false } },
-    { "slug": "disco", "label": "Rétro & Disco", "images": { "apres": false, "avant": false, "montage": false } },
-    { "slug": "cartoon", "label": "Cartoon / 3D", "images": { "apres": false, "avant": false, "montage": false } }
+    { "slug": "disco",   "label": "Rétro & Disco",     "avant": "avant.jpg", "apres": "apres.jpg", "montage": null },
+    { "slug": "cartoon", "label": "Cartoon / 3D",      "avant": "avant.jpg", "apres": "apres.jpg", "montage": null },
+    { "slug": "foot",    "label": "Supporter / Sport", "avant": null,        "apres": null,        "montage": null }
   ]
 }

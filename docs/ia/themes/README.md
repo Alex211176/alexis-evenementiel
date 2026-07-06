@@ -29,8 +29,16 @@ docs/ia/themes/mariage/montage.jpg
 
 ## Pour ajouter un thème
 
-1. Créer le dossier `docs/ia/themes/<slug>/` et y déposer au moins `apres.jpg`.
-2. Ajouter une entrée dans `themes.json` (slug + libellé).
+1. Créer le dossier `docs/ia/themes/<slug>/` et y déposer les images (`avant.jpg`, `apres.jpg`…).
+2. Ajouter/compléter l'entrée dans `themes.json` :
+   pour chaque rôle, mettre le **nom du fichier** (ex : `"avant.jpg"`) ou `null` s'il n'existe pas.
+
+   ```json
+   { "slug": "disco", "label": "Rétro & Disco", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null }
+   ```
+
+> La galerie **avant / après** de la page affiche automatiquement les thèmes qui ont
+> **à la fois** `avant` **et** `apres`. Un thème sans les deux est simplement ignoré.
 
 > Astuce : tu peux simplement m'envoyer les images en me disant
 > « thème **foot** : voici l'avant et l'après » — je les range et je nomme pour toi.
