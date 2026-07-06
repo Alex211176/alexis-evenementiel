@@ -250,6 +250,18 @@ IA_PROMO_CARD = """
             </a>
         </article>"""
 
+TEMPLATES_PROMO_CARD = """
+        <article class="card ia-promo">
+            <a href="templates-photobooth.html">
+                <div class="ia-badge">850+ designs</div>
+                <div class="card-head">
+                    <h3>Templates <span style="color:var(--or-clair)">photobooth</span></h3>
+                </div>
+                <p class="card-desc">Parcourez notre bibliothèque de plus de 850 mises en page (mariage, anniversaire, fêtes…) pour personnaliser les impressions de vos invités.</p>
+                <span class="ia-cta">Parcourir les templates →</span>
+            </a>
+        </article>"""
+
 
 def build_html(equipements, prestations, packs) -> str:
     """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
@@ -268,7 +280,7 @@ def build_html(equipements, prestations, packs) -> str:
         cards = "".join(render_pack_card(pid, p, packs, equipements, prestations)
                         for pid, p in cat_packs)
         if cat == "photobooth":
-            cards += IA_PROMO_CARD
+            cards += IA_PROMO_CARD + TEMPLATES_PROMO_CARD
         gid = ' id="photobooth"' if cat == "photobooth" else ''
         packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
@@ -443,6 +455,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="nav-links">
             <a href="index.html#prestations">Prestations</a>
             <a href="photobooth-ia.html">Photobooth IA</a>
+            <a href="templates-photobooth.html">Templates</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="index.html#realisations">Réalisations</a>
             <a href="index.html#contact">Contact</a>
