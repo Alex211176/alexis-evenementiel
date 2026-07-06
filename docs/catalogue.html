@@ -102,6 +102,50 @@
         section { padding: 60px 0; }
         .equip-grid { grid-template-columns: 1fr; }
     }
+
+    .add-cart{ margin-top:16px; width:100%; background:transparent; color:var(--or-clair);
+        border:1px solid var(--or-sombre); border-radius:4px; padding:10px 14px; font-family:'Jost',sans-serif;
+        font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all .25s; }
+    .add-cart:hover{ background:var(--or); color:var(--noir); border-color:var(--or); }
+    .add-cart.added{ background:var(--or-sombre); color:var(--creme); border-color:var(--or-sombre); }
+    .equip-card .add-cart{ margin:auto 20px 20px; width:calc(100% - 40px); }
+    #cart-fab{ position:fixed; bottom:24px; right:24px; z-index:200; background:var(--or); color:var(--noir);
+        border:none; border-radius:50px; padding:14px 22px; font-family:'Jost',sans-serif; font-size:0.85rem;
+        font-weight:500; letter-spacing:0.06em; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,.45);
+        display:flex; align-items:center; gap:8px; }
+    #cart-fab .count{ background:var(--noir); color:var(--or-clair); border-radius:50px; min-width:22px; height:22px;
+        display:inline-flex; align-items:center; justify-content:center; font-size:0.78rem; padding:0 6px; }
+    #cart-fab.empty{ display:none; }
+    #cart-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:300; opacity:0; pointer-events:none; transition:opacity .3s; }
+    #cart-overlay.open{ opacity:1; pointer-events:auto; }
+    #cart-panel{ position:fixed; top:0; right:0; bottom:0; width:min(420px,100%); background:var(--noir-2);
+        border-left:1px solid var(--line); z-index:301; transform:translateX(100%); transition:transform .3s ease;
+        display:flex; flex-direction:column; }
+    #cart-panel.open{ transform:translateX(0); }
+    #cart-panel .ch{ padding:22px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+    #cart-panel .ch h3{ font-size:1.5rem; color:var(--creme); }
+    #cart-panel .ch button{ background:none; border:none; color:var(--gris-clair); font-size:1.7rem; cursor:pointer; line-height:1; }
+    #cart-items{ flex:1; overflow-y:auto; padding:12px 24px; }
+    .cart-empty{ color:var(--gris); text-align:center; padding:44px 10px; font-size:0.9rem; }
+    .ci{ padding:14px 0; border-bottom:1px solid var(--line); }
+    .ci-nom{ font-size:0.95rem; color:var(--creme); }
+    .ci-line{ font-size:0.8rem; color:var(--or-clair); margin-top:2px; }
+    .ci-ctrl{ display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .ci-ctrl button{ width:26px; height:26px; border:1px solid var(--line); background:transparent; color:var(--creme); border-radius:4px; cursor:pointer; font-size:1rem; }
+    .ci-qty{ min-width:22px; text-align:center; font-size:0.85rem; }
+    .ci-del{ background:none; border:none; color:var(--gris); cursor:pointer; font-size:0.76rem; text-decoration:underline; margin-top:8px; display:inline-block; }
+    #cart-foot{ border-top:1px solid var(--line); padding:18px 24px 24px; }
+    .cart-total{ display:flex; justify-content:space-between; font-size:1.05rem; color:var(--creme); margin-bottom:4px; }
+    .cart-total b{ font-family:'Cormorant Garamond',serif; color:var(--or-clair); font-size:1.3rem; }
+    .cart-note{ font-size:0.72rem; color:var(--gris); margin-bottom:14px; }
+    #cart-form{ display:grid; gap:10px; }
+    #cart-form input, #cart-form textarea{ width:100%; background:var(--noir-3); border:1px solid var(--line);
+        border-radius:4px; padding:10px 12px; color:var(--creme); font-family:'Jost',sans-serif; font-size:0.85rem; }
+    #cart-form .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    #cart-form button[type=submit]{ background:var(--or); color:var(--noir); border:none; border-radius:4px; padding:13px;
+        font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-weight:500; margin-top:4px; }
+    #cart-msg{ font-size:0.85rem; text-align:center; padding:8px 0 0; }
+
 </style>
 </head>
 <body>
@@ -153,6 +197,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>Animation DJ — apéritif (≈ 3h)</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="signature-cocktail" data-type="pack" data-nom="Signature Cocktail" data-kind="fixe" data-max="1" data-unite="unité" data-prix="500">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -165,6 +210,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Chauvet GigBar Move + ILS</li><li>1× Bose S1 Pro</li><li>Animation DJ — apéritif (≈ 3h)</li><li>Playlist personnalisée &amp; collaborative</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="full-soiree" data-type="pack" data-nom="Full Soirée" data-kind="fixe" data-max="1" data-unite="unité" data-prix="650">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -177,6 +223,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet Swarm FX</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>1× Chauvet GigBar Move + ILS</li><li>1× Bose S1 Pro</li><li>1× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Station énergétique portable EcoFlow 768Wh 800W</li><li>Animation DJ — apéritif (≈ 3h)</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo basique</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="immersion" data-type="pack" data-nom="Immersion" data-kind="fixe" data-max="1" data-unite="unité" data-prix="800">+ Ajouter au devis</button>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Mariage</h3><div class="card-grid">
         <article class="card pack-card">
             <div class="card-head">
@@ -189,6 +236,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="essentiel" data-type="pack" data-nom="Essentiel" data-kind="fixe" data-max="1" data-unite="unité" data-prix="1000">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -201,6 +249,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>2× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow 768Wh 800W</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="confort" data-type="pack" data-nom="Confort" data-kind="fixe" data-max="1" data-unite="unité" data-prix="1300.0">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -213,6 +262,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>2× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow 768Wh 800W</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360°</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="premium" data-type="pack" data-nom="Premium" data-kind="fixe" data-max="1" data-unite="unité" data-prix="1600">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -225,6 +275,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>2× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow 768Wh 800W</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360°</li><li>Clip vidéo résumé cinématique</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="cinematique" data-type="pack" data-nom="Cinématique" data-kind="fixe" data-max="1" data-unite="unité" data-prix="2000">+ Ajouter au devis</button>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
         <article class="card pack-card">
             <div class="card-head">
@@ -237,6 +288,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Photobooth</li><li>Fond photo + accessoires fun</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="pack-photobooth-basic" data-type="pack" data-nom="Photobooth Basic" data-kind="fixe" data-max="1" data-unite="unité" data-prix="150.0">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -249,6 +301,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Photobooth</li><li>Fond photo + accessoires fun</li><li>100 impressions photobooth incluses</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="pack-photobooth-classic-100" data-type="pack" data-nom="Photobooth Classic 100 impressions" data-kind="fixe" data-max="1" data-unite="unité" data-prix="200.0">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -261,6 +314,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Photobooth</li><li>1× Imprimante DNP DS620</li><li>Fond photo + accessoires fun</li><li>200 impressions photobooth incluses</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="pack-photobooth-classic-200" data-type="pack" data-nom="Photobooth Classic 200 impressions" data-kind="fixe" data-max="1" data-unite="unité" data-prix="250.0">+ Ajouter au devis</button>
         </article>
         <article class="card pack-card">
             <div class="card-head">
@@ -273,6 +327,7 @@
                 <summary>Voir le contenu</summary>
                 <ul><li>1× Photobooth</li><li>1× Imprimante DNP DS620</li><li>Fond photo + accessoires fun</li><li>Impressions photobooth illimitées</li></ul>
             </details>
+            <button type="button" class="add-cart" data-id="pack-photobooth-illimite" data-type="pack" data-nom="Photobooth Illimité" data-kind="fixe" data-max="1" data-unite="unité" data-prix="300.0">+ Ajouter au devis</button>
         </article></div></div>
     </div>
 </section>
@@ -291,6 +346,7 @@
                 <div class="price">550 €</div>
             </div>
             <p class="card-desc">Cérémonie, groupes et couple, post-traitement inclus</p>
+            <button type="button" class="add-cart" data-id="pack-photo-mariage" data-type="presta" data-nom="Pack Photo Mariage" data-kind="fixe" data-max="1" data-unite="unité" data-prix="550.0">+ Ajouter au devis</button>
         </article>
         <article class="card presta-card">
             <div class="card-head">
@@ -298,6 +354,7 @@
                 <div class="price">550 €</div>
             </div>
             <p class="card-desc">Captation cérémonie &amp; soirée version 360° pour immersion</p>
+            <button type="button" class="add-cart" data-id="pack-video-mariage" data-type="presta" data-nom="Pack Vidéo Mariage 360°" data-kind="fixe" data-max="1" data-unite="unité" data-prix="550.0">+ Ajouter au devis</button>
         </article>
         <article class="card presta-card">
             <div class="card-head">
@@ -305,6 +362,7 @@
                 <div class="price">150 €</div>
             </div>
             <p class="card-desc">Moments clés de l&#x27;événement : apéritif, repas, soirée dansante. Pas de post-traitement.</p>
+            <button type="button" class="add-cart" data-id="pack-photo-soiree" data-type="presta" data-nom="Pack Photo Soirée" data-kind="fixe" data-max="1" data-unite="unité" data-prix="150">+ Ajouter au devis</button>
         </article>
         <article class="card presta-card">
             <div class="card-head">
@@ -312,6 +370,7 @@
                 <div class="price">Sur devis</div>
             </div>
             <p class="card-desc">Captation immersive 360°</p>
+            <button type="button" class="add-cart" data-id="captation-video-360" data-type="presta" data-nom="Captation vidéo 360°" data-kind="devis" data-max="1" data-unite="unité">+ Ajouter au devis</button>
         </article></div></div>
     </div>
 </section>
@@ -331,6 +390,7 @@
                 <h3>Bose F1 (système complet)</h3>
                 <p class="card-desc">Sonorisation pour plus de 100 personnes</p>
                 <div class="price">200 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="bose-f1-systeme" data-type="equip" data-nom="Bose F1 (système complet)" data-kind="fixe" data-max="1" data-unite="système" data-prix="200.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -340,6 +400,7 @@
                 <h3>Bose S1 Pro</h3>
                 <p class="card-desc">Sonorisation Mairie, Église, vin d&#x27;honneur (&lt;50 pers.), fin de soirée</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="bose-s1" data-type="equip" data-nom="Bose S1 Pro" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -349,6 +410,7 @@
                 <h3>RCF ART 915 (paire)</h3>
                 <p class="card-desc">Sonorisation vin d&#x27;honneur pour plus de 50 personnes</p>
                 <div class="price">100 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="rcf-915" data-type="equip" data-nom="RCF ART 915 (paire)" data-kind="fixe" data-max="1" data-unite="paire" data-prix="100">+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Régie DJ</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -358,6 +420,7 @@
                 <h3>Denon SC Live 4</h3>
                 <p class="card-desc">Régie DJ standalone 4 platines pour soirée dansante</p>
                 <div class="price">70 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="denon-sc-live-4" data-type="equip" data-nom="Denon SC Live 4" data-kind="fixe" data-max="1" data-unite="unité" data-prix="70.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -367,6 +430,7 @@
                 <h3>Numark Mixstream Pro Go</h3>
                 <p class="card-desc">Régie DJ portable sur batterie pour vin d&#x27;honneur, cérémonies</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="numark-mixstream-pro-go" data-type="equip" data-nom="Numark Mixstream Pro Go" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50">+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Lumière</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -376,6 +440,7 @@
                 <h3>Boule à facettes 50 cm + spot LED</h3>
                 <p class="card-desc">Boule à facettes 50 cm motorisée avec spot LED dédié</p>
                 <div class="price">100 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="boule-facettes-spot" data-type="equip" data-nom="Boule à facettes 50 cm + spot LED" data-kind="fixe" data-max="1" data-unite="set" data-prix="100">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -385,6 +450,7 @@
                 <h3>Chauvet Colorband T3BT</h3>
                 <p class="card-desc">Barre LED architecturale pour éclairage piste de danse</p>
                 <div class="price">à partir de 30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-colorband-t3bt" data-type="equip" data-nom="Chauvet Colorband T3BT" data-kind="tranches" data-max="2" data-unite="unité" data-paliers='[{"qte": 1, "prix_forfait": 30}, {"qte": 2, "prix_forfait": 55}]'>+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -394,6 +460,7 @@
                 <h3>Chauvet GigBar Move + ILS</h3>
                 <p class="card-desc">Système 5-en-1 : moving heads, derbies, washes, laser, strobes</p>
                 <div class="price">à partir de 50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-gigbar-move-ils" data-type="equip" data-nom="Chauvet GigBar Move + ILS" data-kind="tranches" data-max="2" data-unite="unité" data-paliers='[{"qte": 1, "prix_forfait": 50}, {"qte": 2, "prix_forfait": 90}]'>+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -403,6 +470,7 @@
                 <h3>Chauvet ILS Command</h3>
                 <p class="card-desc">Contrôleur ILS pour piloter l&#x27;éclairage Chauvet sans console DMX</p>
                 <div class="price">20 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-ils-command" data-type="equip" data-nom="Chauvet ILS Command" data-kind="fixe" data-max="1" data-unite="unité" data-prix="20.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -412,6 +480,7 @@
                 <h3>Chauvet Swarm FX</h3>
                 <p class="card-desc">Effet multi-fonctions 5-en-1 pour piste de danse</p>
                 <div class="price">à partir de 30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-swarm-fx" data-type="equip" data-nom="Chauvet Swarm FX" data-kind="tranches" data-max="2" data-unite="unité" data-paliers='[{"qte": 1, "prix_forfait": 30}, {"qte": 2, "prix_forfait": 55}]'>+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -421,6 +490,7 @@
                 <h3>Lyre Imitador 160 ILS</h3>
                 <p class="card-desc">Lyre à tête mobile pour éclairage dynamique de piste</p>
                 <div class="price">à partir de 50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="lyre-imitador-160-ils" data-type="equip" data-nom="Lyre Imitador 160 ILS" data-kind="tranches" data-max="4" data-unite="unité" data-paliers='[{"prix_forfait": 50, "qte": 1}, {"prix_forfait": 90, "qte": 2}, {"prix_forfait": 120, "qte": 3}, {"prix_forfait": 140, "qte": 4}]'>+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -430,6 +500,7 @@
                 <h3>Set de 4 PAR H9 (architectural)</h3>
                 <p class="card-desc">Éclairage architectural sur batterie — 4 PARs LED autonomes</p>
                 <div class="price">à partir de 70 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-h9-set" data-type="equip" data-nom="Set de 4 PAR H9 (architectural)" data-kind="tranches" data-max="2" data-unite="set de 4" data-paliers='[{"prix_forfait": 70, "qte": 1}, {"prix_forfait": 120, "qte": 2}]'>+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Effets</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -439,6 +510,7 @@
                 <h3>Algam Lighting FMG1500</h3>
                 <p class="card-desc">Machine à fumée 1500W RGB portable</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="algam-lighting-fmg1500" data-type="equip" data-nom="Algam Lighting FMG1500" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -448,6 +520,7 @@
                 <h3>Chauvet Geyser T6</h3>
                 <p class="card-desc">Machine à fumée verticale (effet pyrotechnique) avec 6 LEDs RGB</p>
                 <div class="price">à partir de 30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="chauvet-geyser-t6" data-type="equip" data-nom="Chauvet Geyser T6" data-kind="tranches" data-max="2" data-unite="unité" data-paliers='[{"prix_forfait": 30, "qte": 1}, {"prix_forfait": 50, "qte": 2}]'>+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -457,6 +530,7 @@
                 <h3>Martin Magnum 2500 (machine à brouillard)</h3>
                 <p class="card-desc">Machine à brouillard pour sublimer l&#x27;éclairage de la piste (inodore)</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="martin-magnum-2500" data-type="equip" data-nom="Martin Magnum 2500 (machine à brouillard)" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50">+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Vidéo</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -466,6 +540,7 @@
                 <h3>Insta360 X5</h3>
                 <p class="card-desc">Caméra 360° pour captation immersive</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="insta360-x5" data-type="equip" data-nom="Insta360 X5" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -475,6 +550,7 @@
                 <h3>Écran TV 42 pouces sur trépied</h3>
                 <p class="card-desc">Écran TV 42 pouces sur trépied</p>
                 <div class="price">30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="ecran-tv-42-pouces-sur-trepied" data-type="equip" data-nom="Écran TV 42 pouces sur trépied" data-kind="fixe" data-max="1" data-unite="unité" data-prix="30.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -484,6 +560,7 @@
                 <h3>Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</h3>
                 <p class="card-desc">Écran géant + vidéoprojecteur ultra courte focale (photos, paroles, diaporamas)</p>
                 <div class="price">250 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="ecran-projection-150" data-type="equip" data-nom="Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF" data-kind="fixe" data-max="1" data-unite="ensemble" data-prix="250">+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Photo / Booth</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -493,6 +570,7 @@
                 <h3>Canon EOS R6 Mark II</h3>
                 <p class="card-desc">Appareil photo hybride plein format pour captation événementielle</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="canon-r6-mark-ii" data-type="equip" data-nom="Canon EOS R6 Mark II" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -502,6 +580,7 @@
                 <h3>Imprimante Canon Selphy CP</h3>
                 <p class="card-desc">Imprimante à sublimation thermique compacte</p>
                 <div class="price">30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="imprimante-canon-selphy" data-type="equip" data-nom="Imprimante Canon Selphy CP" data-kind="fixe" data-max="1" data-unite="unité" data-prix="30.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -511,6 +590,7 @@
                 <h3>Imprimante DNP DS620</h3>
                 <p class="card-desc">Imprimante professionnelle à sublimation thermique grande capacité</p>
                 <div class="price">70 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="imprimante-dnp" data-type="equip" data-nom="Imprimante DNP DS620" data-kind="fixe" data-max="1" data-unite="unité" data-prix="70.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -520,6 +600,7 @@
                 <h3>Mobile Booth</h3>
                 <p class="card-desc">Rig mobile pour photobooth itinérant (smartphone + éclairage LED)</p>
                 <div class="price">100 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="mobile-booth" data-type="equip" data-nom="Mobile Booth" data-kind="fixe" data-max="1" data-unite="set" data-prix="100">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -529,6 +610,7 @@
                 <h3>Photobooth</h3>
                 <p class="card-desc">Photobooth complet sur trépied, fond photo + accessoires fun</p>
                 <div class="price">150 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="photobooth-canon-5d" data-type="equip" data-nom="Photobooth" data-kind="fixe" data-max="1" data-unite="set" data-prix="150.0">+ Ajouter au devis</button>
             </div>
         </article></div></div><div class="cat-group"><h3 class="cat-title">Énergie</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
@@ -538,6 +620,7 @@
                 <h3>EcoFlow Delta 3 Max — 2048 Wh / 3000 W</h3>
                 <p class="card-desc">Station électrique portable 2048 Wh (2 kWh), 4 prises + USB-C 140W</p>
                 <div class="price">70 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="ecoflow-delta-3-max" data-type="equip" data-nom="EcoFlow Delta 3 Max — 2048 Wh / 3000 W" data-kind="fixe" data-max="1" data-unite="unité" data-prix="70.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -547,6 +630,7 @@
                 <h3>EcoFlow Panneau solaire 220W bifacial</h3>
                 <p class="card-desc">Panneau solaire portable 220W bifacial (+155W à l&#x27;arrière), pliable</p>
                 <div class="price">30 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="ecoflow-panneau-solaire-220w-bifacial" data-type="equip" data-nom="EcoFlow Panneau solaire 220W bifacial" data-kind="fixe" data-max="1" data-unite="unité" data-prix="30.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -556,6 +640,7 @@
                 <h3>Station énergétique portable EcoFlow 768Wh 800W</h3>
                 <p class="card-desc">Station portable pour s&#x27;affranchir de tout problème électrique</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="ecoflow-station-energetique" data-type="equip" data-nom="Station énergétique portable EcoFlow 768Wh 800W" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
         </article></div></div>
     </div>
@@ -578,6 +663,98 @@
         </script>
     </div>
 </footer>
+
+
+<button id="cart-fab" class="empty" onclick="AECart.open()" aria-label="Voir ma sélection">
+  &#128722; Mon devis <span class="count" id="cart-count">0</span>
+</button>
+<div id="cart-overlay" onclick="AECart.close()"></div>
+<aside id="cart-panel" aria-label="Sélection pour devis">
+  <div class="ch"><h3>Ma sélection</h3><button onclick="AECart.close()" aria-label="Fermer">&times;</button></div>
+  <div id="cart-items"></div>
+  <div id="cart-foot">
+    <div class="cart-total"><span>Estimation à la carte</span><b id="cart-subtotal">0 &euro;</b></div>
+    <div class="cart-note">Montant indicatif. Vous recevrez un <strong>prix pack personnalisé</strong> en réponse à votre demande.</div>
+    <form id="cart-form" onsubmit="return AECart.submit(event)">
+      <div class="row2"><input name="prenom" placeholder="Prénom *" required><input name="nom" placeholder="Nom"></div>
+      <div class="row2"><input name="email" type="email" placeholder="Email *" required><input name="tel" placeholder="Téléphone"></div>
+      <div class="row2"><input name="date" placeholder="Date de l'événement"><input name="lieu" placeholder="Lieu / ville"></div>
+      <textarea name="message" rows="2" placeholder="Précisions (optionnel)"></textarea>
+      <button type="submit">Envoyer ma demande de devis</button>
+      <div id="cart-msg"></div>
+    </form>
+  </div>
+</aside>
+
+<script>
+
+(function(){
+  var KEY='ae_cart_v1';
+  var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
+  var CONTACT='contact@alexisevenementiel.fr';
+  var cart=[]; try{ cart=JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ cart=[]; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(cart)); }catch(e){} }
+  function fmt(n){ n=Math.round(n*100)/100; return (n%1===0? n.toFixed(0): n.toFixed(2).replace('.',',')) + ' \u20ac'; }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function palierPrice(p, q){ if(!p||!p.length) return 0; var b=null;
+    for(var i=0;i<p.length;i++){ if(p[i].qte<=q && (b===null||p[i].qte>b.qte)) b=p[i]; }
+    if(!b){ b=p[0]; for(var j=0;j<p.length;j++){ if(p[j].qte<b.qte) b=p[j]; } }
+    return b.prix_forfait||0; }
+  function lineTotal(it){ if(it.kind==='devis') return null;
+    if(it.kind==='tranches') return palierPrice(it.paliers, it.qty);
+    if(it.kind==='unitaire') return (it.prix||0)*it.qty; return it.prix||0; }
+  function count(){ var c=0; cart.forEach(function(it){ c+=it.qty; }); return c; }
+  function find(k){ for(var i=0;i<cart.length;i++){ if(cart[i].key===k) return cart[i]; } return null; }
+  function add(btn){ var d=btn.dataset, key=d.type+':'+d.id, it=find(key), max=parseInt(d.max)||1;
+    if(it){ if(it.qty<max) it.qty++; }
+    else{ var pal=null; if(d.paliers){ try{ pal=JSON.parse(d.paliers); }catch(e){} }
+      cart.push({key:key,type:d.type,id:d.id,nom:d.nom,kind:d.kind,prix:parseFloat(d.prix)||0,paliers:pal,max:max,unite:d.unite||'unité',qty:1}); }
+    save(); render(); pulse(btn); }
+  function pulse(btn){ btn.classList.add('added'); var t=btn.textContent; btn.textContent='\u2713 Ajouté';
+    setTimeout(function(){ btn.classList.remove('added'); btn.textContent='+ Ajouter au devis'; }, 1100); }
+  function q(k,d){ var it=find(k); if(!it) return; it.qty+=d; if(it.qty<1) it.qty=1; if(it.qty>it.max) it.qty=it.max; save(); render(); }
+  function del(k){ cart=cart.filter(function(it){ return it.key!==k; }); save(); render(); }
+  function render(){ var w=document.getElementById('cart-items'); if(!w) return;
+    var fab=document.getElementById('cart-fab');
+    document.getElementById('cart-count').textContent=count();
+    if(fab) fab.classList.toggle('empty', cart.length===0);
+    if(cart.length===0){ w.innerHTML='<div class="cart-empty">Votre sélection est vide.<br>Ajoutez des packs, prestations ou du matériel.</div>';
+      document.getElementById('cart-subtotal').textContent='0 \u20ac'; return; }
+    var html='', sub=0;
+    cart.forEach(function(it){ var lt=lineTotal(it), ctrl='';
+      if(it.kind==='tranches'||it.kind==='unitaire'){ ctrl='<div class="ci-ctrl"><button onclick="AECart.q(\''+it.key+'\',-1)">\u2212</button><span class="ci-qty">'+it.qty+'</span><button onclick="AECart.q(\''+it.key+'\',1)">+</button></div>'; }
+      var txt=(lt===null)?'Sur devis':fmt(lt)+((it.qty>1&&it.kind==='unitaire')?' ('+it.qty+'\u00d7)':''); if(lt!==null) sub+=lt;
+      html+='<div class="ci"><div class="ci-nom">'+esc(it.nom)+'</div><div class="ci-line">'+txt+'</div>'+ctrl+'<button class="ci-del" onclick="AECart.del(\''+it.key+'\')">Retirer</button></div>'; });
+    w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
+  function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
+  function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
+  function summary(){ var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt; l.push('- '+it.nom+' x'+it.qty+' : '+p); });
+    l.push(''); l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\n'); }
+  function msg(t,err){ var m=document.getElementById('cart-msg'); if(m){ m.textContent=t; m.style.color=err?'#e88':'var(--or-clair)'; } }
+  function submit(ev){ ev.preventDefault();
+    if(cart.length===0){ msg('Votre sélection est vide.', true); return false; }
+    var f=ev.target, g=function(n){ var el=f.querySelector('[name="'+n+'"]'); return el?el.value.trim():''; };
+    var data={ prenom:g('prenom'), nom:g('nom'), email:g('email'), tel:g('tel'), date:g('date'), lieu:g('lieu'), message:g('message') };
+    var sel=summary(), b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Envoi…';
+    var done=function(ok){ b.disabled=false; b.textContent='Envoyer ma demande de devis';
+      if(ok){ cart=[]; save(); render(); f.reset(); msg('Demande envoyée. Nous revenons vers vous avec un prix pack personnalisé.', false); }
+      else{ msg('Échec de l\'envoi. Réessayez ou écrivez à '+CONTACT, true); } };
+    if(FORMSPREE_ENDPOINT){
+      fetch(FORMSPREE_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
+        body:JSON.stringify(Object.assign({},data,{selection:sel,_subject:'Demande de devis — '+data.prenom+' '+data.nom}))})
+        .then(function(r){ done(r.ok); }).catch(function(){ done(false); });
+    } else {
+      var body='Bonjour,\n\nVoici ma demande de devis :\n\n'+sel+'\n\n--\nPrénom : '+data.prenom+'\nNom : '+data.nom+'\nEmail : '+data.email+'\nTéléphone : '+data.tel+'\nDate : '+data.date+'\nLieu : '+data.lieu+'\nMessage : '+data.message+'\n';
+      window.location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent('Demande de devis — '+data.prenom+' '+data.nom)+'&body='+encodeURIComponent(body);
+      setTimeout(function(){ done(true); }, 500);
+    }
+    return false; }
+  document.addEventListener('click', function(e){ var b=e.target.closest?e.target.closest('.add-cart'):null; if(b) add(b); });
+  window.AECart={ open:open, close:close, q:q, del:del, submit:submit };
+  if(document.readyState!=='loading') render(); else document.addEventListener('DOMContentLoaded', render);
+})();
+
+</script>
 
 </body>
 </html>
