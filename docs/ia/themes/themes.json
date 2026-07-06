@@ -10,7 +10,7 @@
           "label": "Couple pailleté",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
-          "montage": null,
+          "montage": "montage.JPG",
           "extras": []
         }
       ]
@@ -30,9 +30,18 @@
       ]
     },
     {
-      "slug": "foot",
-      "label": "Supporter / Sport",
-      "montages": []
+      "slug": "avatar",
+      "label": "Avatar",
+      "montages": [
+        {
+          "slug": "couple",
+          "label": "Couple",
+          "avant": "avant.PNG",
+          "apres": null,
+          "montage": null,
+          "extras": []
+        }
+      ]
     }
   ]
 }
