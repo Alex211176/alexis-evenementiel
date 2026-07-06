@@ -6,8 +6,8 @@
       "label": "Rétro & Disco",
       "montages": [
         {
-          "slug": "couple",
-          "label": "Couple pailleté",
+          "slug": "exemple-01",
+          "label": "Exemple 01",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
           "montage": "montage.jpg",
@@ -20,8 +20,8 @@
       "label": "Cartoon / 3D",
       "montages": [
         {
-          "slug": "famille",
-          "label": "Famille cartoon",
+          "slug": "exemple-01",
+          "label": "Exemple 01",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
           "montage": "montage.jpg",
@@ -34,8 +34,8 @@
       "label": "Avatar 3D",
       "montages": [
         {
-          "slug": "couple",
-          "label": "Couple",
+          "slug": "exemple-01",
+          "label": "Exemple 01",
           "avant": "avant.png",
           "apres": "apres.png",
           "montage": "montage.jpg",
@@ -62,8 +62,8 @@
       "label": "Halloween",
       "montages": [
         {
-          "slug": "femme",
-          "label": "Femme",
+          "slug": "exemple-01",
+          "label": "Exemple 01",
           "avant": "avant.png",
           "apres": "apres.png",
           "montage": "montage.jpg",
@@ -76,8 +76,8 @@
       "label": "Super-héros",
       "montages": [
         {
-          "slug": "famille",
-          "label": "Famille",
+          "slug": "exemple-01",
+          "label": "Exemple 01",
           "avant": "avant.png",
           "apres": "apres.png",
           "montage": "montage.jpg",
