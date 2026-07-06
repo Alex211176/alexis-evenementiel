@@ -454,8 +454,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
         <div class="nav-links">
             <a href="index.html#prestations">Prestations</a>
-            <a href="photobooth-ia.html">Photobooth IA</a>
-            <a href="templates-photobooth.html">Templates</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="index.html#realisations">Réalisations</a>
             <a href="index.html#contact">Contact</a>
