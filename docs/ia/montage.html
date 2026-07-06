@@ -56,14 +56,14 @@
     .head2 h2 { font-size: clamp(1.7rem, 4vw, 2.6rem); margin-top:6px; }
     .head2 h2 .italic { font-style:italic; color:var(--or-clair); }
 
-    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:16px; padding-bottom:20px; align-items:start; }
-    .g-item { position:relative; aspect-ratio:1; overflow:hidden; border-radius:6px; border:1px solid var(--line); cursor:pointer; display:block; background:var(--noir-2); }
-    .g-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s ease; }
+    /* Toutes les vignettes à la même hauteur ; la largeur s'adapte au ratio
+       (comme la page Templates) → la bande 2x6 devient étroite mais entière. */
+    .grid { display:flex; flex-wrap:wrap; gap:16px; padding-bottom:20px; align-items:flex-start; }
+    .g-item { position:relative; height:300px; flex:0 0 auto; overflow:hidden; border-radius:6px; border:1px solid var(--line); cursor:pointer; display:block; background:var(--noir-2); }
+    .g-item img { height:100%; width:auto; object-fit:cover; display:block; transition:transform .6s ease; }
     .g-item:hover img { transform:scale(1.04); }
-    /* Montage (bande 2x6, très haute) : montrer toute la hauteur, largeur adaptée */
-    .g-item.montage { aspect-ratio:auto; display:flex; align-items:center; justify-content:center; background:var(--noir); }
-    .g-item.montage img { width:auto; height:auto; max-width:100%; max-height:520px; object-fit:contain; }
-    .g-item .cap { position:absolute; left:0; right:0; bottom:0; padding:14px; background:linear-gradient(180deg, transparent, rgba(10,10,12,0.85)); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--or-clair); }
+    .g-item .cap { position:absolute; left:0; right:0; bottom:0; padding:14px 10px; background:linear-gradient(180deg, transparent, rgba(10,10,12,0.85)); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--or-clair); text-align:center; white-space:nowrap; }
+    @media (max-width:600px){ .g-item{ height:220px; } }
 
     .cta { text-align:center; padding: 80px 0; }
     .cta h2 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin-bottom: 20px; }
@@ -193,7 +193,7 @@
     var grid = document.getElementById('grid');
     lbPhotos.forEach(function(p, i){
       var a = document.createElement('div'); a.className = 'g-item' + (p.cls ? ' ' + p.cls : '');
-      a.innerHTML = '<img src="'+p.src+'" alt="'+p.cap+' — '+m.label+'" loading="lazy"><span class="cap">'+p.cap+'</span>';
+      a.innerHTML = '<img src="'+p.src+'" alt="'+p.cap+' — '+m.label+'"><span class="cap">'+p.cap+'</span>';
       a.addEventListener('click', function(){ openLb(i); });
       grid.appendChild(a);
     });
