@@ -237,6 +237,20 @@ def render_equip_card(eid, e, photos_rel="photos"):
         </article>"""
 
 
+IA_PROMO_CARD = """
+        <article class="card ia-promo">
+            <a href="photobooth-ia.html">
+                <div class="ia-badge">Nouveauté</div>
+                <div class="card-head">
+                    <h3>Option Photobooth <span style="color:var(--or-clair)">IA</span></h3>
+                    <div class="price">à partir de 100 €</div>
+                </div>
+                <p class="card-desc">Chaque photo transformée par IA sur le thème de votre choix (foot, disco, cartoon, mariage…), avec votre marque intégrée.</p>
+                <span class="ia-cta">Découvrir l'option IA →</span>
+            </a>
+        </article>"""
+
+
 def build_html(equipements, prestations, packs) -> str:
     """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
 
@@ -253,6 +267,8 @@ def build_html(equipements, prestations, packs) -> str:
         cat_packs.sort(key=lambda x: x[1].get("prix_ttc", 0))
         cards = "".join(render_pack_card(pid, p, packs, equipements, prestations)
                         for pid, p in cat_packs)
+        if cat == "photobooth":
+            cards += IA_PROMO_CARD
         packs_html += f'<div class="cat-group"><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
     # --- Section PRESTATIONS (vitrine seulement), avec prix > 0 ou sur devis ---
@@ -394,6 +410,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .equip-marque {{ font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--or); font-weight: 500; }}
     .equip-body h3 {{ font-size: 1.15rem; margin: 5px 0 0; }}
     .equip-body .price {{ margin-top: auto; padding-top: 14px; font-size: 1.15rem; }}
+
+    .ia-promo {{ position: relative; border-color: var(--or-sombre); }}
+    .ia-promo a {{ text-decoration: none; color: inherit; display: block; }}
+    .ia-promo:hover {{ border-color: var(--or); box-shadow: 0 12px 30px rgba(201,165,92,0.15); }}
+    .ia-badge {{ position: absolute; top: 16px; right: 16px; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 3px 10px; border-radius: 99px; }}
+    .ia-cta {{ display: inline-block; margin-top: 16px; color: var(--or-clair); font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color .3s; }}
+    .ia-promo:hover .ia-cta {{ color: var(--or); }}
 
     footer {{ background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }}
     footer .brand {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }}
