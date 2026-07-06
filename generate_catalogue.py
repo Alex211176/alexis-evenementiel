@@ -114,6 +114,41 @@ def resoudre_pack_simple(pid, packs, _seen=None):
     return {"equipements": eqs, "prestations": prs}
 
 
+# ----- Panier / demande de devis -----
+def _cart_button(item_type, item_id, nom, kind, prix=None, paliers=None, max_qty=1, unite="unité"):
+    """Bouton « + Ajouter au devis » — les infos de tarif sont portées en data-*
+    et lues côté client par le panier (aucune donnée serveur nécessaire)."""
+    a = [
+        f'data-id="{escape(str(item_id), quote=True)}"',
+        f'data-type="{item_type}"',
+        f'data-nom="{escape(nom or str(item_id), quote=True)}"',
+        f'data-kind="{kind}"',
+        f'data-max="{int(max_qty or 1)}"',
+        f'data-unite="{escape(unite or "unité", quote=True)}"',
+    ]
+    if prix is not None:
+        a.append(f'data-prix="{prix}"')
+    if paliers:
+        a.append("data-paliers='" + escape(json.dumps(paliers, ensure_ascii=False), quote=False) + "'")
+    return '<button type="button" class="add-cart" ' + " ".join(a) + '>+ Ajouter au devis</button>'
+
+
+def _equip_cart_button(eid, e):
+    vente = e.get("vente", {}) or {}
+    mode = vente.get("mode")
+    unite = vente.get("unite_label", "unité")
+    maxq = e.get("quantite_possedee", 1) or 1
+    nom = e.get("nom", eid)
+    if mode == "tranches":
+        return _cart_button("equip", eid, nom, "tranches", paliers=vente.get("paliers", []) or [], max_qty=maxq, unite=unite)
+    if mode == "unitaire":
+        return _cart_button("equip", eid, nom, "unitaire", prix=vente.get("prix_unitaire", 0) or 0, max_qty=maxq, unite=unite)
+    pv = vente.get("prix_unitaire")
+    if pv:
+        return _cart_button("equip", eid, nom, "fixe", prix=pv, max_qty=1, unite=unite)
+    return _cart_button("equip", eid, nom, "devis", max_qty=1, unite=unite)
+
+
 # ----- Génération HTML -----
 def render_pack_card(pid, pack, packs, equipements, prestations):
     nom = escape(pack.get("nom", pid))
@@ -136,6 +171,7 @@ def render_pack_card(pid, pack, packs, equipements, prestations):
     contenu = "".join(f"<li>{it}</li>" for it in items)
 
     duree_html = f'<span class="card-meta">{duree}</span>' if duree else ""
+    btn = _cart_button("pack", pid, pack.get("nom", pid), "fixe", prix=pack.get("prix_ttc", 0) or 0, max_qty=1)
     return f"""
         <article class="card pack-card">
             <div class="card-head">
@@ -148,6 +184,7 @@ def render_pack_card(pid, pack, packs, equipements, prestations):
                 <summary>Voir le contenu</summary>
                 <ul>{contenu}</ul>
             </details>
+            {btn}
         </article>"""
 
 
@@ -156,6 +193,10 @@ def render_presta_card(pid, pr):
     desc = escape(pr.get("description", "") or "")
     prix_v = pr.get("prix", 0)
     prix = euro(prix_v) if prix_v else "Sur devis"
+    if prix_v:
+        btn = _cart_button("presta", pid, pr.get("nom", pid), "fixe", prix=prix_v, max_qty=1)
+    else:
+        btn = _cart_button("presta", pid, pr.get("nom", pid), "devis", max_qty=1)
     return f"""
         <article class="card presta-card">
             <div class="card-head">
@@ -163,6 +204,7 @@ def render_presta_card(pid, pr):
                 <div class="price">{prix}</div>
             </div>
             <p class="card-desc">{desc}</p>
+            {btn}
         </article>"""
 
 
@@ -180,6 +222,7 @@ def render_equip_card(eid, e, photos_rel="photos"):
     if photo:
         img = f'<div class="equip-photo"><img src="{photos_rel}/{escape(photo)}" alt="{nom}" loading="lazy"></div>'
     marque_html = f'<span class="equip-marque">{marque}</span>' if marque else ""
+    btn = _equip_cart_button(eid, e)
     return f"""
         <article class="card equip-card">
             {img}
@@ -188,6 +231,7 @@ def render_equip_card(eid, e, photos_rel="photos"):
                 <h3>{nom}</h3>
                 <p class="card-desc">{desc}</p>
                 <div class="price">{prix} <span class="price-unit">/ location</span></div>
+                {btn}
             </div>
         </article>"""
 
@@ -234,7 +278,8 @@ def build_html(equipements, prestations, packs) -> str:
 
     maj = datetime.now().strftime("%d/%m/%Y")
     return HTML_TEMPLATE.format(
-        packs=packs_html, prestations=presta_html, equipements=equip_html, maj=maj
+        packs=packs_html, prestations=presta_html, equipements=equip_html, maj=maj,
+        cart_css=CART_CSS, cart_html=CART_HTML, cart_js=CART_JS,
     )
 
 
@@ -361,6 +406,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         section {{ padding: 60px 0; }}
         .equip-grid {{ grid-template-columns: 1fr; }}
     }}
+{cart_css}
 </style>
 </head>
 <body>
@@ -444,8 +490,151 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
 </footer>
 
+{cart_html}
+<script>
+{cart_js}
+</script>
+
 </body>
 </html>"""
+
+
+# ── Panier / demande de devis (blocs injectés tels quels via .format) ─────────
+CART_CSS = """
+    .add-cart{ margin-top:16px; width:100%; background:transparent; color:var(--or-clair);
+        border:1px solid var(--or-sombre); border-radius:4px; padding:10px 14px; font-family:'Jost',sans-serif;
+        font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all .25s; }
+    .add-cart:hover{ background:var(--or); color:var(--noir); border-color:var(--or); }
+    .add-cart.added{ background:var(--or-sombre); color:var(--creme); border-color:var(--or-sombre); }
+    .equip-card .add-cart{ margin:auto 20px 20px; width:calc(100% - 40px); }
+    #cart-fab{ position:fixed; bottom:24px; right:24px; z-index:200; background:var(--or); color:var(--noir);
+        border:none; border-radius:50px; padding:14px 22px; font-family:'Jost',sans-serif; font-size:0.85rem;
+        font-weight:500; letter-spacing:0.06em; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,.45);
+        display:flex; align-items:center; gap:8px; }
+    #cart-fab .count{ background:var(--noir); color:var(--or-clair); border-radius:50px; min-width:22px; height:22px;
+        display:inline-flex; align-items:center; justify-content:center; font-size:0.78rem; padding:0 6px; }
+    #cart-fab.empty{ display:none; }
+    #cart-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:300; opacity:0; pointer-events:none; transition:opacity .3s; }
+    #cart-overlay.open{ opacity:1; pointer-events:auto; }
+    #cart-panel{ position:fixed; top:0; right:0; bottom:0; width:min(420px,100%); background:var(--noir-2);
+        border-left:1px solid var(--line); z-index:301; transform:translateX(100%); transition:transform .3s ease;
+        display:flex; flex-direction:column; }
+    #cart-panel.open{ transform:translateX(0); }
+    #cart-panel .ch{ padding:22px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+    #cart-panel .ch h3{ font-size:1.5rem; color:var(--creme); }
+    #cart-panel .ch button{ background:none; border:none; color:var(--gris-clair); font-size:1.7rem; cursor:pointer; line-height:1; }
+    #cart-items{ flex:1; overflow-y:auto; padding:12px 24px; }
+    .cart-empty{ color:var(--gris); text-align:center; padding:44px 10px; font-size:0.9rem; }
+    .ci{ padding:14px 0; border-bottom:1px solid var(--line); }
+    .ci-nom{ font-size:0.95rem; color:var(--creme); }
+    .ci-line{ font-size:0.8rem; color:var(--or-clair); margin-top:2px; }
+    .ci-ctrl{ display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .ci-ctrl button{ width:26px; height:26px; border:1px solid var(--line); background:transparent; color:var(--creme); border-radius:4px; cursor:pointer; font-size:1rem; }
+    .ci-qty{ min-width:22px; text-align:center; font-size:0.85rem; }
+    .ci-del{ background:none; border:none; color:var(--gris); cursor:pointer; font-size:0.76rem; text-decoration:underline; margin-top:8px; display:inline-block; }
+    #cart-foot{ border-top:1px solid var(--line); padding:18px 24px 24px; }
+    .cart-total{ display:flex; justify-content:space-between; font-size:1.05rem; color:var(--creme); margin-bottom:4px; }
+    .cart-total b{ font-family:'Cormorant Garamond',serif; color:var(--or-clair); font-size:1.3rem; }
+    .cart-note{ font-size:0.72rem; color:var(--gris); margin-bottom:14px; }
+    #cart-form{ display:grid; gap:10px; }
+    #cart-form input, #cart-form textarea{ width:100%; background:var(--noir-3); border:1px solid var(--line);
+        border-radius:4px; padding:10px 12px; color:var(--creme); font-family:'Jost',sans-serif; font-size:0.85rem; }
+    #cart-form .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    #cart-form button[type=submit]{ background:var(--or); color:var(--noir); border:none; border-radius:4px; padding:13px;
+        font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-weight:500; margin-top:4px; }
+    #cart-msg{ font-size:0.85rem; text-align:center; padding:8px 0 0; }
+"""
+
+CART_HTML = """
+<button id="cart-fab" class="empty" onclick="AECart.open()" aria-label="Voir ma sélection">
+  &#128722; Mon devis <span class="count" id="cart-count">0</span>
+</button>
+<div id="cart-overlay" onclick="AECart.close()"></div>
+<aside id="cart-panel" aria-label="Sélection pour devis">
+  <div class="ch"><h3>Ma sélection</h3><button onclick="AECart.close()" aria-label="Fermer">&times;</button></div>
+  <div id="cart-items"></div>
+  <div id="cart-foot">
+    <div class="cart-total"><span>Estimation à la carte</span><b id="cart-subtotal">0 &euro;</b></div>
+    <div class="cart-note">Montant indicatif. Vous recevrez un <strong>prix pack personnalisé</strong> en réponse à votre demande.</div>
+    <form id="cart-form" onsubmit="return AECart.submit(event)">
+      <div class="row2"><input name="prenom" placeholder="Prénom *" required><input name="nom" placeholder="Nom"></div>
+      <div class="row2"><input name="email" type="email" placeholder="Email *" required><input name="tel" placeholder="Téléphone"></div>
+      <div class="row2"><input name="date" placeholder="Date de l'événement"><input name="lieu" placeholder="Lieu / ville"></div>
+      <textarea name="message" rows="2" placeholder="Précisions (optionnel)"></textarea>
+      <button type="submit">Envoyer ma demande de devis</button>
+      <div id="cart-msg"></div>
+    </form>
+  </div>
+</aside>
+"""
+
+CART_JS = """
+(function(){
+  var KEY='ae_cart_v1';
+  var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
+  var CONTACT='contact@alexisevenementiel.fr';
+  var cart=[]; try{ cart=JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ cart=[]; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(cart)); }catch(e){} }
+  function fmt(n){ n=Math.round(n*100)/100; return (n%1===0? n.toFixed(0): n.toFixed(2).replace('.',',')) + ' \\u20ac'; }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function palierPrice(p, q){ if(!p||!p.length) return 0; var b=null;
+    for(var i=0;i<p.length;i++){ if(p[i].qte<=q && (b===null||p[i].qte>b.qte)) b=p[i]; }
+    if(!b){ b=p[0]; for(var j=0;j<p.length;j++){ if(p[j].qte<b.qte) b=p[j]; } }
+    return b.prix_forfait||0; }
+  function lineTotal(it){ if(it.kind==='devis') return null;
+    if(it.kind==='tranches') return palierPrice(it.paliers, it.qty);
+    if(it.kind==='unitaire') return (it.prix||0)*it.qty; return it.prix||0; }
+  function count(){ var c=0; cart.forEach(function(it){ c+=it.qty; }); return c; }
+  function find(k){ for(var i=0;i<cart.length;i++){ if(cart[i].key===k) return cart[i]; } return null; }
+  function add(btn){ var d=btn.dataset, key=d.type+':'+d.id, it=find(key), max=parseInt(d.max)||1;
+    if(it){ if(it.qty<max) it.qty++; }
+    else{ var pal=null; if(d.paliers){ try{ pal=JSON.parse(d.paliers); }catch(e){} }
+      cart.push({key:key,type:d.type,id:d.id,nom:d.nom,kind:d.kind,prix:parseFloat(d.prix)||0,paliers:pal,max:max,unite:d.unite||'unité',qty:1}); }
+    save(); render(); pulse(btn); }
+  function pulse(btn){ btn.classList.add('added'); var t=btn.textContent; btn.textContent='\\u2713 Ajouté';
+    setTimeout(function(){ btn.classList.remove('added'); btn.textContent='+ Ajouter au devis'; }, 1100); }
+  function q(k,d){ var it=find(k); if(!it) return; it.qty+=d; if(it.qty<1) it.qty=1; if(it.qty>it.max) it.qty=it.max; save(); render(); }
+  function del(k){ cart=cart.filter(function(it){ return it.key!==k; }); save(); render(); }
+  function render(){ var w=document.getElementById('cart-items'); if(!w) return;
+    var fab=document.getElementById('cart-fab');
+    document.getElementById('cart-count').textContent=count();
+    if(fab) fab.classList.toggle('empty', cart.length===0);
+    if(cart.length===0){ w.innerHTML='<div class=\"cart-empty\">Votre sélection est vide.<br>Ajoutez des packs, prestations ou du matériel.</div>';
+      document.getElementById('cart-subtotal').textContent='0 \\u20ac'; return; }
+    var html='', sub=0;
+    cart.forEach(function(it){ var lt=lineTotal(it), ctrl='';
+      if(it.kind==='tranches'||it.kind==='unitaire'){ ctrl='<div class=\"ci-ctrl\"><button onclick=\"AECart.q(\\''+it.key+'\\',-1)\">\\u2212</button><span class=\"ci-qty\">'+it.qty+'</span><button onclick=\"AECart.q(\\''+it.key+'\\',1)\">+</button></div>'; }
+      var txt=(lt===null)?'Sur devis':fmt(lt)+((it.qty>1&&it.kind==='unitaire')?' ('+it.qty+'\\u00d7)':''); if(lt!==null) sub+=lt;
+      html+='<div class=\"ci\"><div class=\"ci-nom\">'+esc(it.nom)+'</div><div class=\"ci-line\">'+txt+'</div>'+ctrl+'<button class=\"ci-del\" onclick=\"AECart.del(\\''+it.key+'\\')\">Retirer</button></div>'; });
+    w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
+  function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
+  function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
+  function summary(){ var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt; l.push('- '+it.nom+' x'+it.qty+' : '+p); });
+    l.push(''); l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\\n'); }
+  function msg(t,err){ var m=document.getElementById('cart-msg'); if(m){ m.textContent=t; m.style.color=err?'#e88':'var(--or-clair)'; } }
+  function submit(ev){ ev.preventDefault();
+    if(cart.length===0){ msg('Votre sélection est vide.', true); return false; }
+    var f=ev.target, g=function(n){ var el=f.querySelector('[name=\"'+n+'\"]'); return el?el.value.trim():''; };
+    var data={ prenom:g('prenom'), nom:g('nom'), email:g('email'), tel:g('tel'), date:g('date'), lieu:g('lieu'), message:g('message') };
+    var sel=summary(), b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Envoi…';
+    var done=function(ok){ b.disabled=false; b.textContent='Envoyer ma demande de devis';
+      if(ok){ cart=[]; save(); render(); f.reset(); msg('Demande envoyée. Nous revenons vers vous avec un prix pack personnalisé.', false); }
+      else{ msg('Échec de l\\'envoi. Réessayez ou écrivez à '+CONTACT, true); } };
+    if(FORMSPREE_ENDPOINT){
+      fetch(FORMSPREE_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
+        body:JSON.stringify(Object.assign({},data,{selection:sel,_subject:'Demande de devis — '+data.prenom+' '+data.nom}))})
+        .then(function(r){ done(r.ok); }).catch(function(){ done(false); });
+    } else {
+      var body='Bonjour,\\n\\nVoici ma demande de devis :\\n\\n'+sel+'\\n\\n--\\nPrénom : '+data.prenom+'\\nNom : '+data.nom+'\\nEmail : '+data.email+'\\nTéléphone : '+data.tel+'\\nDate : '+data.date+'\\nLieu : '+data.lieu+'\\nMessage : '+data.message+'\\n';
+      window.location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent('Demande de devis — '+data.prenom+' '+data.nom)+'&body='+encodeURIComponent(body);
+      setTimeout(function(){ done(true); }, 500);
+    }
+    return false; }
+  document.addEventListener('click', function(e){ var b=e.target.closest?e.target.closest('.add-cart'):null; if(b) add(b); });
+  window.AECart={ open:open, close:close, q:q, del:del, submit:submit };
+  if(document.readyState!=='loading') render(); else document.addEventListener('DOMContentLoaded', render);
+})();
+"""
 
 
 if __name__ == "__main__":
