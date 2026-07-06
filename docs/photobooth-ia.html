@@ -104,6 +104,8 @@
     .ba .lbl { position:absolute; top:12px; font-size:0.64rem; letter-spacing:0.14em; text-transform:uppercase; background:rgba(10,10,12,0.72); color:var(--creme); padding:4px 10px; border-radius:99px; pointer-events:none; }
     .ba .lbl-a { left:12px; } .ba .lbl-b { right:12px; color:var(--or-clair); }
     .ba-theme { position:absolute; bottom:12px; left:12px; font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--or-clair); background:rgba(10,10,12,0.72); padding:4px 12px; border-radius:99px; pointer-events:none; }
+    .ba-open { position:absolute; bottom:12px; right:12px; font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--noir); background:var(--or); padding:6px 13px; border-radius:99px; text-decoration:none; opacity:0.92; transition:opacity .3s, transform .2s; }
+    .ba-open:hover { opacity:1; transform:translateY(-1px); }
     .ba-empty { text-align:center; color:var(--gris); padding:30px 0; }
 
     .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(5,5,7,0.95); display: none; align-items: center; justify-content: center; padding: 40px; backdrop-filter: blur(6px); }
@@ -235,30 +237,37 @@
   fetch('ia/themes/themes.json', {cache:'no-store'})
     .then(function(r){ return r.json(); })
     .then(function(data){
-      var themes = (data.themes || []).filter(function(t){ return t.avant && t.apres; });
-      if(!themes.length){ host.innerHTML = '<div class="ba-empty">Exemples avant/après à venir très bientôt.</div>'; return; }
-      themes.forEach(function(t){ host.appendChild(buildBA(t)); });
+      var made = 0;
+      (data.themes || []).forEach(function(t){
+        (t.montages || []).forEach(function(m){
+          if(m.avant && m.apres){ host.appendChild(buildBA(t, m)); made++; }
+        });
+      });
+      if(!made){ host.innerHTML = '<div class="ba-empty">Exemples avant/après à venir très bientôt.</div>'; }
     })
     .catch(function(){ host.innerHTML = '<div class="ba-empty">Galerie momentanément indisponible.</div>'; });
 
-  function buildBA(t){
-    var base = 'ia/themes/' + t.slug + '/';
+  function buildBA(t, m){
+    var base = 'ia/themes/' + t.slug + '/' + m.slug + '/';
+    var href = 'ia/montage.html?theme=' + encodeURIComponent(t.slug) + '&montage=' + encodeURIComponent(m.slug);
     var el = document.createElement('div'); el.className = 'ba';
     el.innerHTML =
-      '<div class="ba-apres"><img src="'+base+t.apres+'" alt="Après IA — '+t.label+'" loading="lazy"></div>'+
-      '<div class="ba-avant"><img src="'+base+t.avant+'" alt="Avant — '+t.label+'" loading="lazy"></div>'+
+      '<div class="ba-apres"><img src="'+base+m.apres+'" alt="Après IA — '+t.label+'" loading="lazy"></div>'+
+      '<div class="ba-avant"><img src="'+base+m.avant+'" alt="Avant — '+t.label+'" loading="lazy"></div>'+
       '<div class="ba-divider"><div class="ba-handle">&#8596;</div></div>'+
       '<span class="lbl lbl-a">Avant</span><span class="lbl lbl-b">Après IA</span>'+
-      '<span class="ba-theme">'+t.label+'</span>';
+      '<span class="ba-theme">'+t.label+'</span>'+
+      '<a class="ba-open" href="'+href+'">Voir la fiche →</a>';
     var avant = el.querySelector('.ba-avant');
     var divider = el.querySelector('.ba-divider');
-    var pos = 50, dir = 1, auto = true, dragging = false;
+    var pos = 50, dir = 1, auto = true, dragging = false, downX = 0, downT = 0, moved = false;
     function set(p){ pos = Math.max(0, Math.min(100, p)); avant.style.clipPath = 'inset(0 '+(100-pos)+'% 0 0)'; divider.style.left = pos+'%'; }
     set(50);
-    function fromEvent(e){ var r = el.getBoundingClientRect(); var cx = (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX); if(cx == null) return; set((cx - r.left) / r.width * 100); }
-    el.addEventListener('pointerdown', function(e){ dragging = true; auto = false; try{ el.setPointerCapture(e.pointerId); }catch(_){} fromEvent(e); e.preventDefault(); });
-    el.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e); });
-    el.addEventListener('pointerup', function(){ dragging = false; });
+    function cx(e){ return (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX); }
+    function fromX(x){ if(x == null) return; var r = el.getBoundingClientRect(); set((x - r.left) / r.width * 100); }
+    el.addEventListener('pointerdown', function(e){ dragging = true; auto = false; moved = false; downX = cx(e); downT = Date.now(); try{ el.setPointerCapture(e.pointerId); }catch(_){} });
+    el.addEventListener('pointermove', function(e){ if(!dragging) return; var x = cx(e); if(x != null && Math.abs(x - downX) > 5) moved = true; if(moved) fromX(x); });
+    el.addEventListener('pointerup', function(){ dragging = false; if(!moved && Date.now() - downT < 400){ window.location.href = href; } });
     el.addEventListener('pointercancel', function(){ dragging = false; });
     el.addEventListener('mouseenter', function(){ auto = false; });
     var inView = false, running = false;

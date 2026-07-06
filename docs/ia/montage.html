@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Montage IA — Alexis Événementiel</title>
+<meta name="description" content="Photobooth génératif par IA — avant / après et galerie du montage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.on { color: var(--or-clair); }
+
+    .page { padding: 130px 0 30px; }
+    .back { color: var(--gris-clair); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .back:hover { color: var(--or-clair); }
+    .ttl { margin: 18px 0 4px; }
+    .ttl .eyebrow { font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--or); }
+    .ttl h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin-top: 6px; }
+    .ttl h1 .italic { font-style: italic; color: var(--or-clair); }
+    .ttl p { color: var(--gris-clair); margin-top: 8px; }
+
+    /* Slider avant/après */
+    .ba-wrap { margin: 30px 0 10px; }
+    .ba { position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--line); user-select:none; -webkit-user-select:none; touch-action:none; cursor:ew-resize; background:var(--noir-3); max-width:760px; margin:0 auto; }
+    .ba img { display:block; width:100%; height:auto; pointer-events:none; -webkit-user-drag:none; }
+    .ba-apres { position:relative; }
+    .ba-avant { position:absolute; inset:0; overflow:hidden; will-change:clip-path; }
+    .ba-avant img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .ba-divider { position:absolute; top:0; bottom:0; left:50%; width:2px; background:var(--or); box-shadow:0 0 12px rgba(201,165,92,0.6); }
+    .ba-handle { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:var(--or); color:var(--noir); display:flex; align-items:center; justify-content:center; font-size:1.05rem; box-shadow:0 4px 16px rgba(0,0,0,0.45); }
+    .ba .lbl { position:absolute; top:14px; font-size:0.66rem; letter-spacing:0.14em; text-transform:uppercase; background:rgba(10,10,12,0.72); color:var(--creme); padding:4px 10px; border-radius:99px; pointer-events:none; }
+    .ba .lbl-a { left:14px; } .ba .lbl-b { right:14px; color:var(--or-clair); }
+    .hint { text-align:center; color:var(--gris); font-size:0.8rem; margin-top:12px; }
+
+    .head2 { text-align:center; margin: 60px 0 26px; }
+    .head2 .num { font-family:'Cormorant Garamond',serif; font-size:0.85rem; color:var(--or); letter-spacing:0.3em; font-style:italic; }
+    .head2 h2 { font-size: clamp(1.7rem, 4vw, 2.6rem); margin-top:6px; }
+    .head2 h2 .italic { font-style:italic; color:var(--or-clair); }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:16px; padding-bottom:20px; }
+    .g-item { position:relative; overflow:hidden; border-radius:6px; border:1px solid var(--line); cursor:pointer; display:block; }
+    .g-item img { width:100%; display:block; transition:transform .6s ease; }
+    .g-item:hover img { transform:scale(1.04); }
+    .g-item .cap { position:absolute; left:0; right:0; bottom:0; padding:14px; background:linear-gradient(180deg, transparent, rgba(10,10,12,0.85)); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--or-clair); }
+
+    .cta { text-align:center; padding: 80px 0; }
+    .cta h2 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin-bottom: 20px; }
+    .cta h2 .italic { font-style:italic; color:var(--or-clair); }
+    .btn { display:inline-flex; align-items:center; gap:10px; padding:16px 34px; font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all .35s ease; border:none; cursor:pointer; }
+    .btn-gold { background:var(--or); color:var(--noir); }
+    .btn-gold:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.25); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 50px 0 34px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--creme); margin-bottom: 8px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.88rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(5,5,7,0.95); display: none; align-items: center; justify-content: center; padding: 40px; backdrop-filter: blur(6px); }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .lightbox .close { position: absolute; top: 26px; right: 34px; color: var(--creme); font-size: 2.2rem; cursor: pointer; line-height: 1; background: none; border: none; }
+
+    @media (max-width: 700px) { .nav-links { display: none; } }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="../index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="../index.html#prestations">Prestations</a>
+            <a href="../photobooth-ia.html" class="on">Photobooth IA</a>
+            <a href="../catalogue.html">Catalogue</a>
+            <a href="../galerie.html">Réalisations</a>
+            <a href="../index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <div class="wrap">
+        <a href="../photobooth-ia.html" class="back">← Retour au Photobooth IA</a>
+        <div class="ttl">
+            <div class="eyebrow" id="m-theme">Photobooth IA</div>
+            <h1 id="m-title">Montage <span class="italic">IA</span></h1>
+            <p id="m-sub">Avant / après — glissez la barre pour dévoiler la version IA.</p>
+        </div>
+
+        <div class="ba-wrap" id="ba-wrap"></div>
+        <div class="hint">Glissez la barre au doigt / à la souris — elle balaye aussi toute seule.</div>
+
+        <div class="head2">
+            <div class="num">La galerie</div>
+            <h2>Toutes les <span class="italic">photos</span> du montage</h2>
+        </div>
+        <div class="grid" id="grid"></div>
+    </div>
+</div>
+
+<section class="cta">
+    <div class="wrap">
+        <h2>Envie de <span class="italic">cet effet</span> à votre événement ?</h2>
+        <a href="../catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi &amp; Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
+    </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+    <button class="close" id="lb-close">&times;</button>
+    <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+(function(){
+  function param(n){ return new URLSearchParams(location.search).get(n) || ''; }
+  var tSlug = param('theme'), mSlug = param('montage');
+
+  fetch('themes/themes.json', {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var t = (data.themes||[]).filter(function(x){ return x.slug === tSlug; })[0];
+      var m = t && (t.montages||[]).filter(function(x){ return x.slug === mSlug; })[0];
+      if(!t || !m){ fail(); return; }
+      render(t, m);
+    })
+    .catch(fail);
+
+  function fail(){
+    document.getElementById('m-title').textContent = 'Montage introuvable';
+    document.getElementById('m-sub').innerHTML = '<a href="../photobooth-ia.html" style="color:var(--or-clair)">Revenir aux exemples →</a>';
+  }
+
+  function render(t, m){
+    var base = 'themes/' + t.slug + '/' + m.slug + '/';
+    document.title = m.label + ' — ' + t.label + ' | Alexis Événementiel';
+    document.getElementById('m-theme').textContent = t.label;
+    document.getElementById('m-title').innerHTML = m.label + ' <span class="italic">·</span> IA';
+
+    // Slider avant/après
+    if(m.avant && m.apres){
+      document.getElementById('ba-wrap').appendChild(makeSlider(base + m.apres, base + m.avant));
+    } else {
+      document.getElementById('ba-wrap').style.display = 'none';
+      document.querySelector('.hint').style.display = 'none';
+    }
+
+    // Galerie : toutes les photos du montage
+    var photos = [];
+    if(m.avant)   photos.push({ src: base + m.avant,   cap: 'Avant' });
+    if(m.apres)   photos.push({ src: base + m.apres,   cap: 'Après IA' });
+    if(m.montage) photos.push({ src: base + m.montage, cap: 'Montage' });
+    (m.extras || []).forEach(function(f){ photos.push({ src: base + f, cap: 'Photo' }); });
+
+    var grid = document.getElementById('grid');
+    photos.forEach(function(p){
+      var a = document.createElement('div'); a.className = 'g-item';
+      a.innerHTML = '<img src="'+p.src+'" alt="'+p.cap+' — '+m.label+'" loading="lazy"><span class="cap">'+p.cap+'</span>';
+      a.addEventListener('click', function(){ openLb(p.src); });
+      grid.appendChild(a);
+    });
+  }
+
+  function makeSlider(apresSrc, avantSrc){
+    var el = document.createElement('div'); el.className = 'ba';
+    el.innerHTML =
+      '<div class="ba-apres"><img src="'+apresSrc+'" alt="Après IA"></div>'+
+      '<div class="ba-avant"><img src="'+avantSrc+'" alt="Avant"></div>'+
+      '<div class="ba-divider"><div class="ba-handle">&#8596;</div></div>'+
+      '<span class="lbl lbl-a">Avant</span><span class="lbl lbl-b">Après IA</span>';
+    var avant = el.querySelector('.ba-avant'), divider = el.querySelector('.ba-divider');
+    var pos = 50, dir = 1, auto = true, dragging = false;
+    function set(p){ pos = Math.max(0, Math.min(100, p)); avant.style.clipPath = 'inset(0 '+(100-pos)+'% 0 0)'; divider.style.left = pos+'%'; }
+    set(50);
+    function cx(e){ return (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX); }
+    function fromX(x){ if(x == null) return; var r = el.getBoundingClientRect(); set((x - r.left) / r.width * 100); }
+    el.addEventListener('pointerdown', function(e){ dragging = true; auto = false; try{ el.setPointerCapture(e.pointerId); }catch(_){} fromX(cx(e)); e.preventDefault(); });
+    el.addEventListener('pointermove', function(e){ if(dragging) fromX(cx(e)); });
+    el.addEventListener('pointerup', function(){ dragging = false; });
+    el.addEventListener('pointercancel', function(){ dragging = false; });
+    el.addEventListener('mouseenter', function(){ auto = false; });
+    var inView = false, running = false;
+    function loop(){ running = false; if(!(auto && !dragging && inView)) return; pos += dir * 0.3; if(pos >= 86){ pos = 86; dir = -1; } else if(pos <= 14){ pos = 14; dir = 1; } set(pos); start(); }
+    function start(){ if(running || !(auto && !dragging && inView)) return; running = true; requestAnimationFrame(loop); }
+    if('IntersectionObserver' in window){ new IntersectionObserver(function(es){ es.forEach(function(e){ inView = e.isIntersecting; start(); }); }, {threshold:0.15}).observe(el); }
+    else { inView = true; start(); }
+    el.addEventListener('mouseleave', function(){ if(!dragging){ auto = true; start(); } });
+    return el;
+  }
+
+  var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img');
+  function openLb(src){ lbImg.src = src; lb.classList.add('open'); }
+  document.getElementById('lb-close').addEventListener('click', function(){ lb.classList.remove('open'); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) lb.classList.remove('open'); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') lb.classList.remove('open'); });
+})();
+</script>
+
+</body>
+</html>

@@ -1,8 +1,24 @@
 {
-  "_doc": "Registre des thèmes Photobooth IA. Un dossier par thème sous docs/ia/themes/<slug>/. Pour chaque rôle (avant, apres, montage) : le nom du fichier (ex: 'avant.jpg') ou null s'il n'existe pas. La galerie avant/après affiche automatiquement les thèmes ayant À LA FOIS avant et apres. Voir README.md.",
+  "_doc": "Registre Photobooth IA. Arbo : docs/ia/themes/<theme>/<montage>/ avec avant.jpg, apres.jpg (pour le slider), montage.jpg (optionnel) et extras (autres photos). La galerie affiche un slider par montage ayant avant + apres ; le clic ouvre ia/montage.html?theme=<t>&montage=<m>. Voir README.md.",
   "themes": [
-    { "slug": "disco",   "label": "Rétro & Disco",     "avant": "avant.jpg", "apres": "apres.jpg", "montage": null },
-    { "slug": "cartoon", "label": "Cartoon / 3D",      "avant": "avant.jpg", "apres": "apres.jpg", "montage": null },
-    { "slug": "foot",    "label": "Supporter / Sport", "avant": null,        "apres": null,        "montage": null }
+    {
+      "slug": "disco",
+      "label": "Rétro & Disco",
+      "montages": [
+        { "slug": "couple", "label": "Couple pailleté", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null, "extras": [] }
+      ]
+    },
+    {
+      "slug": "cartoon",
+      "label": "Cartoon / 3D",
+      "montages": [
+        { "slug": "famille", "label": "Famille cartoon", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null, "extras": [] }
+      ]
+    },
+    {
+      "slug": "foot",
+      "label": "Supporter / Sport",
+      "montages": []
+    }
   ]
 }

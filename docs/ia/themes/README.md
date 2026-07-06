@@ -1,44 +1,43 @@
-# Exemples de thèmes — Photobooth IA
+# Exemples Photobooth IA — thèmes & montages
 
-Rangement des visuels d'exemple affichés (à terme) sur la page `/photobooth-ia.html`.
+Contenu affiché sur `/photobooth-ia.html` (galerie de sliders avant/après) et sur
+les fiches détail `/ia/montage.html?theme=<t>&montage=<m>`.
 
-## Convention : un dossier par thème
-
-```
-docs/ia/themes/<slug-du-theme>/
-    apres.jpg      ← OBLIGATOIRE — le rendu généré par l'IA
-    avant.jpg      ← optionnel — la photo d'origine (fond neutre)
-    montage.jpg    ← optionnel — le montage avant/après composé
-```
-
-- **`<slug-du-theme>`** : minuscules, sans accent, avec tirets.
-  Ex : `foot`, `retro-disco`, `cartoon`, `mariage`, `halloween`, `noel`.
-- **Rôle du fichier** = son nom : `avant`, `apres` ou `montage`.
-- **Formats** : `.jpg`, `.png` ou `.webp` (garder un seul fichier par rôle).
-- Le **libellé affiché** (« Rétro & Disco »…) et l'ordre sont définis dans `themes.json`.
-
-## Exemples
+## Structure : thème → montage → photos
 
 ```
-docs/ia/themes/foot/apres.jpg
-docs/ia/themes/disco/avant.jpg
-docs/ia/themes/disco/apres.jpg
-docs/ia/themes/mariage/apres.jpg
-docs/ia/themes/mariage/montage.jpg
+docs/ia/themes/<theme>/<montage>/
+    avant.jpg       ← photo d'origine (fond neutre)
+    apres.jpg       ← rendu IA (sert au comparateur avant/après)
+    montage.jpg     ← montage composé (optionnel)
+    extra-01.jpg    ← photos en plus liées au montage (optionnel)
+    extra-02.jpg
 ```
 
-## Pour ajouter un thème
+- **`<theme>`** : slug minuscule-sans-accent-avec-tirets (`disco`, `mariage`, `foot`…).
+- **`<montage>`** : slug d'un exemple précis (`couple`, `soiree-paul`…). Un thème peut en avoir plusieurs.
+- **Rôle = nom de fichier** : `avant`, `apres`, `montage`, puis `extra-XX` pour le reste.
 
-1. Créer le dossier `docs/ia/themes/<slug>/` et y déposer les images (`avant.jpg`, `apres.jpg`…).
-2. Ajouter/compléter l'entrée dans `themes.json` :
-   pour chaque rôle, mettre le **nom du fichier** (ex : `"avant.jpg"`) ou `null` s'il n'existe pas.
+## Le registre `themes.json`
 
-   ```json
-   { "slug": "disco", "label": "Rétro & Disco", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null }
-   ```
+```json
+{
+  "slug": "disco", "label": "Rétro & Disco",
+  "montages": [
+    { "slug": "couple", "label": "Couple pailleté",
+      "avant": "avant.jpg", "apres": "apres.jpg",
+      "montage": "montage.jpg", "extras": ["extra-01.jpg", "extra-02.jpg"] }
+  ]
+}
+```
 
-> La galerie **avant / après** de la page affiche automatiquement les thèmes qui ont
-> **à la fois** `avant` **et** `apres`. Un thème sans les deux est simplement ignoré.
+- Chaque rôle = **nom de fichier** ou `null`. `extras` = liste (peut être vide).
+- Un montage n'apparaît en slider que s'il a **`avant` ET `apres`**.
+- La fiche détail affiche **toutes** les photos du montage (avant, après, montage, extras).
 
-> Astuce : tu peux simplement m'envoyer les images en me disant
-> « thème **foot** : voici l'avant et l'après » — je les range et je nomme pour toi.
+## Pour ajouter un montage
+
+1. Créer `docs/ia/themes/<theme>/<montage>/` et y déposer les images.
+2. Ajouter le montage dans `themes.json` (sous le bon thème).
+
+> Le plus simple : envoie-moi les photos en disant *« thème disco, montage “soirée Paul” : avant, après, + 2 photos »* — je range et je complète le registre.
