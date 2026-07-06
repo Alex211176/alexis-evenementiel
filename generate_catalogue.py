@@ -192,7 +192,8 @@ def render_presta_card(pid, pr):
     nom = escape(pr.get("nom", pid))
     desc = escape(pr.get("description", "") or "")
     prix_v = pr.get("prix", 0)
-    prix = euro(prix_v) if prix_v else "Sur devis"
+    prefixe = "à partir de " if "a_partir_de" in (pr.get("tags") or []) else ""
+    prix = (prefixe + euro(prix_v)) if prix_v else "Sur devis"
     if prix_v:
         btn = _cart_button("presta", pid, pr.get("nom", pid), "fixe", prix=prix_v, max_qty=1)
     else:
@@ -416,6 +417,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
         <div class="nav-links">
             <a href="index.html#prestations">Prestations</a>
+            <a href="photobooth-ia.html">Photobooth IA</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="index.html#realisations">Réalisations</a>
             <a href="index.html#contact">Contact</a>
