@@ -37,8 +37,36 @@
           "slug": "couple",
           "label": "Couple",
           "avant": "avant.PNG",
+          "apres": "apres.PNG",
+          "montage": "montage.JPG",
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "foot",
+      "label": "Foot",
+      "montages": [
+        {
+          "slug": "bînome",
+          "label": "BîNome",
+          "avant": null,
           "apres": null,
           "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "super-héros",
+      "label": "Super HéRos",
+      "montages": [
+        {
+          "slug": "famille",
+          "label": "Famille",
+          "avant": "avant.PNG",
+          "apres": "apres.PNG",
+          "montage": "montage.JPG",
           "extras": []
         }
       ]
