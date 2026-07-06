@@ -12,8 +12,10 @@ nommés par rôle : avant.*  apres.*  montage.*  extra-01.* extra-02.* …
 """
 
 import json
+import os
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,6 +35,50 @@ DEFAULT_DOC = (
 def humanize(slug: str) -> str:
     words = slug.replace("-", " ").replace("_", " ").split()
     return " ".join(w[:1].upper() + w[1:] for w in words)
+
+
+def clean_slug(name: str) -> str:
+    """Nom de dossier propre : minuscules, sans accent, tirets."""
+    s = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    s = re.sub(r"[^\w\s-]", "", s).strip().lower()
+    s = re.sub(r"[\s_]+", "-", s)
+    s = re.sub(r"-+", "-", s)
+    return s or "sans-nom"
+
+
+def _rename(path: Path, newname: str) -> Path:
+    if path.name == newname:
+        return path
+    target = path.with_name(newname)
+    if target.exists() and target.resolve() == path.resolve():
+        # changement de casse seul (FS insensible) → passer par un temporaire
+        tmp = path.with_name(newname + "___tmp")
+        os.rename(path, tmp)
+        os.rename(tmp, target)
+    else:
+        os.rename(path, target)
+    return target
+
+
+def normalize_tree():
+    """Renomme fichiers (extension en minuscules) + dossiers (slug propre)."""
+    changed = []
+    for tdir in [d for d in THEMES_DIR.iterdir() if d.is_dir()]:
+        for mdir in [d for d in tdir.iterdir() if d.is_dir()]:
+            for f in [p for p in mdir.iterdir() if p.is_file() and p.suffix.lower() in IMG_EXT]:
+                newf = f.stem.lower() + f.suffix.lower()
+                if newf != f.name:
+                    _rename(f, newf)
+                    changed.append(f"{tdir.name}/{mdir.name}/{f.name} → {newf}")
+            newm = clean_slug(mdir.name)
+            if newm != mdir.name:
+                _rename(mdir, newm)
+                changed.append(f"dossier {tdir.name}/{mdir.name} → {newm}")
+        newt = clean_slug(tdir.name)
+        if newt != tdir.name:
+            _rename(tdir, newt)
+            changed.append(f"dossier {tdir.name} → {newt}")
+    return changed
 
 
 def find_role(folder: Path, role: str):
@@ -86,6 +132,12 @@ def main():
     if not THEMES_DIR.exists():
         print(f"❌ Dossier introuvable : {THEMES_DIR}")
         sys.exit(1)
+
+    renamed = normalize_tree()
+    if renamed:
+        print("🧹 Noms normalisés (minuscules, sans accent) :")
+        for r in renamed:
+            print(f"   · {r}")
 
     labels_t, labels_m, order_t, order_m, doc = load_existing()
 
