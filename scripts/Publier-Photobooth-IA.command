@@ -13,7 +13,8 @@ echo "> Lecture des dossiers + mise a jour du registre..."
 python3 scripts/rebuild_ia_themes.py || { echo "ERREUR lors du scan."; echo; read -n1 -s -p "Touche pour fermer..."; exit 1; }
 echo
 echo "> Enregistrement..."
-git add docs/ia/themes/
+git config core.ignorecase false
+git add -A docs/ia/themes/
 if git diff --cached --quiet; then
   echo "Rien de nouveau a publier."
   echo; read -n1 -s -p "Touche pour fermer..."; exit 0
