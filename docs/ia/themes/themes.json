@@ -5,14 +5,28 @@
       "slug": "disco",
       "label": "Rétro & Disco",
       "montages": [
-        { "slug": "couple", "label": "Couple pailleté", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null, "extras": [] }
+        {
+          "slug": "couple",
+          "label": "Couple pailleté",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
       ]
     },
     {
       "slug": "cartoon",
       "label": "Cartoon / 3D",
       "montages": [
-        { "slug": "famille", "label": "Famille cartoon", "avant": "avant.jpg", "apres": "apres.jpg", "montage": null, "extras": [] }
+        {
+          "slug": "famille",
+          "label": "Famille cartoon",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": "montage.jpg",
+          "extras": []
+        }
       ]
     },
     {
