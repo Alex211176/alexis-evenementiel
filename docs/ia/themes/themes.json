@@ -31,7 +31,7 @@
     },
     {
       "slug": "avatar",
-      "label": "Avatar",
+      "label": "Avatar 3D",
       "montages": [
         {
           "slug": "couple",
@@ -45,14 +45,14 @@
     },
     {
       "slug": "foot",
-      "label": "Foot",
+      "label": "Supporter / Sport",
       "montages": [
         {
           "slug": "bînome",
           "label": "BîNome",
-          "avant": null,
-          "apres": null,
-          "montage": null,
+          "avant": "avant.PNG",
+          "apres": "apres.PNG",
+          "montage": "montage.JPG",
           "extras": []
         }
       ]

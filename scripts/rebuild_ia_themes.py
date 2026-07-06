@@ -31,7 +31,8 @@ DEFAULT_DOC = (
 
 
 def humanize(slug: str) -> str:
-    return slug.replace("-", " ").replace("_", " ").strip().title()
+    words = slug.replace("-", " ").replace("_", " ").split()
+    return " ".join(w[:1].upper() + w[1:] for w in words)
 
 
 def find_role(folder: Path, role: str):
