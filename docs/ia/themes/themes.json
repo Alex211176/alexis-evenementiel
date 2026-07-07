@@ -84,6 +84,20 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "mariage",
+      "label": "Mariage",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": "montage.jpg",
+          "extras": []
+        }
+      ]
     }
   ]
 }
