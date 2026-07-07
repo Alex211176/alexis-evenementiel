@@ -63,6 +63,14 @@
     .cat-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    /* Filtres par type (chips) de la section Location */
+    .loc-filters { position: sticky; top: 110px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 14px; margin-bottom: 24px; background: rgba(10,10,12,0.92); backdrop-filter: blur(10px); }
+    .loc-chip { border: 1px solid var(--line); background: transparent; color: var(--gris-clair); border-radius: 99px; padding: 7px 16px; font-family: 'Jost', sans-serif; font-size: 0.8rem; letter-spacing: 0.03em; cursor: pointer; transition: all .25s; white-space: nowrap; }
+    .loc-chip:hover { border-color: var(--or-sombre); color: var(--or-clair); }
+    .loc-chip.on { background: var(--or); color: var(--noir); border-color: var(--or); }
+    .loc-chip .loc-n { opacity: 0.55; font-size: 0.72rem; margin-left: 2px; }
+    .loc-chip.on .loc-n { opacity: 0.8; }
+    @media (max-width: 700px) { .loc-filters { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; top: 98px; } }
     .equip-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 
     .card { background: var(--noir-3); border: 1px solid var(--line); border-radius: 6px; padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease; }
@@ -416,7 +424,7 @@
             <h2>Location de <span class="italic">matériel</span></h2>
             <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
         </div>
-        <div class="cat-group"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
+        <div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button><button type="button" class="loc-chip" data-loc-filter="son">Sonorisation <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="regie">Régie DJ <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="lumiere">Lumière <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="effet">Effets <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="video">Vidéo <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="photo">Photo / Booth <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="energie">Énergie <span class="loc-n">3</span></button></div><div class="cat-group" data-loc-cat="son"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/bose-f1-systeme.png" alt="Bose F1 (système complet)" loading="lazy"></div>
             <div class="equip-body">
@@ -446,7 +454,7 @@
                 <div class="price">100 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="rcf-915" data-type="equip" data-nom="RCF ART 915 (paire)" data-kind="fixe" data-max="1" data-unite="paire" data-prix="100">+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Régie DJ</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="regie"><h3 class="cat-title">Régie DJ</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/denon-prime-4-plus.png" alt="Denon Prime 4+" loading="lazy"></div>
             <div class="equip-body">
@@ -476,7 +484,7 @@
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="numark-mixstream-pro-go" data-type="equip" data-nom="Numark Mixstream Pro Go" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50">+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Lumière</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="lumiere"><h3 class="cat-title">Lumière</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/boule-facettes-spot.png" alt="Boule à facettes 50 cm + spot LED" loading="lazy"></div>
             <div class="equip-body">
@@ -546,7 +554,7 @@
                 <div class="price">à partir de 70 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="chauvet-h9-set" data-type="equip" data-nom="Set de 4 PAR H9 (architectural)" data-kind="tranches" data-max="2" data-unite="set de 4" data-paliers='[{"prix_forfait": 70, "qte": 1}, {"prix_forfait": 120, "qte": 2}]'>+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Effets</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="effet"><h3 class="cat-title">Effets</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/algam-lighting-fmg1500.png" alt="Algam Lighting FMG1500" loading="lazy"></div>
             <div class="equip-body">
@@ -576,7 +584,7 @@
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="martin-magnum-2500" data-type="equip" data-nom="Martin Magnum 2500 (machine à brouillard)" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50">+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Vidéo</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="video"><h3 class="cat-title">Vidéo</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/insta360-x5.png" alt="Insta360 X5" loading="lazy"></div>
             <div class="equip-body">
@@ -606,7 +614,7 @@
                 <div class="price">250 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="ecran-projection-150" data-type="equip" data-nom="Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF" data-kind="fixe" data-max="1" data-unite="ensemble" data-prix="250">+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Photo / Booth</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="photo"><h3 class="cat-title">Photo / Booth</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/canon-r6-mark-ii.png" alt="Canon EOS R6 Mark II" loading="lazy"></div>
             <div class="equip-body">
@@ -676,7 +684,7 @@
                 <div class="price">à partir de 150 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="photobooth-canon-5d" data-type="equip" data-nom="Photobooth" data-kind="fixe" data-max="1" data-unite="set" data-prix="150.0" data-opt="impr">+ Ajouter au devis</button>
             </div>
-        </article></div></div><div class="cat-group"><h3 class="cat-title">Énergie</h3><div class="card-grid equip-grid">
+        </article></div></div><div class="cat-group" data-loc-cat="energie"><h3 class="cat-title">Énergie</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/ecoflow-delta-3-max.png" alt="EcoFlow Delta 3 Max — 2048 Wh / 3000 W" loading="lazy"></div>
             <div class="equip-body">
@@ -707,6 +715,18 @@
                 <button type="button" class="add-cart" data-id="ecoflow-station-energetique" data-type="equip" data-nom="Station énergétique portable EcoFlow 768Wh 800W" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
         </article></div></div>
+<script>(function(){
+  var bar=document.getElementById('loc-filters'); if(!bar) return;
+  var groups=document.querySelectorAll('.cat-group[data-loc-cat]');
+  bar.addEventListener('click', function(e){
+    var b=e.target.closest ? e.target.closest('.loc-chip') : null; if(!b) return;
+    var f=b.getAttribute('data-loc-filter');
+    var chips=bar.querySelectorAll('.loc-chip');
+    for(var i=0;i<chips.length;i++) chips[i].classList.toggle('on', chips[i]===b);
+    for(var j=0;j<groups.length;j++){ var g=groups[j]; g.style.display=(!f || g.getAttribute('data-loc-cat')===f)?'':'none'; }
+  });
+})();</script>
+
     </div>
 </section>
 
