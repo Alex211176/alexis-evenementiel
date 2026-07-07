@@ -301,7 +301,7 @@ LUNETTES_PROMO_CARD = """
             </div>
             <p class="card-desc">Montures personnalisées imprimées en 3D à vos couleurs (prénoms, date, thème…). 50 € les 3 paires, puis +7 €/paire. Un accessoire unique que vos invités gardent.</p>
             <a class="ia-cta" href="lunettes-3d.html">Voir les lunettes 3D &rarr;</a>
-            <button type="button" class="add-cart" data-id="lunettes-3d" data-type="pack" data-nom="Lunettes personnalisées 3D (3 paires)" data-kind="fixe" data-max="1" data-unite="lot" data-prix="50">+ Ajouter au devis</button>
+            <button type="button" class="add-cart" data-id="lunettes-3d" data-type="pack" data-nom="Lunettes personnalisées 3D (3 paires)" data-kind="fixe" data-max="1" data-unite="lot" data-prix="50" data-opt="paires">+ Ajouter au devis</button>
         </article>"""
 
 KIDS_BOOTH_PROMO_CARD = """
@@ -746,7 +746,8 @@ CART_JS = """
   // Jeux d'options du panier (sélecteur par article). Impressions : imprimante + consommables INCLUS dans ces tarifs.
   var OPTSETS={
     impr:{titre:'Impressions', items:[{v:'',lbl:'Sans impression',prix:0},{v:'100',lbl:'100 impressions',prix:50},{v:'200',lbl:'200 impressions',prix:100},{v:'400',lbl:'Illimité (400 photos 15x10)',prix:150}]},
-    conso:{titre:'Consommables', items:[{v:'',lbl:'Sans consommable',prix:0},{v:'800',lbl:'Carton 800 photos (15x10)',prix:150},{v:'1600',lbl:'2 cartons (1600 photos)',prix:300},{v:'2400',lbl:'3 cartons (2400 photos)',prix:450}]}
+    conso:{titre:'Consommables', items:[{v:'',lbl:'Sans consommable',prix:0},{v:'800',lbl:'Carton 800 photos (15x10)',prix:150},{v:'1600',lbl:'2 cartons (1600 photos)',prix:300},{v:'2400',lbl:'3 cartons (2400 photos)',prix:450}]},
+    paires:{titre:'Paires en plus (+7 \\u20ac/paire)', items:[{v:'',lbl:'Aucune (3 paires incluses)',prix:0},{v:'1',lbl:'+1 paire',prix:7},{v:'2',lbl:'+2 paires',prix:14},{v:'3',lbl:'+3 paires',prix:21},{v:'5',lbl:'+5 paires',prix:35},{v:'10',lbl:'+10 paires',prix:70}]}
   };
   function optItems(k){ return (OPTSETS[k]||{}).items||[]; }
   function optTitre(k){ return (OPTSETS[k]||{}).titre||'Option'; }
