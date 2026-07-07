@@ -319,6 +319,17 @@ KIDS_BOOTH_PROMO_CARD = """
             <button type="button" class="add-cart" data-id="kids-booth" data-type="pack" data-nom="Kids Booth" data-kind="fixe" data-max="1" data-unite="prestation" data-prix="100" data-opt="impr">+ Ajouter au devis</button>
         </article>"""
 
+MOBILE_BOOTH_PROMO_CARD = """
+        <article class="card ia-promo">
+            <div class="ia-badge">Itinérant</div>
+            <div class="card-head">
+                <h3>Mobile <span style="color:var(--or-clair)">Booth</span></h3>
+                <div class="price">à partir de 100 €</div>
+            </div>
+            <p class="card-desc">Borne photo itinérante qui vient aux invités — très appréciée pendant l'apéritif et le vin d'honneur. Choisissez votre volume d'impressions.</p>
+            <button type="button" class="add-cart" data-id="mobile-booth" data-type="equip" data-nom="Mobile Booth" data-kind="fixe" data-max="1" data-unite="set" data-prix="100" data-opt="impr">+ Ajouter au devis</button>
+        </article>"""
+
 
 def build_html(equipements, prestations, packs) -> str:
     """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
@@ -339,7 +350,8 @@ def build_html(equipements, prestations, packs) -> str:
             # La section Photobooth s'affiche même sans pack visible : elle porte
             # les cartes « produit » (Photobooth, IA, Lunettes, Kids) + Templates.
             cards += (PHOTOBOOTH_PROMO_CARD + IA_PROMO_CARD + LUNETTES_PROMO_CARD
-                      + KIDS_BOOTH_PROMO_CARD + TEMPLATES_PROMO_CARD)
+                      + KIDS_BOOTH_PROMO_CARD + MOBILE_BOOTH_PROMO_CARD
+                      + TEMPLATES_PROMO_CARD)
         if not cards:
             continue
         gid = ' id="photobooth"' if cat == "photobooth" else ''
