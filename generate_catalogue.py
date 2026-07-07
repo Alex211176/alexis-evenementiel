@@ -262,6 +262,19 @@ TEMPLATES_PROMO_CARD = """
             </a>
         </article>"""
 
+LUNETTES_PROMO_CARD = """
+        <article class="card ia-promo">
+            <a href="lunettes-3d.html">
+                <div class="ia-badge">Sur-mesure</div>
+                <div class="card-head">
+                    <h3>Lunettes <span style="color:var(--or-clair)">3D</span></h3>
+                    <div class="price">à partir de 50 €</div>
+                </div>
+                <p class="card-desc">Montures personnalisées imprimées en 3D à vos couleurs (prénoms, date, thème…). Un accessoire photobooth unique que vos invités gardent.</p>
+                <span class="ia-cta">Voir les lunettes 3D →</span>
+            </a>
+        </article>"""
+
 
 def build_html(equipements, prestations, packs) -> str:
     """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
@@ -280,7 +293,7 @@ def build_html(equipements, prestations, packs) -> str:
         cards = "".join(render_pack_card(pid, p, packs, equipements, prestations)
                         for pid, p in cat_packs)
         if cat == "photobooth":
-            cards += IA_PROMO_CARD + TEMPLATES_PROMO_CARD
+            cards += IA_PROMO_CARD + TEMPLATES_PROMO_CARD + LUNETTES_PROMO_CARD
         gid = ' id="photobooth"' if cat == "photobooth" else ''
         packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 

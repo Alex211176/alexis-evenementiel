@@ -9,12 +9,14 @@ echo "============================================"
 echo "   Publication Photobooth IA - exemples"
 echo "============================================"
 echo
-echo "> Lecture des dossiers + mise a jour du registre..."
-python3 scripts/rebuild_ia_themes.py || { echo "ERREUR lors du scan."; echo; read -n1 -s -p "Touche pour fermer..."; exit 1; }
+echo "> Lecture des dossiers Photobooth IA + mise a jour du registre..."
+python3 scripts/rebuild_ia_themes.py || { echo "ERREUR lors du scan IA."; echo; read -n1 -s -p "Touche pour fermer..."; exit 1; }
+echo "> Lecture des galeries simples (lunettes 3D, etc.)..."
+python3 scripts/rebuild_simple_galleries.py || { echo "ERREUR lors du scan galeries."; echo; read -n1 -s -p "Touche pour fermer..."; exit 1; }
 echo
 echo "> Enregistrement..."
 git config core.ignorecase false
-git add -A docs/ia/themes/
+git add -A docs/ia/themes/ docs/lunettes-3d/
 if git diff --cached --quiet; then
   echo "Rien de nouveau a publier."
   echo; read -n1 -s -p "Touche pour fermer..."; exit 0
