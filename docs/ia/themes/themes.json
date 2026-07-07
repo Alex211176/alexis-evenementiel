@@ -8,7 +8,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.jpg",
+          "avant": "avant.jpeg",
           "apres": "apres.jpg",
           "montage": "montage.jpg",
           "extras": []
@@ -22,7 +22,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.jpg",
+          "avant": "avant.jpeg",
           "apres": "apres.jpg",
           "montage": "montage.jpg",
           "extras": []
@@ -36,7 +36,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.png",
+          "avant": "avant.jpeg",
           "apres": "apres.png",
           "montage": "montage.jpg",
           "extras": []
@@ -50,7 +50,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.png",
+          "avant": "avant.jpeg",
           "apres": "apres.png",
           "montage": "montage.jpg",
           "extras": []
@@ -64,7 +64,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.png",
+          "avant": "avant.jpeg",
           "apres": "apres.png",
           "montage": "montage.jpg",
           "extras": []
@@ -78,7 +78,7 @@
         {
           "slug": "exemple-01",
           "label": "Exemple 01",
-          "avant": "avant.png",
+          "avant": "avant.jpeg",
           "apres": "apres.png",
           "montage": "montage.jpg",
           "extras": []
