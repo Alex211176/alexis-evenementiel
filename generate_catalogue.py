@@ -247,15 +247,14 @@ def render_equip_card(eid, e, photos_rel="photos"):
 
 IA_PROMO_CARD = """
         <article class="card ia-promo">
-            <a href="photobooth-ia.html">
-                <div class="ia-badge">Nouveauté</div>
-                <div class="card-head">
-                    <h3>Option Photobooth <span style="color:var(--or-clair)">IA</span></h3>
-                    <div class="price">à partir de 100 €</div>
-                </div>
-                <p class="card-desc">Chaque photo transformée par IA sur le thème de votre choix (foot, disco, cartoon, mariage…), avec votre marque intégrée.</p>
-                <span class="ia-cta">Découvrir l'option IA →</span>
-            </a>
+            <div class="ia-badge">Nouveauté</div>
+            <div class="card-head">
+                <h3>Option Photobooth <span style="color:var(--or-clair)">IA</span></h3>
+                <div class="price">100 €</div>
+            </div>
+            <p class="card-desc">Chaque photo transformée par IA sur le thème de votre choix (foot, disco, cartoon, mariage…), avec votre marque intégrée.</p>
+            <a class="ia-cta" href="photobooth-ia.html">Découvrir l'option IA &rarr;</a>
+            <button type="button" class="add-cart" data-id="option-photobooth-ia" data-type="presta" data-nom="Option Photobooth IA" data-kind="fixe" data-max="1" data-unite="unité" data-prix="100">+ Ajouter au devis</button>
         </article>"""
 
 TEMPLATES_PROMO_CARD = """
