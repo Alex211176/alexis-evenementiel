@@ -896,7 +896,15 @@
   window.AECart={ open:open, close:close, q:q, del:del, submit:submit, setOpt:setOpt };
   function maybeAutoOpen(){ var h=(location.hash||'').toLowerCase(); if(h.indexOf('devis')>=0||h.indexOf('demande')>=0) open(); }
   window.addEventListener('hashchange', maybeAutoOpen);
-  function init(){ render(); maybeAutoOpen(); }
+  // Rattrapage : un article ajouté au panier AVANT l'ajout d'une option ne porte
+  // pas encore d'option — on la récupère depuis le bouton correspondant du catalogue.
+  function migrateOpts(){ var changed=false;
+    cart.forEach(function(it){ if(it.opt===undefined || it.opt===null){
+      var b=document.querySelector('.add-cart[data-id="'+it.id+'"]');
+      it.opt=(b && b.getAttribute('data-opt'))||''; if(it.optv===undefined) it.optv='';
+      delete it.hasImpr; delete it.impr; changed=true; } });
+    if(changed) save(); }
+  function init(){ migrateOpts(); render(); maybeAutoOpen(); }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
 })();
 
