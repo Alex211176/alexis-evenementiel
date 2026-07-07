@@ -234,6 +234,9 @@ def render_equip_card(eid, e, photos_rel="photos"):
     marque = escape(e.get("marque", "") or "")
     desc = escape(e.get("description_courte", "") or "")
     prix_v, prefixe = prix_equipement(e)
+    # Un équipement qui porte une option (impressions, consommables…) affiche « à partir de »
+    if not prefixe and eid in ITEM_OPTIONS:
+        prefixe = "à partir de "
     if prix_v:
         prix = f'{escape(prefixe)}{euro(prix_v)}'
     else:
@@ -309,7 +312,7 @@ KIDS_BOOTH_PROMO_CARD = """
             <div class="ia-badge">Spécial enfants</div>
             <div class="card-head">
                 <h3>Kids <span style="color:var(--or-clair)">Booth</span></h3>
-                <div class="price">100 €</div>
+                <div class="price">à partir de 100 €</div>
             </div>
             <p class="card-desc">Un photobooth pensé pour ravir les boutchous : hauteur adaptée, accessoires rigolos et souvenirs à emporter. Impressions en option.</p>
             <a class="ia-cta" href="kids-booth.html">Voir la galerie &rarr;</a>
