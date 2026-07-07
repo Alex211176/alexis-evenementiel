@@ -115,7 +115,12 @@ def resoudre_pack_simple(pid, packs, _seen=None):
 
 
 # ----- Panier / demande de devis -----
-def _cart_button(item_type, item_id, nom, kind, prix=None, paliers=None, max_qty=1, unite="unité"):
+# Articles qui peuvent recevoir l'option « impressions » (consommable ; l'imprimante
+# est ajoutée à part par le panier). Se rattache par id d'article.
+PRINT_OPTION_ITEMS = {"mobile-booth", "kids-booth"}
+
+
+def _cart_button(item_type, item_id, nom, kind, prix=None, paliers=None, max_qty=1, unite="unité", impr=False):
     """Bouton « + Ajouter au devis » — les infos de tarif sont portées en data-*
     et lues côté client par le panier (aucune donnée serveur nécessaire)."""
     a = [
@@ -130,6 +135,8 @@ def _cart_button(item_type, item_id, nom, kind, prix=None, paliers=None, max_qty
         a.append(f'data-prix="{prix}"')
     if paliers:
         a.append("data-paliers='" + escape(json.dumps(paliers, ensure_ascii=False), quote=False) + "'")
+    if impr:
+        a.append('data-impr="1"')
     return '<button type="button" class="add-cart" ' + " ".join(a) + '>+ Ajouter au devis</button>'
 
 
@@ -139,14 +146,15 @@ def _equip_cart_button(eid, e):
     unite = vente.get("unite_label", "unité")
     maxq = e.get("quantite_possedee", 1) or 1
     nom = e.get("nom", eid)
+    impr = eid in PRINT_OPTION_ITEMS
     if mode == "tranches":
-        return _cart_button("equip", eid, nom, "tranches", paliers=vente.get("paliers", []) or [], max_qty=maxq, unite=unite)
+        return _cart_button("equip", eid, nom, "tranches", paliers=vente.get("paliers", []) or [], max_qty=maxq, unite=unite, impr=impr)
     if mode == "unitaire":
-        return _cart_button("equip", eid, nom, "unitaire", prix=vente.get("prix_unitaire", 0) or 0, max_qty=maxq, unite=unite)
+        return _cart_button("equip", eid, nom, "unitaire", prix=vente.get("prix_unitaire", 0) or 0, max_qty=maxq, unite=unite, impr=impr)
     pv = vente.get("prix_unitaire")
     if pv:
-        return _cart_button("equip", eid, nom, "fixe", prix=pv, max_qty=1, unite=unite)
-    return _cart_button("equip", eid, nom, "devis", max_qty=1, unite=unite)
+        return _cart_button("equip", eid, nom, "fixe", prix=pv, max_qty=1, unite=unite, impr=impr)
+    return _cart_button("equip", eid, nom, "devis", max_qty=1, unite=unite, impr=impr)
 
 
 # ----- Génération HTML -----
@@ -277,15 +285,14 @@ LUNETTES_PROMO_CARD = """
 
 KIDS_BOOTH_PROMO_CARD = """
         <article class="card ia-promo">
-            <a href="kids-booth.html">
-                <div class="ia-badge">Spécial enfants</div>
-                <div class="card-head">
-                    <h3>Kids <span style="color:var(--or-clair)">Booth</span></h3>
-                    <div class="price">à partir de 100 €</div>
-                </div>
-                <p class="card-desc">Un photobooth pensé pour ravir les boutchous : hauteur adaptée, accessoires rigolos et souvenirs à emporter. Les enfants adorent, les parents soufflent.</p>
-                <span class="ia-cta">Découvrir le Kids Booth →</span>
-            </a>
+            <div class="ia-badge">Spécial enfants</div>
+            <div class="card-head">
+                <h3>Kids <span style="color:var(--or-clair)">Booth</span></h3>
+                <div class="price">100 €</div>
+            </div>
+            <p class="card-desc">Un photobooth pensé pour ravir les boutchous : hauteur adaptée, accessoires rigolos et souvenirs à emporter. Impressions en option.</p>
+            <a class="ia-cta" href="kids-booth.html">Voir la galerie &rarr;</a>
+            <button type="button" class="add-cart" data-id="kids-booth" data-type="pack" data-nom="Kids Booth" data-kind="fixe" data-max="1" data-unite="prestation" data-prix="100" data-impr="1">+ Ajouter au devis</button>
         </article>"""
 
 
@@ -602,6 +609,12 @@ CART_CSS = """
     .ci-ctrl button{ width:26px; height:26px; border:1px solid var(--line); background:transparent; color:var(--creme); border-radius:4px; cursor:pointer; font-size:1rem; }
     .ci-qty{ min-width:22px; text-align:center; font-size:0.85rem; }
     .ci-del{ background:none; border:none; color:var(--gris); cursor:pointer; font-size:0.76rem; text-decoration:underline; margin-top:8px; display:inline-block; }
+    .ci-opt{ display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .ci-opt > span{ font-size:0.64rem; color:var(--gris); letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
+    .ci-opt select{ margin:0 !important; flex:1; padding:7px 10px; font-size:0.8rem; }
+    .ci.ci-auto{ opacity:0.92; }
+    .ci-note{ font-size:0.72rem; color:var(--gris); font-style:italic; margin-top:2px; }
+    .ci-note b{ color:var(--or-clair); font-style:normal; }
     .cart-total{ display:flex; justify-content:space-between; font-size:1.02rem; color:var(--creme); margin:14px 0 4px; }
     .cart-total b{ font-family:'Cormorant Garamond',serif; color:var(--or-clair); font-size:1.3rem; }
     .cart-note{ font-size:0.72rem; color:var(--gris); }
@@ -702,6 +715,14 @@ CART_JS = """
   var KEY='ae_cart_v1';
   var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
   var CONTACT='contact@alexisevenementiel.fr';
+  // Option « impressions » (consommable seul) — l'imprimante est ajoutée à part, une fois.
+  var IMPR=[{v:'',lbl:'Sans impression',prix:0},{v:'100',lbl:'100 impressions',prix:50},{v:'200',lbl:'200 impressions',prix:100},{v:'400',lbl:'400 impressions',prix:150}];
+  var PRINTER_ID='imprimante-dnp', PRINTER_NOM='Imprimante DNP DS620', PRINTER_PRIX=70;
+  function imprPrix(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].prix; } return 0; }
+  function imprLbl(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].lbl; } return ''; }
+  function anyImpr(){ for(var i=0;i<cart.length;i++){ if(cart[i].hasImpr && cart[i].impr) return true; } return false; }
+  function hasPrinter(){ for(var i=0;i<cart.length;i++){ if(cart[i].id===PRINTER_ID) return true; } return false; }
+  function printerAuto(){ return anyImpr() && !hasPrinter(); }
   var cart=[]; try{ cart=JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ cart=[]; }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(cart)); }catch(e){} }
   function fmt(n){ n=Math.round(n*100)/100; return (n%1===0? n.toFixed(0): n.toFixed(2).replace('.',',')) + ' \\u20ac'; }
@@ -711,33 +732,44 @@ CART_JS = """
     if(!b){ b=p[0]; for(var j=0;j<p.length;j++){ if(p[j].qte<b.qte) b=p[j]; } }
     return b.prix_forfait||0; }
   function lineTotal(it){ if(it.kind==='devis') return null;
-    if(it.kind==='tranches') return palierPrice(it.paliers, it.qty);
-    if(it.kind==='unitaire') return (it.prix||0)*it.qty; return it.prix||0; }
+    var base = (it.kind==='tranches') ? palierPrice(it.paliers, it.qty)
+             : (it.kind==='unitaire') ? (it.prix||0)*it.qty
+             : (it.prix||0);
+    if(it.hasImpr && it.impr) base += imprPrix(it.impr);
+    return base; }
   function count(){ var c=0; cart.forEach(function(it){ c+=it.qty; }); return c; }
   function find(k){ for(var i=0;i<cart.length;i++){ if(cart[i].key===k) return cart[i]; } return null; }
   function add(btn){ var d=btn.dataset, key=d.type+':'+d.id, it=find(key), max=parseInt(d.max)||1;
     if(it){ if(it.qty<max) it.qty++; }
     else{ var pal=null; if(d.paliers){ try{ pal=JSON.parse(d.paliers); }catch(e){} }
-      cart.push({key:key,type:d.type,id:d.id,nom:d.nom,kind:d.kind,prix:parseFloat(d.prix)||0,paliers:pal,max:max,unite:d.unite||'unité',qty:1}); }
+      cart.push({key:key,type:d.type,id:d.id,nom:d.nom,kind:d.kind,prix:parseFloat(d.prix)||0,paliers:pal,max:max,unite:d.unite||'unité',qty:1,hasImpr:(d.impr==='1'),impr:''}); }
     save(); render(); pulse(btn); }
   function pulse(btn){ btn.classList.add('added'); var t=btn.textContent; btn.textContent='\\u2713 Ajouté';
     setTimeout(function(){ btn.classList.remove('added'); btn.textContent='+ Ajouter au devis'; }, 1100); }
   function q(k,d){ var it=find(k); if(!it) return; it.qty+=d; if(it.qty<1) it.qty=1; if(it.qty>it.max) it.qty=it.max; save(); render(); }
   function del(k){ cart=cart.filter(function(it){ return it.key!==k; }); save(); render(); }
+  function setImpr(k,v){ var it=find(k); if(it){ it.impr=v; save(); render(); } }
   function render(){ var w=document.getElementById('cart-items'); if(!w) return;
     var badge=document.getElementById('cart-count'); if(badge){ badge.textContent=count(); badge.classList.toggle('hide', count()===0); }
     if(cart.length===0){ w.innerHTML='<div class=\"cart-empty\">Aucun matériel ajouté pour l\\'instant.<br>Ajoutez des packs, prestations ou du matériel — ou décrivez simplement votre besoin ci-dessous.</div>';
       var st=document.getElementById('cart-subtotal'); if(st) st.textContent='0 \\u20ac'; return; }
     var html='', sub=0;
-    cart.forEach(function(it){ var lt=lineTotal(it), ctrl='';
+    cart.forEach(function(it){ var lt=lineTotal(it), ctrl='', opt='';
       if(it.kind==='tranches'||it.kind==='unitaire'){ ctrl='<div class=\"ci-ctrl\"><button onclick=\"AECart.q(\\''+it.key+'\\',-1)\">\\u2212</button><span class=\"ci-qty\">'+it.qty+'</span><button onclick=\"AECart.q(\\''+it.key+'\\',1)\">+</button></div>'; }
+      if(it.hasImpr){ opt='<div class=\"ci-opt\"><span>Impressions</span><select onchange=\"AECart.setImpr(\\''+it.key+'\\',this.value)\">';
+        for(var k=0;k<IMPR.length;k++){ var o=IMPR[k]; opt+='<option value=\"'+o.v+'\"'+(o.v===it.impr?' selected':'')+'>'+esc(o.lbl)+(o.prix?(' (+'+o.prix+' \\u20ac)'):'')+'</option>'; }
+        opt+='</select></div>'; }
       var txt=(lt===null)?'Sur devis':fmt(lt)+((it.qty>1&&it.kind==='unitaire')?' ('+it.qty+'\\u00d7)':''); if(lt!==null) sub+=lt;
-      html+='<div class=\"ci\"><div class=\"ci-nom\">'+esc(it.nom)+'</div><div class=\"ci-line\">'+txt+'</div>'+ctrl+'<button class=\"ci-del\" onclick=\"AECart.del(\\''+it.key+'\\')\">Retirer</button></div>'; });
+      html+='<div class=\"ci\"><div class=\"ci-nom\">'+esc(it.nom)+'</div><div class=\"ci-line\">'+txt+'</div>'+opt+ctrl+'<button class=\"ci-del\" onclick=\"AECart.del(\\''+it.key+'\\')\">Retirer</button></div>'; });
+    if(printerAuto()){ sub+=PRINTER_PRIX;
+      html+='<div class=\"ci ci-auto\"><div class=\"ci-nom\">'+esc(PRINTER_NOM)+'</div><div class=\"ci-line\">'+fmt(PRINTER_PRIX)+'</div><div class=\"ci-note\">Ajout\\u00e9e automatiquement \\u2014 <b>requise pour les impressions</b></div></div>'; }
     w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
   function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
   function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
   function cartLines(){ if(cart.length===0) return '(aucun matériel sélectionné — à définir ensemble)';
-    var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt; l.push('- '+it.nom+' x'+it.qty+' : '+p); });
+    var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt;
+      var nom=it.nom; if(it.hasImpr&&it.impr) nom+=' + '+imprLbl(it.impr); l.push('- '+nom+' x'+it.qty+' : '+p); });
+    if(printerAuto()){ sub+=PRINTER_PRIX; l.push('- '+PRINTER_NOM+' (requise pour les impressions) x1 : '+fmt(PRINTER_PRIX)); }
     l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\\n'); }
   function briefText(d){ var L=[];
     L.push('=== ÉVÉNEMENT ===');
@@ -777,7 +809,7 @@ CART_JS = """
     }
     return false; }
   document.addEventListener('click', function(e){ var b=e.target.closest?e.target.closest('.add-cart'):null; if(b) add(b); });
-  window.AECart={ open:open, close:close, q:q, del:del, submit:submit };
+  window.AECart={ open:open, close:close, q:q, del:del, submit:submit, setImpr:setImpr };
   function maybeAutoOpen(){ var h=(location.hash||'').toLowerCase(); if(h.indexOf('devis')>=0||h.indexOf('demande')>=0) open(); }
   window.addEventListener('hashchange', maybeAutoOpen);
   function init(){ render(); maybeAutoOpen(); }
