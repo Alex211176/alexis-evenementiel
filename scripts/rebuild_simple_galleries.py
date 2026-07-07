@@ -35,6 +35,7 @@ IMG_EXT = (".jpg", ".jpeg", ".png", ".webp")
 # le manifeste docs/<slug>/gallery.json). Ajoute ici tes futures options.
 GALLERIES = [
     {"slug": "lunettes-3d", "titre": "Lunettes personnalisées 3D"},
+    {"slug": "kids-booth", "titre": "Kids Booth"},
 ]
 
 

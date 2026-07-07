@@ -16,7 +16,7 @@ python3 scripts/rebuild_simple_galleries.py || { echo "ERREUR lors du scan galer
 echo
 echo "> Enregistrement..."
 git config core.ignorecase false
-git add -A docs/ia/themes/ docs/lunettes-3d/
+git add -A docs/ia/themes/ docs/lunettes-3d/ docs/kids-booth/
 if git diff --cached --quiet; then
   echo "Rien de nouveau a publier."
   echo; read -n1 -s -p "Touche pour fermer..."; exit 0
