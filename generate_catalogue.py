@@ -330,6 +330,22 @@ MOBILE_BOOTH_PROMO_CARD = """
             <button type="button" class="add-cart" data-id="mobile-booth" data-type="equip" data-nom="Mobile Booth" data-kind="fixe" data-max="1" data-unite="set" data-prix="100" data-opt="impr">+ Ajouter au devis</button>
         </article>"""
 
+# JS de filtrage de la section Location par type (chips). Inséré comme valeur
+# (via {equipements}) donc ses accolades ne gênent pas le .format() du template.
+LOC_FILTER_JS = """
+<script>(function(){
+  var bar=document.getElementById('loc-filters'); if(!bar) return;
+  var groups=document.querySelectorAll('.cat-group[data-loc-cat]');
+  bar.addEventListener('click', function(e){
+    var b=e.target.closest ? e.target.closest('.loc-chip') : null; if(!b) return;
+    var f=b.getAttribute('data-loc-filter');
+    var chips=bar.querySelectorAll('.loc-chip');
+    for(var i=0;i<chips.length;i++) chips[i].classList.toggle('on', chips[i]===b);
+    for(var j=0;j<groups.length;j++){ var g=groups[j]; g.style.display=(!f || g.getAttribute('data-loc-cat')===f)?'':'none'; }
+  });
+})();</script>
+"""
+
 
 def build_html(equipements, prestations, packs) -> str:
     """Assemble le HTML de la page catalogue à partir des dicts du catalogue.
@@ -369,8 +385,9 @@ def build_html(equipements, prestations, packs) -> str:
         gid = ' id="photo-video"' if cat == "captation" else ''
         presta_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
-    # --- Section LOCATION (équipements), groupés par catégorie ---
-    equip_html = ""
+    # --- Section LOCATION (équipements), groupés par catégorie + filtres (chips) ---
+    equip_groups = ""
+    loc_cats = []
     for cat, label in EQUIP_CATEGORIES.items():
         cat_eq = [(eid, e) for eid, e in equipements.items()
                   if e.get("categorie") == cat and equipement_visible_catalogue(e)]
@@ -378,7 +395,19 @@ def build_html(equipements, prestations, packs) -> str:
             continue
         cat_eq.sort(key=lambda x: x[1].get("nom", ""))
         cards = "".join(render_equip_card(eid, e) for eid, e in cat_eq)
-        equip_html += f'<div class="cat-group"><h3 class="cat-title">{escape(label)}</h3><div class="card-grid equip-grid">{cards}</div></div>'
+        loc_cats.append((cat, label, len(cat_eq)))
+        equip_groups += (f'<div class="cat-group" data-loc-cat="{cat}">'
+                         f'<h3 class="cat-title">{escape(label)}</h3>'
+                         f'<div class="card-grid equip-grid">{cards}</div></div>')
+    if len(loc_cats) >= 2:
+        chips = '<div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button>'
+        chips += "".join(
+            f'<button type="button" class="loc-chip" data-loc-filter="{escape(c, quote=True)}">{escape(l)} <span class="loc-n">{n}</span></button>'
+            for c, l, n in loc_cats)
+        chips += '</div>'
+        equip_html = chips + equip_groups + LOC_FILTER_JS
+    else:
+        equip_html = equip_groups
 
     maj = datetime.now().strftime("%d/%m/%Y")
     return HTML_TEMPLATE.format(
@@ -471,6 +500,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .cat-title {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }}
 
     .card-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }}
+    /* Filtres par type (chips) de la section Location */
+    .loc-filters {{ position: sticky; top: 110px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 14px; margin-bottom: 24px; background: rgba(10,10,12,0.92); backdrop-filter: blur(10px); }}
+    .loc-chip {{ border: 1px solid var(--line); background: transparent; color: var(--gris-clair); border-radius: 99px; padding: 7px 16px; font-family: 'Jost', sans-serif; font-size: 0.8rem; letter-spacing: 0.03em; cursor: pointer; transition: all .25s; white-space: nowrap; }}
+    .loc-chip:hover {{ border-color: var(--or-sombre); color: var(--or-clair); }}
+    .loc-chip.on {{ background: var(--or); color: var(--noir); border-color: var(--or); }}
+    .loc-chip .loc-n {{ opacity: 0.55; font-size: 0.72rem; margin-left: 2px; }}
+    .loc-chip.on .loc-n {{ opacity: 0.8; }}
+    @media (max-width: 700px) {{ .loc-filters {{ flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; top: 98px; }} }}
     .equip-grid {{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
 
     .card {{ background: var(--noir-3); border: 1px solid var(--line); border-radius: 6px; padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease; }}
