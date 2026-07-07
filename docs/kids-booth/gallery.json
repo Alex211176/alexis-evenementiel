@@ -1,3 +1,9 @@
 {
-  "photos": []
+  "photos": [
+    {
+      "src": "la-borne.jpg",
+      "cap": "La Borne",
+      "type": "image"
+    }
+  ]
 }
