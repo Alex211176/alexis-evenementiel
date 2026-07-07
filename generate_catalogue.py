@@ -324,14 +324,16 @@ def build_html(equipements, prestations, packs) -> str:
     for cat, label in PACK_CATEGORIES.items():
         cat_packs = [(pid, p) for pid, p in packs.items()
                      if p.get("categorie") == cat and pack_visible_catalogue(p)]
-        if not cat_packs:
-            continue
         cat_packs.sort(key=lambda x: x[1].get("prix_ttc", 0))
         cards = "".join(render_pack_card(pid, p, packs, equipements, prestations)
                         for pid, p in cat_packs)
         if cat == "photobooth":
+            # La section Photobooth s'affiche même sans pack visible : elle porte
+            # les cartes « produit » (Photobooth, IA, Lunettes, Kids) + Templates.
             cards += (PHOTOBOOTH_PROMO_CARD + IA_PROMO_CARD + LUNETTES_PROMO_CARD
                       + KIDS_BOOTH_PROMO_CARD + TEMPLATES_PROMO_CARD)
+        if not cards:
+            continue
         gid = ' id="photobooth"' if cat == "photobooth" else ''
         packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
