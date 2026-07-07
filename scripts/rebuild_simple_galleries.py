@@ -11,7 +11,8 @@ Ajouter une future galerie = une ligne dans GALLERIES ci-dessous + une page
 HTML qui lit docs/<slug>/gallery.json (voir docs/lunettes-3d.html comme modèle).
 
 Conventions de dépôt (rien d'obligatoire) :
-- Extensions .jpg .jpeg .png .webp — la casse est normalisée en minuscules.
+- Photos .jpg .jpeg .png .webp ET vidéos .mp4 .webm .mov (affichées MUETTES).
+  La casse est normalisée en minuscules.
 - Un préfixe « 01- », « 02- »… force l'ordre (sinon tri alphabétique).
 - Le reste du nom devient la légende : « 03-monture-coeur.jpg » → « Monture coeur ».
 - Les légendes déjà présentes dans gallery.json et modifiées à la main sont
@@ -29,6 +30,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 IMG_EXT = (".jpg", ".jpeg", ".png", ".webp")
+VIDEO_EXT = (".mp4", ".webm", ".mov")
+MEDIA_EXT = IMG_EXT + VIDEO_EXT
+
+
+def media_type(suffix: str) -> str:
+    return "video" if suffix.lower() in VIDEO_EXT else "image"
 
 # --- Registre des galeries simples -----------------------------------------
 # slug = nom du dossier sous docs/ (le dossier photos est docs/<slug>/photos/,
@@ -102,7 +109,7 @@ def build_gallery(slug: str) -> dict:
     old_caps = load_existing_caps(manifest)
 
     # 1) normaliser les noms (extension minuscule + slug propre)
-    files = [p for p in photos_dir.iterdir() if p.is_file() and p.suffix.lower() in IMG_EXT]
+    files = [p for p in photos_dir.iterdir() if p.is_file() and p.suffix.lower() in MEDIA_EXT]
     normalized = []
     for f in files:
         newname = clean_name(f.stem) + f.suffix.lower()
@@ -121,7 +128,11 @@ def build_gallery(slug: str) -> dict:
         auto = humanize(Path(p.name).stem)
         cap = old_caps.get(p.name)
         # si l'ancienne légende existe et n'est pas la version auto → on la garde
-        photos.append({"src": p.name, "cap": cap if cap else auto})
+        photos.append({
+            "src": p.name,
+            "cap": cap if cap else auto,
+            "type": media_type(p.suffix),
+        })
 
     manifest.write_text(
         json.dumps({"photos": photos}, ensure_ascii=False, indent=2) + "\n",

@@ -1,3 +1,29 @@
 {
-  "photos": []
+  "photos": [
+    {
+      "src": "01-anniversaire-lena.jpg",
+      "cap": "Anniversaire Léna",
+      "type": "image"
+    },
+    {
+      "src": "02-nina-et-martin.jpg",
+      "cap": "Nina & Martin",
+      "type": "image"
+    },
+    {
+      "src": "03-comite-des-fetes-mouzieys-teulet.jpg",
+      "cap": "Comité des fêtes de Mouzieys-Teulet",
+      "type": "image"
+    },
+    {
+      "src": "04-salsa-libre.mp4",
+      "cap": "Salsa Libre",
+      "type": "video"
+    },
+    {
+      "src": "05-west-duck-swing.mp4",
+      "cap": "West Duck Swing",
+      "type": "video"
+    }
+  ]
 }

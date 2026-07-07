@@ -48,8 +48,9 @@
     /* Galerie : hauteur commune, largeur adaptée au ratio (comme la fiche montage) */
     .grid { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; align-items:flex-start; }
     .g-item { position:relative; height:300px; flex:0 0 auto; overflow:hidden; border-radius:6px; border:1px solid var(--line); cursor:pointer; display:block; background:var(--noir-3); }
-    .g-item img { height:100%; width:auto; object-fit:cover; display:block; transition:transform .6s ease; }
-    .g-item:hover img { transform:scale(1.04); }
+    .g-item img, .g-item video { height:100%; width:auto; object-fit:cover; display:block; transition:transform .6s ease; }
+    .g-item:hover img, .g-item:hover video { transform:scale(1.04); }
+    .g-item .vbadge { position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%; background:rgba(10,10,12,0.7); color:var(--or-clair); display:flex; align-items:center; justify-content:center; font-size:0.7rem; pointer-events:none; }
     .g-item .cap { position:absolute; left:0; right:0; bottom:0; padding:14px 10px; background:linear-gradient(180deg, transparent, rgba(10,10,12,0.85)); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--or-clair); text-align:center; white-space:nowrap; opacity:0; transition:opacity .4s; }
     .g-item:hover .cap { opacity:1; }
     .g-empty { text-align:center; color:var(--gris); padding:20px 0; }
@@ -80,7 +81,7 @@
     /* Lightbox navigable (flèches / swipe / clavier) */
     .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(5,5,7,0.95); display: none; align-items: center; justify-content: center; padding: 40px; backdrop-filter: blur(6px); }
     .lightbox.open { display: flex; }
-    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .lightbox img, .lightbox video { max-width: 92vw; max-height: 88vh; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
     .lightbox .close { position: absolute; top: 26px; right: 34px; color: var(--creme); font-size: 2.2rem; cursor: pointer; line-height: 1; background: none; border: none; z-index: 2; }
     .lightbox .close:hover { color: var(--or-clair); }
     .lightbox .lb-cap { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: var(--or-clair); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -169,7 +170,7 @@
     <button class="close" id="lb-close">&times;</button>
     <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Précédent">&#8249;</button>
     <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Suivant">&#8250;</button>
-    <img id="lb-img" src="" alt="">
+    <div id="lb-media"></div>
     <div class="lb-cap" id="lb-cap"></div>
 </div>
 
@@ -183,19 +184,29 @@
     .then(function(data){ render((data && data.photos) || []); })
     .catch(function(){ render([]); });
 
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
   function render(list){
     photos = list;
     var grid = document.getElementById('grid');
     if(!photos.length){ document.getElementById('empty').style.display = 'block'; return; }
     photos.forEach(function(p, i){
       var a = document.createElement('div'); a.className = 'g-item';
-      a.innerHTML = '<img src="'+BASE+p.src+'" alt="'+(p.cap||'Lunettes personnalisées')+'"><span class="cap">'+(p.cap||'')+'</span>';
+      var cap = esc(p.cap || '');
+      var media;
+      if(p.type === 'video'){
+        // vignette : lecture silencieuse en boucle (jamais de son)
+        media = '<video src="'+BASE+p.src+'" muted loop playsinline autoplay preload="metadata"></video><span class="vbadge">&#9654;</span>';
+      } else {
+        media = '<img src="'+BASE+p.src+'" alt="'+(cap || 'Lunettes personnalisées')+'">';
+      }
+      a.innerHTML = media + '<span class="cap">'+cap+'</span>';
       a.addEventListener('click', function(){ openLb(i); });
       grid.appendChild(a);
     });
   }
 
-  var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCap = document.getElementById('lb-cap');
+  var lb = document.getElementById('lightbox'), lbMedia = document.getElementById('lb-media'), lbCap = document.getElementById('lb-cap');
   var lbPrev = document.getElementById('lb-prev'), lbNext = document.getElementById('lb-next');
   var _lbSwiped = false, _lx = 0, _ly = 0;
 
@@ -203,18 +214,24 @@
     if(!photos.length) return;
     lbPos = (pos + photos.length) % photos.length;
     var p = photos[lbPos];
-    lbImg.src = BASE + p.src; lbImg.alt = p.cap || ''; lbCap.textContent = p.cap || '';
+    if(p.type === 'video'){
+      // plein écran : muet + contrôles, jamais de son
+      lbMedia.innerHTML = '<video src="'+BASE+p.src+'" muted autoplay loop playsinline controls></video>';
+    } else {
+      lbMedia.innerHTML = '<img class="lb-img" src="'+BASE+p.src+'" alt="'+esc(p.cap||'')+'">';
+    }
+    lbCap.textContent = p.cap || '';
     var multi = photos.length > 1;
     lbPrev.style.display = lbNext.style.display = multi ? 'flex' : 'none';
     lb.classList.add('open');
   }
-  function closeLb(){ lb.classList.remove('open'); lbImg.removeAttribute('src'); }
+  function closeLb(){ lb.classList.remove('open'); lbMedia.innerHTML = ''; }
   function navLb(d){ if(lbPos < 0 || photos.length < 2) return; openLb(lbPos + d); }
 
   document.getElementById('lb-close').addEventListener('click', function(e){ e.stopPropagation(); closeLb(); });
   lbPrev.addEventListener('click', function(e){ e.stopPropagation(); navLb(-1); });
   lbNext.addEventListener('click', function(e){ e.stopPropagation(); navLb(1); });
-  lb.addEventListener('click', function(e){ if(_lbSwiped){ _lbSwiped = false; return; } if(e.target === lb || e.target === lbImg) closeLb(); });
+  lb.addEventListener('click', function(e){ if(_lbSwiped){ _lbSwiped = false; return; } if(e.target === lb || (e.target.classList && e.target.classList.contains('lb-img'))) closeLb(); });
 
   lb.addEventListener('touchstart', function(e){ _lx = e.changedTouches[0].clientX; _ly = e.changedTouches[0].clientY; }, {passive:true});
   lb.addEventListener('touchend', function(e){
