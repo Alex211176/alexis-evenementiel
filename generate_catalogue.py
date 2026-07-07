@@ -96,6 +96,13 @@ def prestation_visible_catalogue(p):
     return vd.get("catalogue", True)
 
 
+def pack_visible_catalogue(p):
+    """Le pack est-il affiché dans le catalogue public ?
+    Par défaut True ; on l'exclut seulement si visible_dans.catalogue == False."""
+    vd = p.get("visible_dans", {}) or {}
+    return vd.get("catalogue", True)
+
+
 def resoudre_pack_simple(pid, packs, _seen=None):
     """Résout l'héritage d'un pack pour lister son contenu (équipements + prestations)."""
     if _seen is None:
@@ -117,7 +124,7 @@ def resoudre_pack_simple(pid, packs, _seen=None):
 # ----- Panier / demande de devis -----
 # Articles qui peuvent recevoir l'option « impressions » (consommable ; l'imprimante
 # est ajoutée à part par le panier). Se rattache par id d'article.
-PRINT_OPTION_ITEMS = {"mobile-booth", "kids-booth"}
+PRINT_OPTION_ITEMS = {"mobile-booth", "kids-booth", "photobooth-canon-5d"}
 
 
 def _cart_button(item_type, item_id, nom, kind, prix=None, paliers=None, max_qty=1, unite="unité", impr=False):
@@ -245,6 +252,17 @@ def render_equip_card(eid, e, photos_rel="photos"):
         </article>"""
 
 
+PHOTOBOOTH_PROMO_CARD = """
+        <article class="card ia-promo">
+            <div class="ia-badge">Formule</div>
+            <div class="card-head">
+                <h3>Photobooth</h3>
+                <div class="price">à partir de 150 €</div>
+            </div>
+            <p class="card-desc">Borne photo complète sur trépied (fond + accessoires fun). Choisissez votre volume d'impressions : de « sans impression » à « illimité ».</p>
+            <button type="button" class="add-cart" data-id="photobooth-canon-5d" data-type="equip" data-nom="Photobooth" data-kind="fixe" data-max="1" data-unite="set" data-prix="150" data-impr="1">+ Ajouter au devis</button>
+        </article>"""
+
 IA_PROMO_CARD = """
         <article class="card ia-promo">
             <div class="ia-badge">Nouveauté</div>
@@ -258,13 +276,13 @@ IA_PROMO_CARD = """
         </article>"""
 
 TEMPLATES_PROMO_CARD = """
-        <article class="card ia-promo">
+        <article class="card ia-promo templates-promo">
             <a href="templates-photobooth.html">
                 <div class="ia-badge">850+ designs</div>
                 <div class="card-head">
                     <h3>Templates <span style="color:var(--or-clair)">photobooth</span></h3>
                 </div>
-                <p class="card-desc">Parcourez notre bibliothèque de plus de 850 mises en page (mariage, anniversaire, fêtes…) pour personnaliser les impressions de vos invités.</p>
+                <p class="card-desc">Pour aller plus loin — parcourez notre bibliothèque de plus de 850 mises en page (mariage, anniversaire, fêtes…) pour personnaliser les impressions de vos invités.</p>
                 <span class="ia-cta">Parcourir les templates →</span>
             </a>
         </article>"""
@@ -304,14 +322,16 @@ def build_html(equipements, prestations, packs) -> str:
     # --- Section PACKS, groupés par catégorie ---
     packs_html = ""
     for cat, label in PACK_CATEGORIES.items():
-        cat_packs = [(pid, p) for pid, p in packs.items() if p.get("categorie") == cat]
+        cat_packs = [(pid, p) for pid, p in packs.items()
+                     if p.get("categorie") == cat and pack_visible_catalogue(p)]
         if not cat_packs:
             continue
         cat_packs.sort(key=lambda x: x[1].get("prix_ttc", 0))
         cards = "".join(render_pack_card(pid, p, packs, equipements, prestations)
                         for pid, p in cat_packs)
         if cat == "photobooth":
-            cards += IA_PROMO_CARD + TEMPLATES_PROMO_CARD + LUNETTES_PROMO_CARD + KIDS_BOOTH_PROMO_CARD
+            cards += (PHOTOBOOTH_PROMO_CARD + IA_PROMO_CARD + LUNETTES_PROMO_CARD
+                      + KIDS_BOOTH_PROMO_CARD + TEMPLATES_PROMO_CARD)
         gid = ' id="photobooth"' if cat == "photobooth" else ''
         packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
 
@@ -462,6 +482,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .ia-badge {{ position: absolute; top: 16px; right: 16px; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 3px 10px; border-radius: 99px; }}
     .ia-cta {{ display: inline-block; margin-top: 16px; color: var(--or-clair); font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color .3s; }}
     .ia-promo:hover .ia-cta {{ color: var(--or); }}
+    /* Carte Templates : légèrement différenciée (lien bibliothèque, pas un produit) */
+    .templates-promo {{ border-style: dashed; background: rgba(255,255,255,0.015); }}
+    .templates-promo .ia-badge {{ background: var(--or-sombre); color: var(--creme); }}
 
     footer {{ background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }}
     footer .brand {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }}
@@ -714,7 +737,7 @@ CART_JS = """
   var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
   var CONTACT='contact@alexisevenementiel.fr';
   // Option « impressions » (consommable seul) — l'imprimante est ajoutée à part, une fois.
-  var IMPR=[{v:'',lbl:'Sans impression',prix:0},{v:'100',lbl:'100 impressions',prix:50},{v:'200',lbl:'200 impressions',prix:100},{v:'400',lbl:'400 impressions',prix:150}];
+  var IMPR=[{v:'',lbl:'Sans impression',prix:0},{v:'100',lbl:'100 impressions',prix:50},{v:'200',lbl:'200 impressions',prix:100},{v:'400',lbl:'Illimité (400 photos 15x10)',prix:150}];
   var PRINTER_ID='imprimante-dnp', PRINTER_NOM='Imprimante DNP DS620', PRINTER_PRIX=70;
   function imprPrix(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].prix; } return 0; }
   function imprLbl(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].lbl; } return ''; }
