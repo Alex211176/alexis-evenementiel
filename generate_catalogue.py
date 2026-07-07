@@ -271,15 +271,14 @@ TEMPLATES_PROMO_CARD = """
 
 LUNETTES_PROMO_CARD = """
         <article class="card ia-promo">
-            <a href="lunettes-3d.html">
-                <div class="ia-badge">Sur-mesure</div>
-                <div class="card-head">
-                    <h3>Lunettes <span style="color:var(--or-clair)">3D</span></h3>
-                    <div class="price">à partir de 50 €</div>
-                </div>
-                <p class="card-desc">Montures personnalisées imprimées en 3D à vos couleurs (prénoms, date, thème…). Un accessoire photobooth unique que vos invités gardent.</p>
-                <span class="ia-cta">Voir les lunettes 3D →</span>
-            </a>
+            <div class="ia-badge">Sur-mesure</div>
+            <div class="card-head">
+                <h3>Lunettes <span style="color:var(--or-clair)">3D</span></h3>
+                <div class="price">à partir de 50 €</div>
+            </div>
+            <p class="card-desc">Montures personnalisées imprimées en 3D à vos couleurs (prénoms, date, thème…). 50 € les 3 paires, puis +7 €/paire. Un accessoire unique que vos invités gardent.</p>
+            <a class="ia-cta" href="lunettes-3d.html">Voir les lunettes 3D &rarr;</a>
+            <button type="button" class="add-cart" data-id="lunettes-3d" data-type="pack" data-nom="Lunettes personnalisées 3D (3 paires)" data-kind="fixe" data-max="1" data-unite="lot" data-prix="50">+ Ajouter au devis</button>
         </article>"""
 
 KIDS_BOOTH_PROMO_CARD = """
