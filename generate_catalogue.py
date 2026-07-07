@@ -507,7 +507,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .loc-chip.on {{ background: var(--or); color: var(--noir); border-color: var(--or); }}
     .loc-chip .loc-n {{ opacity: 0.55; font-size: 0.72rem; margin-left: 2px; }}
     .loc-chip.on .loc-n {{ opacity: 0.8; }}
-    @media (max-width: 700px) {{ .loc-filters {{ flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; top: 98px; }} }}
+    @media (max-width: 700px) {{
+        .loc-filters {{ top: 98px; gap: 6px; padding: 10px 0 12px; }}
+        .loc-chip {{ padding: 6px 13px; font-size: 0.76rem; }}
+    }}
     .equip-grid {{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
 
     .card {{ background: var(--noir-3); border: 1px solid var(--line); border-radius: 6px; padding: 26px; transition: transform 0.3s ease, border-color 0.3s ease; }}
