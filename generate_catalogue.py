@@ -738,14 +738,10 @@ CART_JS = """
   var KEY='ae_cart_v1';
   var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
   var CONTACT='contact@alexisevenementiel.fr';
-  // Option « impressions » (consommable seul) — l'imprimante est ajoutée à part, une fois.
+  // Option « impressions » — l'imprimante et les consommables sont INCLUS dans ces tarifs (pas de ligne séparée).
   var IMPR=[{v:'',lbl:'Sans impression',prix:0},{v:'100',lbl:'100 impressions',prix:50},{v:'200',lbl:'200 impressions',prix:100},{v:'400',lbl:'Illimité (400 photos 15x10)',prix:150}];
-  var PRINTER_ID='imprimante-dnp', PRINTER_NOM='Imprimante DNP DS620', PRINTER_PRIX=70;
   function imprPrix(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].prix; } return 0; }
   function imprLbl(v){ for(var i=0;i<IMPR.length;i++){ if(IMPR[i].v===v) return IMPR[i].lbl; } return ''; }
-  function anyImpr(){ for(var i=0;i<cart.length;i++){ if(cart[i].hasImpr && cart[i].impr) return true; } return false; }
-  function hasPrinter(){ for(var i=0;i<cart.length;i++){ if(cart[i].id===PRINTER_ID) return true; } return false; }
-  function printerAuto(){ return anyImpr() && !hasPrinter(); }
   var cart=[]; try{ cart=JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ cart=[]; }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(cart)); }catch(e){} }
   function fmt(n){ n=Math.round(n*100)/100; return (n%1===0? n.toFixed(0): n.toFixed(2).replace('.',',')) + ' \\u20ac'; }
@@ -784,15 +780,12 @@ CART_JS = """
         opt+='</select></div>'; }
       var txt=(lt===null)?'Sur devis':fmt(lt)+((it.qty>1&&it.kind==='unitaire')?' ('+it.qty+'\\u00d7)':''); if(lt!==null) sub+=lt;
       html+='<div class=\"ci\"><div class=\"ci-nom\">'+esc(it.nom)+'</div><div class=\"ci-line\">'+txt+'</div>'+opt+ctrl+'<button class=\"ci-del\" onclick=\"AECart.del(\\''+it.key+'\\')\">Retirer</button></div>'; });
-    if(printerAuto()){ sub+=PRINTER_PRIX;
-      html+='<div class=\"ci ci-auto\"><div class=\"ci-nom\">'+esc(PRINTER_NOM)+'</div><div class=\"ci-line\">'+fmt(PRINTER_PRIX)+'</div><div class=\"ci-note\">Ajout\\u00e9e automatiquement \\u2014 <b>requise pour les impressions</b></div></div>'; }
     w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
   function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
   function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
   function cartLines(){ if(cart.length===0) return '(aucun matériel sélectionné — à définir ensemble)';
     var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt;
       var nom=it.nom; if(it.hasImpr&&it.impr) nom+=' + '+imprLbl(it.impr); l.push('- '+nom+' x'+it.qty+' : '+p); });
-    if(printerAuto()){ sub+=PRINTER_PRIX; l.push('- '+PRINTER_NOM+' (requise pour les impressions) x1 : '+fmt(PRINTER_PRIX)); }
     l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\\n'); }
   function briefText(d){ var L=[];
     L.push('=== ÉVÉNEMENT ===');
