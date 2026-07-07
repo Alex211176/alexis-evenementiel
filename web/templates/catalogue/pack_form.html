@@ -103,6 +103,18 @@
     </fieldset>
     {% endif %}
 
+    <fieldset>
+        <legend>Visibilité</legend>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_devis" {% if pack.visible_dans is not defined or pack.visible_dans.get('devis', True) %}checked{% endif %}>
+            <span>Proposable dans les devis</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" name="visible_catalogue" {% if pack.visible_dans is not defined or pack.visible_dans.get('catalogue', True) %}checked{% endif %}>
+            <span>Visible dans le catalogue public</span>
+        </label>
+    </fieldset>
+
     <div class="form-actions">
         <a href="{{ url_for('catalogue.packs_list') }}" class="btn">Annuler</a>
         <button type="submit" class="btn btn-primary">Sauvegarder le pack</button>

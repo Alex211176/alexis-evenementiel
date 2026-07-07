@@ -429,6 +429,10 @@ def pack_save():
         },
         "retraits": [r.strip() for r in form.getlist("retraits") if r.strip()],
         "bundle_compatible": [b.strip() for b in form.getlist("bundle_compatible") if b.strip()],
+        "visible_dans": {
+            "devis": form.get("visible_devis") == "on",
+            "catalogue": form.get("visible_catalogue") == "on",
+        },
     }
     extends = form.get("extends", "").strip()
     if extends:
