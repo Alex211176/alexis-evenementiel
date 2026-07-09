@@ -108,7 +108,7 @@
           "label": "Exemple 01",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
-          "montage": null,
+          "montage": "montage.jpg",
           "extras": []
         }
       ]
@@ -122,7 +122,7 @@
           "label": "Exemple 01",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
-          "montage": null,
+          "montage": "montage.jpg",
           "extras": []
         }
       ]
@@ -136,7 +136,21 @@
           "label": "Exemple 01",
           "avant": "avant.jpg",
           "apres": "apres.jpg",
-          "montage": null,
+          "montage": "montage.jpg",
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "danse-de-rue-hip-hop",
+      "label": "Danse de rue (hip-hop)",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": "montage.jpg",
           "extras": []
         }
       ]
