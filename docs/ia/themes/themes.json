@@ -98,6 +98,48 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "salsa",
+      "label": "Salsa",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "tango-argentin",
+      "label": "Tango argentin",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "aquarelle-artistique",
+      "label": "Aquarelle Artistique",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
     }
   ]
 }
