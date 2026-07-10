@@ -154,6 +154,48 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "dresseur-de-monstres",
+      "label": "Dresseur de monstres",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "pirates",
+      "label": "Pirates",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "princesse-feerique",
+      "label": "Princesse féerique",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpg",
+          "apres": "apres.jpg",
+          "montage": null,
+          "extras": []
+        }
+      ]
     }
   ]
 }
