@@ -1,0 +1,26 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 11 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Regard pendant la Danse — Gros plan des visages, joue contre joue.
+2. La Danse Père-Fille — Mariée dansant avec son père, émotion.
+3. Les Étincelles — Fontaines à étincelles derrière le couple qui danse.
+4. La Piste en Folie — Foule dansant, ambiance de fête.
+5. Le Lancer du Bouquet — Mariée de dos lançant le bouquet, invitées bras tendus.
+6. La Jarretière — Jeu de la jarretière, ambiance et rires.
+7. Le Saut Groupé — Invités sautant, mains en l'air.
+8. La Mariée qui Danse — Mariée robe relevée, en plein mouvement.
+9. Le Slow de Fin — Couple enlacé au milieu de la piste.
+10. Le Selfie Géant — Groupe compact, sourires, téléphone tendu.
+11. La Sortie aux Cierges — Couple sortant sous une haie de cierges magiques.

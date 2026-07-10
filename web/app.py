@@ -52,13 +52,17 @@ app.config["SECRET_KEY"] = config.get("secret_key") or "dev-key-change-in-prod"
 from catalogue_routes import catalogue_bp
 from parametres_routes import parametres_bp
 from devis_routes import devis_bp
+from poses_routes import poses_bp
 app.register_blueprint(catalogue_bp)
 app.register_blueprint(parametres_bp)
 app.register_blueprint(devis_bp)
+app.register_blueprint(poses_bp)
 
 
 # --- Authentification globale ------------------------------------------------
-_PUBLIC_PREFIXES = ("/login", "/static", "/healthz")
+# /poses/s/ = pages client Poses Mariage (accès par token non devinable, pas de
+# mot de passe admin). L'admin Poses (/poses/admin) reste, lui, derrière le gate.
+_PUBLIC_PREFIXES = ("/login", "/static", "/healthz", "/poses/s/")
 
 
 @app.before_request

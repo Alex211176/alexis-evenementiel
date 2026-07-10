@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{{ title | default("Jour J") }}</title>
+  <link rel="stylesheet" href="/poses/a/field.css?v=1">
+  <link rel="manifest" href="/poses/app.webmanifest">
+  <meta name="theme-color" content="#14181f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Poses">
+  <link rel="apple-touch-icon" href="/poses/a/icons/icon-192.png">
+</head>
+<body
+  data-token="{{ event.clientToken }}"
+  data-done-url="{{ url_for('poses.field_done', token=event.clientToken) }}"
+  data-musthave-url="{{ url_for('poses.field_musthave', token=event.clientToken) }}"
+  data-lock-url="{{ url_for('poses.field_lock', token=event.clientToken) }}"
+  data-locked="{{ '1' if event.locked else '0' }}"
+>
+  <script type="application/json" id="field-state">
+    {{ { "done": event.done } | tojson }}
+  </script>
+
+  <header class="fhead">
+    <div class="fhead-top">
+      <div class="couple">{{ event.couple }}</div>
+      <a class="back" href="{{ url_for('poses.admin') }}">Événements</a>
+    </div>
+    <div class="progress">
+      <div class="progress-bar"><span id="progressFill"></span></div>
+      <div class="progress-txt"><b id="doneN">0</b>/<span id="totalN">{{ shown_total }}</span> faites</div>
+    </div>
+    <div class="sync" id="syncStatus" hidden></div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">Toutes</button>
+      <button class="filter" data-filter="todo">À faire</button>
+      <button class="filter" data-filter="done">Faites</button>
+    </div>
+  </header>
+
+  <main class="fwrap">
+    {% for phase in checklist %}
+    <section class="fphase" data-phase-id="{{ phase.id }}" data-order="{{ phase.order }}">
+      <div class="fphase-head">
+        <span class="icon">{{ phase.icon }}</span>
+        <h2>{{ phase.label }}</h2>
+        <span class="fphase-count" data-phase-count="{{ phase.id }}">0/{{ phase.poses|length }}</span>
+      </div>
+      {% for pose in phase.poses %}
+      <div class="row" data-pose-id="{{ pose.id }}">
+        <button type="button" class="check" aria-label="Marquer comme fait">✓</button>
+        <div class="row-body">
+          <div class="rtitle">
+            {{ pose.title }}
+            {% if pose.mustHave %}<span class="star" title="Incontournable">★</span>{% endif %}
+          </div>
+          <div class="rdesc">{{ pose.desc }}</div>
+          {% if event.notes.get(pose.id) %}
+          <div class="rnote">📝 {{ event.notes.get(pose.id) }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endfor %}
+
+    {% if event.custom %}
+    <section class="fphase" data-phase-id="__custom__" data-order="999">
+      <div class="fphase-head">
+        <span class="icon">💡</span>
+        <h2>Idées des mariés</h2>
+        <span class="fphase-count" data-phase-count="__custom__">0/{{ event.custom|length }}</span>
+      </div>
+      {% for c in event.custom %}
+      <div class="row" data-pose-id="{{ c.id }}">
+        <button type="button" class="check" aria-label="Marquer comme fait">✓</button>
+        <div class="row-body">
+          <div class="rtitle">{{ c.title }} <span class="star" title="Idée des mariés">★</span></div>
+          {% if c.desc %}<div class="rdesc">{{ c.desc }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if not checklist and not event.custom %}
+      <div class="empty">Les mariés n'ont pas encore sélectionné de poses.</div>
+    {% endif %}
+
+    <!-- Ajouter des incontournables (poses de la biblio non choisies) -->
+    <details class="addpanel">
+      <summary>＋ Ajouter un incontournable</summary>
+      <p class="addhelp">Poses que tu veux garantir, en plus de la sélection des mariés. Marquées ★.</p>
+      {% for phase in lib.phases %}
+      <div class="add-phase">
+        <div class="add-phase-label">{{ phase.icon }} {{ phase.label }}</div>
+        {% for pose in phase.poses %}
+        {% set is_sel = pose.id in event.selections %}
+        {% set is_mh = pose.id in event.mustHave %}
+        <label class="add-row {{ 'is-sel' if is_sel else '' }}">
+          <input type="checkbox" class="mh-check"
+                 data-pose-id="{{ pose.id }}"
+                 data-title="{{ pose.title }}"
+                 data-desc="{{ pose.desc }}"
+                 data-phase-id="{{ phase.id }}"
+                 data-phase-label="{{ phase.label }}"
+                 data-phase-icon="{{ phase.icon }}"
+                 data-phase-order="{{ phase.order }}"
+                 {{ 'checked disabled' if is_sel else ('checked' if is_mh else '') }}>
+          <span>{{ pose.title }}{% if is_sel %} <em>(choisi par les mariés)</em>{% endif %}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </details>
+  </main>
+
+  <footer class="factionbar">
+    <button type="button" id="lockBtn" class="lock-btn">🔒 Verrouiller la sélection</button>
+  </footer>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/poses/sw.js", { scope: "/poses/" })
+          .then(function () { return navigator.serviceWorker.ready; })
+          .then(function (reg) {
+            // garantit la mise en cache de CETTE page dès la 1re visite (offline)
+            if (reg.active) reg.active.postMessage({ type: "cache-self", url: location.href });
+          })
+          .catch(function () {});
+      });
+    }
+  </script>
+  <script src="/poses/a/field.js?v=3"></script>
+</body>
+</html>

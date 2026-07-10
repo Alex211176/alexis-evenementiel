@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Baiser Contre-jour — Couple s'embrassant, halo lumineux derrière.
+2. Les Mains Levées — Couple bras levés en V face au ciel.
+3. La Danse au Soleil — Couple dansant, silhouette découpée sur le ciel.
+4. Les Mains Enlacées — Gros plan des deux mains avec les alliances.
+5. Le Baiser dans le Cou — Marié embrassant le cou de la mariée souriante.
+6. Le Regard Complice — Visages proches, yeux dans les yeux.
+7. Le Bouquet Partagé — Mains superposées tenant le bouquet ensemble.
+8. Le Saut de Joie — Couple sautant en l'air, mains liées.
+9. Le Porté — Marié portant la mariée dans ses bras.
+10. Le Dip Cinématique — Marié penchant la mariée en arrière pour un baiser.
+11. Le Fou Rire — Couple riant aux éclats, tête renversée.
+12. L'Encadrement — Couple cadré dans une grande porte ou une arche.

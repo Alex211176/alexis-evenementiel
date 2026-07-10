@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Les Boutons de Manchette — Gros plan sur les mains ajustant les boutons de manchette.
+2. La Montre — Marié mettant sa montre, détail élégant.
+3. La Veste Enfilée — Marié enfilant sa veste, vu de profil ou de dos.
+4. Le Toast entre Hommes — Marié et témoins trinquant avant la cérémonie.
+5. Le Miroir Confiant — Marié se regardant dans le miroir, ajustement final.
+6. Le Regard Pensif — Marié près d'une fenêtre, moment de calme avant le grand moment.
+7. Les Alliances — Gros plan des deux alliances sur un joli support.
+8. Le Bouquet Posé — Bouquet de la mariée seul, composition soignée.
+9. Chaussures & Robe — Chaussures de la mariée disposées devant la robe suspendue.
+10. Le Faire-part — Invitation, alliances et ruban composés à plat (flat lay).
+11. Parfum & Bijoux — Flacon de parfum, boucles d'oreilles et bague disposés à plat.
+12. Les Accessoires du Marié — Nœud, montre, boutons et boutonnière disposés à plat.

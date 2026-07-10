@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Reflet dans l'Eau — Couple près d'un plan d'eau, reflet visible.
+2. Le Chemin en Perspective — Couple au bout d'une allée d'arbres, profondeur.
+3. La Fenêtre Lumineuse — Couple près d'une grande fenêtre, lumière latérale.
+4. La Main sur la Joue — Mariée posant la main sur la joue du marié.
+5. Le Front Baissé — Couple front contre front, mains jointes au centre.
+6. L'Enlacement au Sol — Mariée assise entre les jambes du marié, tendresse.
+7. Le Slow Enlacé — Couple en position de danse lente, joue contre joue.
+8. Le Regard par la Fenêtre — Mariée de profil, bouquet en main, lumière douce.
+9. La Mise en Valeur du Dos — Mariée de dos, tête tournée, détails de la robe.
+10. Le Portrait Serré — Buste, mariée regardant l'objectif, épaules basses.
+11. Les Mains sur la Taille — Posture confiante, robe déployée.
+12. Le Tourbillon de Robe — Mariée faisant tourner sa robe, mouvement figé.
