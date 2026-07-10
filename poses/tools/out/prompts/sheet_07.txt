@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Baiser sur le Front — Marié embrassant le front de la mariée, yeux clos.
+2. Le Regard par-dessus l'Épaule — Tête sur l'épaule, mariée fixant l'objectif.
+3. Nez contre Nez — Couple front baissé, sourires complices.
+4. Assis Enlacés — Couple assis au sol, appuyés l'un contre l'autre.
+5. Sur un Banc — Couple assis, marié bras autour des épaules.
+6. Les Pieds qui Pendent — Couple sur un muret, jambes ballantes.
+7. Le Dos à Dos — Couple assis dos à dos, têtes inclinées.
+8. Sous le Voile — Couple front contre front enveloppé dans le voile.
+9. Le Voile au Vent — Mariée devant, voile soulevé, marié derrière.
+10. L'Ajustement du Voile — Marié ajustant délicatement le voile de la mariée.
+11. La Traîne Déployée — Couple debout, longue traîne étalée au premier plan.
+12. La Silhouette au Coucher — Couple sur une colline face au soleil couchant.

@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Diaporama — Invités regardant l'écran, visages éclairés.
+2. Le Toast Général — Toute la salle levant son verre.
+3. L'Animation Surprise — Flashmob ou surprise, réactions capturées.
+4. La Découpe à Quatre Mains — Mariés coupant le gâteau ensemble.
+5. La Pièce Montée en Feu — Feux de Bengale sur la pièce montée, ambiance.
+6. La Bouchée Partagée — Mariés se donnant la première bouchée.
+7. Le Baiser au-dessus du Gâteau — Couple s'embrassant, gâteau au premier plan.
+8. Les Invités qui Filment — Foule de téléphones levés autour des mariés.
+9. La Première Danse — Couple enlacé, projecteur, piste vide.
+10. La Danse Renversée — Marié penchant la mariée en arrière pendant la danse.
+11. Le Tour de Piste — Couple tournoyant, effet de mouvement.
+12. Les Invités en Cercle — Couple au centre, invités formant un cercle autour.

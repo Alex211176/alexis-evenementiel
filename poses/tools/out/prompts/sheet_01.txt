@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Regard par la Fenêtre — Mariée de profil à une fenêtre lumineuse, regard vers l'extérieur, mains sur la robe.
+2. Le Laçage de la Robe — Une demoiselle d'honneur lace ou boutonne le dos de la robe.
+3. Le Maquillage — Mariée en train de se faire maquiller, regard vers le haut, ambiance intime.
+4. Le Coup d'Œil au Miroir — Mariée se découvrant dans un grand miroir, émotion.
+5. Le Parfum — Mariée se parfumant le poignet ou le cou, geste délicat.
+6. Les Talons — Mariée assise enfilant ses chaussures, gros plan possible.
+7. Le Voile Posé par la Mère — La mère ajuste le voile de sa fille, moment d'émotion.
+8. Le Rire entre Filles — Mariée et demoiselles riant ensemble, coupes de champagne.
+9. La Robe Admirée — Mariée en peignoir regardant sa robe suspendue avant de l'enfiler.
+10. Le Portrait Prêt — Mariée entièrement prête, dernier regard confiant vers l'objectif.
+11. Le Nœud de Cravate — Marié ajustant sa cravate ou son nœud papillon face au miroir.
+12. La Cravate à Deux — Le père ou un témoin aide le marié avec sa cravate.

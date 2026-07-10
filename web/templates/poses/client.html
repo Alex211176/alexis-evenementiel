@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title | default("Vos poses de mariage") }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='poses/client.css') }}?v=2">
+</head>
+<body
+  data-save-url="{{ url_for('poses.client_save', token=event.clientToken) }}"
+  data-validate-url="{{ url_for('poses.client_validate', token=event.clientToken) }}"
+  {% if event.locked %}data-locked="1"{% endif %}
+>
+  <!-- État initial injecté pour le JS (sélection déjà faite par les mariés) -->
+  <script type="application/json" id="poses-state">
+    {{ {
+      "selections": event.selections,
+      "notes": event.notes,
+      "custom": event.custom,
+      "validated": event.validated,
+      "locked": event.locked
+    } | tojson }}
+  </script>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Alexis Événementiel · Vos poses</div>
+      <h1>{{ event.couple }}</h1>
+      <p class="hero-sub">
+        Parcourez la journée et cochez les poses que vous aimeriez. Ajoutez une note,
+        proposez vos idées. Tout s'enregistre automatiquement.
+      </p>
+    </div>
+  </header>
+
+  {% if event.locked %}
+  <div class="banner banner-lock">
+    🔒 Votre sélection a été transmise et verrouillée par le photographe. Vous pouvez
+    la consulter mais plus la modifier — contactez Alexis pour tout ajustement.
+  </div>
+  {% endif %}
+
+  <div class="counterbar" id="counterbar">
+    <span class="count-n" id="countN">0</span> pose<span id="countS"></span> choisie<span id="countS2"></span>
+    <span class="save-state" id="saveState"></span>
+  </div>
+
+  <main class="wrap">
+    {% for phase in lib.phases %}
+    <section class="phase" data-phase-id="{{ phase.id }}">
+      <div class="phase-head">
+        <span class="order">{{ "%02d"|format(phase.order) }}</span>
+        <span class="icon">{{ phase.icon }}</span>
+        <h2>{{ phase.label }}</h2>
+        {% if phase.optional %}<span class="badge-opt">optionnel</span>{% endif %}
+        <span class="phase-count" data-phase-count="{{ phase.id }}">0/{{ phase.poses|length }}</span>
+      </div>
+      <div class="poses">
+        {% for pose in phase.poses %}
+        <article class="pose{% if pose.id in thumbs %} has-thumb{% endif %}" data-pose-id="{{ pose.id }}" data-phase="{{ phase.id }}">
+          <button type="button" class="heart" aria-label="Choisir cette pose">♥</button>
+          <div class="pose-body">
+            {% if pose.id in thumbs %}
+            <div class="pose-thumb">
+              <img src="{{ url_for('static', filename='poses/thumbs/' ~ pose.id ~ '.webp') }}?v=1"
+                   loading="lazy" alt="Croquis : {{ pose.title }}">
+            </div>
+            {% endif %}
+            <div class="ptitle">{{ pose.title }}</div>
+            <div class="pdesc">{{ pose.desc }}</div>
+            <button type="button" class="note-toggle">＋ note</button>
+            <textarea class="pose-note" data-note-for="{{ pose.id }}"
+                      placeholder="Ex. devant le vieux mur du domaine, avec notre chien…"
+                      maxlength="500"></textarea>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+
+    <!-- Poses perso proposées par les mariés -->
+    <section class="phase custom-section">
+      <div class="phase-head">
+        <span class="icon">💡</span>
+        <h2>Vos idées à vous</h2>
+        <span class="phase-count" id="customCount">0</span>
+      </div>
+      <p class="custom-help">Une pose qui vous tient à cœur et qui n'est pas dans la liste ? Ajoutez-la.</p>
+      <div class="custom-list" id="customList"></div>
+      <div class="custom-add">
+        <input type="text" id="customTitle" maxlength="120" placeholder="Titre (ex. Avec notre chien)">
+        <input type="text" id="customDesc" maxlength="500" placeholder="Détail (optionnel)">
+        <button type="button" id="customAddBtn">Ajouter</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="actionbar">
+    <div class="actionbar-inner">
+      <div class="validated-note" id="validatedNote"></div>
+      <button type="button" class="btn-validate" id="btnValidate">Valider ma sélection</button>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='poses/client.js') }}?v=1"></script>
+</body>
+</html>

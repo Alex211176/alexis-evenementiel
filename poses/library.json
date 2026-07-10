@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "name": "Bibliothèque de poses mariage",
+    "version": "1.0",
+    "description": "Catalogue de poses organisé selon la chronologie réelle d'une journée de mariage, des préparatifs à la soirée dansante. Sert à la fois de menu de sélection côté client et de check-list ordonnée côté photographe le jour J.",
+    "language": "fr",
+    "extensible": true
+  },
+  "phases": [
+    {
+      "id": "prep-mariee",
+      "order": 1,
+      "label": "Préparatifs — La Mariée",
+      "icon": "💄",
+      "moment": "matin",
+      "poses": [
+        { "id": "pm01", "title": "Le Regard par la Fenêtre", "desc": "Mariée de profil à une fenêtre lumineuse, regard vers l'extérieur, mains sur la robe." },
+        { "id": "pm02", "title": "Le Laçage de la Robe", "desc": "Une demoiselle d'honneur lace ou boutonne le dos de la robe." },
+        { "id": "pm03", "title": "Le Maquillage", "desc": "Mariée en train de se faire maquiller, regard vers le haut, ambiance intime." },
+        { "id": "pm04", "title": "Le Coup d'Œil au Miroir", "desc": "Mariée se découvrant dans un grand miroir, émotion." },
+        { "id": "pm05", "title": "Le Parfum", "desc": "Mariée se parfumant le poignet ou le cou, geste délicat." },
+        { "id": "pm06", "title": "Les Talons", "desc": "Mariée assise enfilant ses chaussures, gros plan possible." },
+        { "id": "pm07", "title": "Le Voile Posé par la Mère", "desc": "La mère ajuste le voile de sa fille, moment d'émotion." },
+        { "id": "pm08", "title": "Le Rire entre Filles", "desc": "Mariée et demoiselles riant ensemble, coupes de champagne." },
+        { "id": "pm09", "title": "La Robe Admirée", "desc": "Mariée en peignoir regardant sa robe suspendue avant de l'enfiler." },
+        { "id": "pm10", "title": "Le Portrait Prêt", "desc": "Mariée entièrement prête, dernier regard confiant vers l'objectif." }
+      ]
+    },
+    {
+      "id": "prep-marie",
+      "order": 2,
+      "label": "Préparatifs — Le Marié",
+      "icon": "🤵",
+      "moment": "matin",
+      "poses": [
+        { "id": "ph01", "title": "Le Nœud de Cravate", "desc": "Marié ajustant sa cravate ou son nœud papillon face au miroir." },
+        { "id": "ph02", "title": "La Cravate à Deux", "desc": "Le père ou un témoin aide le marié avec sa cravate." },
+        { "id": "ph03", "title": "Les Boutons de Manchette", "desc": "Gros plan sur les mains ajustant les boutons de manchette." },
+        { "id": "ph04", "title": "La Montre", "desc": "Marié mettant sa montre, détail élégant." },
+        { "id": "ph05", "title": "La Veste Enfilée", "desc": "Marié enfilant sa veste, vu de profil ou de dos." },
+        { "id": "ph06", "title": "Le Toast entre Hommes", "desc": "Marié et témoins trinquant avant la cérémonie." },
+        { "id": "ph07", "title": "Le Miroir Confiant", "desc": "Marié se regardant dans le miroir, ajustement final." },
+        { "id": "ph08", "title": "Le Regard Pensif", "desc": "Marié près d'une fenêtre, moment de calme avant le grand moment." }
+      ]
+    },
+    {
+      "id": "details",
+      "order": 3,
+      "label": "Détails & Flat Lay",
+      "icon": "💍",
+      "moment": "matin",
+      "poses": [
+        { "id": "dt01", "title": "Les Alliances", "desc": "Gros plan des deux alliances sur un joli support." },
+        { "id": "dt02", "title": "Le Bouquet Posé", "desc": "Bouquet de la mariée seul, composition soignée." },
+        { "id": "dt03", "title": "Chaussures & Robe", "desc": "Chaussures de la mariée disposées devant la robe suspendue." },
+        { "id": "dt04", "title": "Le Faire-part", "desc": "Invitation, alliances et ruban composés à plat (flat lay)." },
+        { "id": "dt05", "title": "Parfum & Bijoux", "desc": "Flacon de parfum, boucles d'oreilles et bague disposés à plat." },
+        { "id": "dt06", "title": "Les Accessoires du Marié", "desc": "Nœud, montre, boutons et boutonnière disposés à plat." },
+        { "id": "dt07", "title": "La Papeterie", "desc": "Menu, plan de table et marque-place, détail calligraphie." },
+        { "id": "dt08", "title": "Les Alliances au Soleil", "desc": "Alliances captant la lumière, jeu de reflets." }
+      ]
+    },
+    {
+      "id": "first-look",
+      "order": 4,
+      "label": "First Look / Découverte",
+      "icon": "👀",
+      "moment": "avant-ceremonie",
+      "optional": true,
+      "poses": [
+        { "id": "fl01", "title": "La Tape sur l'Épaule", "desc": "Marié de dos, se retourne pour découvrir la mariée." },
+        { "id": "fl02", "title": "La Réaction du Marié", "desc": "Visage du marié capté au moment où il découvre la mariée." },
+        { "id": "fl03", "title": "L'Étreinte de Découverte", "desc": "Couple s'enlaçant à la première vision l'un de l'autre." },
+        { "id": "fl04", "title": "La Découverte du Père", "desc": "Le père découvre sa fille en robe, émotion pure." },
+        { "id": "fl05", "title": "Le First Look des Demoiselles", "desc": "Les demoiselles découvrent la mariée prête, réactions." }
+      ]
+    },
+    {
+      "id": "ceremonie",
+      "order": 5,
+      "label": "La Cérémonie",
+      "icon": "⛪",
+      "moment": "ceremonie",
+      "poses": [
+        { "id": "ce01", "title": "L'Entrée de la Mariée", "desc": "Mariée remontant l'allée au bras de son père." },
+        { "id": "ce02", "title": "L'Attente du Marié", "desc": "Marié se retournant vers l'allée, ému, à l'arrivée de la mariée." },
+        { "id": "ce03", "title": "L'Échange des Vœux", "desc": "Couple face à face, mains jointes, regards intenses." },
+        { "id": "ce04", "title": "L'Échange des Alliances", "desc": "Gros plan des mains au moment où l'alliance est passée." },
+        { "id": "ce05", "title": "Le Baiser des Mariés", "desc": "Premier baiser, assemblée en arrière-plan flou." },
+        { "id": "ce06", "title": "La Signature des Registres", "desc": "Mariés signant, témoins réunis autour." },
+        { "id": "ce07", "title": "Les Invités Émus", "desc": "Plan sur l'assemblée, réactions et larmes." },
+        { "id": "ce08", "title": "Le Rituel", "desc": "Rituel symbolique (rubans, sable, bougie, arbre à vœux…)." },
+        { "id": "ce09", "title": "La Sortie Main dans la Main", "desc": "Couple redescendant l'allée, sourires et joie." }
+      ]
+    },
+    {
+      "id": "sortie",
+      "order": 6,
+      "label": "Sortie & Félicitations",
+      "icon": "🎉",
+      "moment": "sortie",
+      "poses": [
+        { "id": "so01", "title": "La Haie d'Honneur", "desc": "Invités formant une haie, couple passant au centre." },
+        { "id": "so02", "title": "Le Lancer de Pétales", "desc": "Couple sous une pluie de pétales ou de confettis." },
+        { "id": "so03", "title": "Les Bulles de Savon", "desc": "Couple entouré de bulles de savon, ambiance féerique." },
+        { "id": "so04", "title": "L'Étreinte des Parents", "desc": "Parents félicitant les mariés, émotion et larmes." },
+        { "id": "so05", "title": "La Vague de Félicitations", "desc": "Couple embrassé par la file des invités, spontané." },
+        { "id": "so06", "title": "Le Baiser sous les Bras Levés", "desc": "Invités bras levés formant une arche, couple s'embrassant." }
+      ]
+    },
+    {
+      "id": "famille",
+      "order": 7,
+      "label": "Photos de Famille",
+      "icon": "👨‍👩‍👧‍👦",
+      "moment": "apres-ceremonie",
+      "poses": [
+        { "id": "fa01", "title": "Le Portrait de Générations", "desc": "Mariée, mère et grand-mère (ou versant marié) épaule contre épaule." },
+        { "id": "fa02", "title": "La Famille Alignée", "desc": "Famille en rang, mariés au centre, photo formelle." },
+        { "id": "fa03", "title": "Les Grands-Parents", "desc": "Couple de grands-parents avec les mariés, tendresse." },
+        { "id": "fa04", "title": "L'Étreinte Spontanée", "desc": "Un parent enlaçant son enfant marié, émotion captée sur le vif." },
+        { "id": "fa05", "title": "La Photo à Étages", "desc": "Famille disposée sur des marches d'escalier pour la profondeur." },
+        { "id": "fa06", "title": "Le Regard des Parents", "desc": "Parents regardant fièrement leur enfant marié." },
+        { "id": "fa07", "title": "Côté Mariée / Côté Marié", "desc": "Les deux familles séparément puis réunies." },
+        { "id": "fa08", "title": "Le Groupe Vivant", "desc": "Famille riant après la pose formelle, sourires non forcés." }
+      ]
+    },
+    {
+      "id": "temoins",
+      "order": 8,
+      "label": "Témoins & Amis",
+      "icon": "🥂",
+      "moment": "apres-ceremonie",
+      "poses": [
+        { "id": "te01", "title": "La Marche de Front", "desc": "Mariés au centre, témoins avançant en ligne vers l'objectif." },
+        { "id": "te02", "title": "Le Toast Volé", "desc": "Groupe trinquant, expressions spontanées." },
+        { "id": "te03", "title": "Le Fou Rire Collectif", "desc": "Groupe riant ensemble, désordre joyeux." },
+        { "id": "te04", "title": "Les Demoiselles Alignées", "desc": "Demoiselles d'honneur en ligne, bouquets en main." },
+        { "id": "te05", "title": "Le Groupe des Garçons", "desc": "Témoins masculins, poses décontractées." },
+        { "id": "te06", "title": "Le Porté du Marié", "desc": "Témoins soulevant le marié, énergie." },
+        { "id": "te07", "title": "Le Sandwich Câlin", "desc": "Mariée serrée par ses demoiselles en groupe." },
+        { "id": "te08", "title": "La Ronde", "desc": "Groupe se tenant les mains en cercle, vu de dessus." },
+        { "id": "te09", "title": "Le Champagne qui Saute", "desc": "Bouchon qui saute, réactions de surprise." }
+      ]
+    },
+    {
+      "id": "couple",
+      "order": 9,
+      "label": "Séance Couple",
+      "icon": "👩‍❤️‍👨",
+      "moment": "golden-hour",
+      "poses": [
+        { "id": "cp01", "title": "La Promenade", "desc": "Couple marchant vers l'objectif, mains liées, regards complices." },
+        { "id": "cp02", "title": "La Marche de Dos", "desc": "Couple s'éloignant sur un chemin, main dans la main." },
+        { "id": "cp03", "title": "Le Tourbillon", "desc": "Le marié fait tourner la mariée, robe qui s'envole." },
+        { "id": "cp04", "title": "La Course Joyeuse", "desc": "Couple courant vers la caméra en riant." },
+        { "id": "cp05", "title": "L'Étreinte Intime", "desc": "Front contre front, yeux clos, mains sur la poitrine." },
+        { "id": "cp06", "title": "Le Câlin Enveloppant", "desc": "Marié enlaçant la mariée par derrière, joue contre joue." },
+        { "id": "cp07", "title": "La Tête sur l'Épaule", "desc": "Mariée blottie contre l'épaule du marié." },
+        { "id": "cp08", "title": "L'Étreinte Frontale", "desc": "Couple enlacé face à face, yeux fermés, sourire." },
+        { "id": "cp09", "title": "Le Baiser Chuchoté", "desc": "Visages proches, lèvres effleurant, murmure." },
+        { "id": "cp10", "title": "Le Baiser sur le Front", "desc": "Marié embrassant le front de la mariée, yeux clos." },
+        { "id": "cp11", "title": "Le Regard par-dessus l'Épaule", "desc": "Tête sur l'épaule, mariée fixant l'objectif." },
+        { "id": "cp12", "title": "Nez contre Nez", "desc": "Couple front baissé, sourires complices." },
+        { "id": "cp13", "title": "Assis Enlacés", "desc": "Couple assis au sol, appuyés l'un contre l'autre." },
+        { "id": "cp14", "title": "Sur un Banc", "desc": "Couple assis, marié bras autour des épaules." },
+        { "id": "cp15", "title": "Les Pieds qui Pendent", "desc": "Couple sur un muret, jambes ballantes." },
+        { "id": "cp16", "title": "Le Dos à Dos", "desc": "Couple assis dos à dos, têtes inclinées." },
+        { "id": "cp17", "title": "Sous le Voile", "desc": "Couple front contre front enveloppé dans le voile." },
+        { "id": "cp18", "title": "Le Voile au Vent", "desc": "Mariée devant, voile soulevé, marié derrière." },
+        { "id": "cp19", "title": "L'Ajustement du Voile", "desc": "Marié ajustant délicatement le voile de la mariée." },
+        { "id": "cp20", "title": "La Traîne Déployée", "desc": "Couple debout, longue traîne étalée au premier plan." },
+        { "id": "cp21", "title": "La Silhouette au Coucher", "desc": "Couple sur une colline face au soleil couchant." },
+        { "id": "cp22", "title": "Le Baiser Contre-jour", "desc": "Couple s'embrassant, halo lumineux derrière." },
+        { "id": "cp23", "title": "Les Mains Levées", "desc": "Couple bras levés en V face au ciel." },
+        { "id": "cp24", "title": "La Danse au Soleil", "desc": "Couple dansant, silhouette découpée sur le ciel." },
+        { "id": "cp25", "title": "Les Mains Enlacées", "desc": "Gros plan des deux mains avec les alliances." },
+        { "id": "cp26", "title": "Le Baiser dans le Cou", "desc": "Marié embrassant le cou de la mariée souriante." },
+        { "id": "cp27", "title": "Le Regard Complice", "desc": "Visages proches, yeux dans les yeux." },
+        { "id": "cp28", "title": "Le Bouquet Partagé", "desc": "Mains superposées tenant le bouquet ensemble." },
+        { "id": "cp29", "title": "Le Saut de Joie", "desc": "Couple sautant en l'air, mains liées." },
+        { "id": "cp30", "title": "Le Porté", "desc": "Marié portant la mariée dans ses bras." },
+        { "id": "cp31", "title": "Le Dip Cinématique", "desc": "Marié penchant la mariée en arrière pour un baiser." },
+        { "id": "cp32", "title": "Le Fou Rire", "desc": "Couple riant aux éclats, tête renversée." },
+        { "id": "cp33", "title": "L'Encadrement", "desc": "Couple cadré dans une grande porte ou une arche." },
+        { "id": "cp34", "title": "Le Reflet dans l'Eau", "desc": "Couple près d'un plan d'eau, reflet visible." },
+        { "id": "cp35", "title": "Le Chemin en Perspective", "desc": "Couple au bout d'une allée d'arbres, profondeur." },
+        { "id": "cp36", "title": "La Fenêtre Lumineuse", "desc": "Couple près d'une grande fenêtre, lumière latérale." },
+        { "id": "cp37", "title": "La Main sur la Joue", "desc": "Mariée posant la main sur la joue du marié." },
+        { "id": "cp38", "title": "Le Front Baissé", "desc": "Couple front contre front, mains jointes au centre." },
+        { "id": "cp39", "title": "L'Enlacement au Sol", "desc": "Mariée assise entre les jambes du marié, tendresse." },
+        { "id": "cp40", "title": "Le Slow Enlacé", "desc": "Couple en position de danse lente, joue contre joue." }
+      ]
+    },
+    {
+      "id": "portrait-mariee",
+      "order": 10,
+      "label": "Portrait — La Mariée",
+      "icon": "👰",
+      "moment": "golden-hour",
+      "poses": [
+        { "id": "bm01", "title": "Le Regard par la Fenêtre", "desc": "Mariée de profil, bouquet en main, lumière douce." },
+        { "id": "bm02", "title": "La Mise en Valeur du Dos", "desc": "Mariée de dos, tête tournée, détails de la robe." },
+        { "id": "bm03", "title": "Le Portrait Serré", "desc": "Buste, mariée regardant l'objectif, épaules basses." },
+        { "id": "bm04", "title": "Les Mains sur la Taille", "desc": "Posture confiante, robe déployée." },
+        { "id": "bm05", "title": "Le Tourbillon de Robe", "desc": "Mariée faisant tourner sa robe, mouvement figé." },
+        { "id": "bm06", "title": "La Marche Latérale", "desc": "Mariée marchant de profil, robe en mouvement." },
+        { "id": "bm07", "title": "Le Bouquet Admiré", "desc": "Mariée regardant son bouquet, tête inclinée." },
+        { "id": "bm08", "title": "Le Voile Ouvert", "desc": "Mariée tenant son voile déployé des deux mains." },
+        { "id": "bm09", "title": "Le Regard Baissé", "desc": "Yeux baissés, sourire doux, mains jointes." },
+        { "id": "bm10", "title": "Assise Gracieuse", "desc": "Mariée assise, robe étalée en corolle." },
+        { "id": "bm11", "title": "Le Rire Spontané", "desc": "Mariée riant, main près du visage." },
+        { "id": "bm12", "title": "Le Profil Lumineux", "desc": "Mariée de profil face à la lumière, contour éclairé." }
+      ]
+    },
+    {
+      "id": "portrait-marie",
+      "order": 11,
+      "label": "Portrait — Le Marié",
+      "icon": "🕴️",
+      "moment": "golden-hour",
+      "poses": [
+        { "id": "gm01", "title": "L'Ajustement de Manchette", "desc": "Marié ajustant ses boutons de manchette, regard baissé." },
+        { "id": "gm02", "title": "Le Profil Confiant", "desc": "Marié assis, jambes croisées, regard au loin." },
+        { "id": "gm03", "title": "La Main dans la Poche", "desc": "Marié debout, veste ouverte, une main en poche." },
+        { "id": "gm04", "title": "Le Nœud de Cravate", "desc": "Marié ajustant sa cravate, face miroir." },
+        { "id": "gm05", "title": "Le Regard Franc", "desc": "Buste, marié fixant l'objectif." },
+        { "id": "gm06", "title": "Adossé au Mur", "desc": "Marié appuyé contre un mur texturé, décontracté." },
+        { "id": "gm07", "title": "La Veste sur l'Épaule", "desc": "Marié tenant sa veste sur l'épaule, en chemise." },
+        { "id": "gm08", "title": "Le Rire Naturel", "desc": "Marié riant, tête légèrement renversée." }
+      ]
+    },
+    {
+      "id": "vin-honneur",
+      "order": 12,
+      "label": "Vin d'Honneur / Cocktail",
+      "icon": "🍾",
+      "moment": "cocktail",
+      "poses": [
+        { "id": "vh01", "title": "L'Ambiance Générale", "desc": "Vue large du cocktail, invités et décor." },
+        { "id": "vh02", "title": "Les Retrouvailles", "desc": "Invités s'embrassant, discussions animées." },
+        { "id": "vh03", "title": "Le Trinquement", "desc": "Gros plan de coupes qui s'entrechoquent." },
+        { "id": "vh04", "title": "Les Enfants qui Jouent", "desc": "Enfants sur la pelouse, spontanéité." },
+        { "id": "vh05", "title": "Le Livre d'Or", "desc": "Invités laissant un mot ou signant le livre d'or." },
+        { "id": "vh06", "title": "Les Petits Fours", "desc": "Plan détail des mets et boissons." },
+        { "id": "vh07", "title": "Les Mariés Circulant", "desc": "Couple saluant les groupes d'invités." },
+        { "id": "vh08", "title": "Le Rire d'un Groupe", "desc": "Candid d'un groupe d'invités riant." }
+      ]
+    },
+    {
+      "id": "details-reception",
+      "order": 13,
+      "label": "Détails Réception",
+      "icon": "🕯️",
+      "moment": "avant-repas",
+      "poses": [
+        { "id": "dr01", "title": "La Salle Dressée", "desc": "Vue d'ensemble de la salle décorée, avant l'entrée." },
+        { "id": "dr02", "title": "Le Plan de Table", "desc": "Plan de table et calligraphie en détail." },
+        { "id": "dr03", "title": "Le Centre de Table", "desc": "Décoration florale d'une table." },
+        { "id": "dr04", "title": "Le Marque-Place", "desc": "Détail assiette, menu et marque-place." },
+        { "id": "dr05", "title": "Le Wedding Cake", "desc": "Gâteau ou pièce montée mis en valeur." },
+        { "id": "dr06", "title": "Le Bar / Candy Bar", "desc": "Buffet sucré ou bar décoré." },
+        { "id": "dr07", "title": "L'Ambiance Lumineuse", "desc": "Guirlandes, bougies, ambiance du soir." },
+        { "id": "dr08", "title": "Le Dressage", "desc": "Menu, verres et couverts, dressage détaillé." }
+      ]
+    },
+    {
+      "id": "repas",
+      "order": 14,
+      "label": "Entrée & Repas",
+      "icon": "🍽️",
+      "moment": "repas",
+      "poses": [
+        { "id": "re01", "title": "L'Entrée des Mariés", "desc": "Couple faisant son entrée, invités applaudissant." },
+        { "id": "re02", "title": "La Standing Ovation", "desc": "Invités debout, serviettes levées, énergie." },
+        { "id": "re03", "title": "Le Discours du Témoin", "desc": "Témoin au micro, réactions de la salle." },
+        { "id": "re04", "title": "Les Larmes d'un Discours", "desc": "Mariée ou marié ému pendant un discours." },
+        { "id": "re05", "title": "Le Rire à Table", "desc": "Tablée riant à une blague ou une anecdote." },
+        { "id": "re06", "title": "Le Diaporama", "desc": "Invités regardant l'écran, visages éclairés." },
+        { "id": "re07", "title": "Le Toast Général", "desc": "Toute la salle levant son verre." },
+        { "id": "re08", "title": "L'Animation Surprise", "desc": "Flashmob ou surprise, réactions capturées." }
+      ]
+    },
+    {
+      "id": "gateau",
+      "order": 15,
+      "label": "Découpe du Gâteau",
+      "icon": "🎂",
+      "moment": "soir",
+      "poses": [
+        { "id": "ga01", "title": "La Découpe à Quatre Mains", "desc": "Mariés coupant le gâteau ensemble." },
+        { "id": "ga02", "title": "La Pièce Montée en Feu", "desc": "Feux de Bengale sur la pièce montée, ambiance." },
+        { "id": "ga03", "title": "La Bouchée Partagée", "desc": "Mariés se donnant la première bouchée." },
+        { "id": "ga04", "title": "Le Baiser au-dessus du Gâteau", "desc": "Couple s'embrassant, gâteau au premier plan." },
+        { "id": "ga05", "title": "Les Invités qui Filment", "desc": "Foule de téléphones levés autour des mariés." }
+      ]
+    },
+    {
+      "id": "ouverture-bal",
+      "order": 16,
+      "label": "Ouverture de Bal",
+      "icon": "💃",
+      "moment": "soir",
+      "poses": [
+        { "id": "ob01", "title": "La Première Danse", "desc": "Couple enlacé, projecteur, piste vide." },
+        { "id": "ob02", "title": "La Danse Renversée", "desc": "Marié penchant la mariée en arrière pendant la danse." },
+        { "id": "ob03", "title": "Le Tour de Piste", "desc": "Couple tournoyant, effet de mouvement." },
+        { "id": "ob04", "title": "Les Invités en Cercle", "desc": "Couple au centre, invités formant un cercle autour." },
+        { "id": "ob05", "title": "Le Regard pendant la Danse", "desc": "Gros plan des visages, joue contre joue." },
+        { "id": "ob06", "title": "La Danse Père-Fille", "desc": "Mariée dansant avec son père, émotion." },
+        { "id": "ob07", "title": "Les Étincelles", "desc": "Fontaines à étincelles derrière le couple qui danse." }
+      ]
+    },
+    {
+      "id": "soiree",
+      "order": 17,
+      "label": "Soirée Dansante",
+      "icon": "🪩",
+      "moment": "nuit",
+      "poses": [
+        { "id": "sr01", "title": "La Piste en Folie", "desc": "Foule dansant, ambiance de fête." },
+        { "id": "sr02", "title": "Le Lancer du Bouquet", "desc": "Mariée de dos lançant le bouquet, invitées bras tendus." },
+        { "id": "sr03", "title": "La Jarretière", "desc": "Jeu de la jarretière, ambiance et rires." },
+        { "id": "sr04", "title": "Le Saut Groupé", "desc": "Invités sautant, mains en l'air." },
+        { "id": "sr05", "title": "La Mariée qui Danse", "desc": "Mariée robe relevée, en plein mouvement." },
+        { "id": "sr06", "title": "Le Slow de Fin", "desc": "Couple enlacé au milieu de la piste." },
+        { "id": "sr07", "title": "Le Selfie Géant", "desc": "Groupe compact, sourires, téléphone tendu." },
+        { "id": "sr08", "title": "La Sortie aux Cierges", "desc": "Couple sortant sous une haie de cierges magiques." }
+      ]
+    }
+  ]
+}

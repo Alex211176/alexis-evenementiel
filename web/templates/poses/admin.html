@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  /* Styles locaux Poses admin — sobres, alignés sur admin.css existant. */
+  .poses-admin h1 { margin: 0 0 4px; }
+  .poses-admin .lead { color: #667; margin: 0 0 20px; }
+  .poses-create {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+    background: #f6f7f9; border: 1px solid #e3e6ea; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 22px;
+  }
+  .poses-create .field { display: flex; flex-direction: column; gap: 4px; }
+  .poses-create label { font-size: .8rem; color: #556; font-weight: 600; }
+  .poses-create input {
+    padding: 8px 10px; border: 1px solid #ccd2da; border-radius: 8px; font-size: .95rem;
+  }
+  .poses-create button {
+    padding: 9px 16px; border: 0; border-radius: 8px; background: #1f2937;
+    color: #fff; font-weight: 600; cursor: pointer; font-size: .95rem;
+  }
+  .created-banner {
+    background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 20px;
+  }
+  .created-banner .lnk {
+    display: flex; gap: 8px; align-items: center; margin-top: 6px; flex-wrap: wrap;
+  }
+  .created-banner input {
+    flex: 1; min-width: 240px; padding: 7px 10px; border: 1px solid #cbd5e1;
+    border-radius: 7px; font-family: ui-monospace, monospace; font-size: .85rem;
+  }
+  .created-banner button {
+    padding: 7px 12px; border: 0; border-radius: 7px; background: #059669;
+    color: #fff; cursor: pointer; font-weight: 600;
+  }
+  table.poses-list { width: 100%; border-collapse: collapse; }
+  table.poses-list th, table.poses-list td {
+    text-align: left; padding: 10px 8px; border-bottom: 1px solid #eceef1; font-size: .92rem;
+  }
+  table.poses-list th { color: #667; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+  .pill { font-size: .72rem; padding: 2px 9px; border-radius: 999px; font-weight: 600; }
+  .pill.ok { background: #dcfce7; color: #166534; }
+  .pill.wait { background: #fef3c7; color: #92400e; }
+  .pill.lock { background: #e5e7eb; color: #374151; }
+  .poses-list a.client-link { color: #1d4ed8; text-decoration: none; }
+  .poses-list a.client-link:hover { text-decoration: underline; }
+  .empty { color: #889; padding: 24px 0; text-align: center; }
+</style>
+
+<div class="poses-admin">
+  <h1>Poses Mariage — Événements</h1>
+  <p class="lead">Crée un mariage, envoie le lien aux mariés, retrouve leur sélection le jour J.</p>
+
+  {% if request.args.get('created') %}
+    {% set tok = request.args.get('created') %}
+    <div class="created-banner">
+      <strong>✅ Événement créé.</strong> Envoie ce lien aux mariés :
+      <div class="lnk">
+        <input id="clientLink" type="text" readonly
+               value="{{ url_for('poses.client', token=tok, _external=True) }}">
+        <button type="button" onclick="copyLink()">Copier</button>
+        <a class="client-link" href="{{ url_for('poses.client', token=tok) }}" target="_blank">Ouvrir</a>
+      </div>
+    </div>
+  {% endif %}
+
+  <form class="poses-create" method="POST" action="{{ url_for('poses.admin_new') }}">
+    <div class="field">
+      <label for="couple">Couple</label>
+      <input id="couple" name="couple" type="text" placeholder="Julie &amp; Marc" required>
+    </div>
+    <div class="field">
+      <label for="date">Date</label>
+      <input id="date" name="date" type="date">
+    </div>
+    <button type="submit">+ Créer l'événement</button>
+  </form>
+
+  {% if events %}
+  <table class="poses-list">
+    <thead>
+      <tr>
+        <th>Couple</th><th>Date</th><th>Sélection</th><th>Statut</th><th>Lien client</th><th>Jour J</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in events %}
+      <tr>
+        <td><strong>{{ e.couple }}</strong><br><small style="color:#99a">{{ e.id }}</small></td>
+        <td>{{ e.date or "—" }}</td>
+        <td>{{ e.nb_selections }} pose{{ "s" if e.nb_selections != 1 else "" }}</td>
+        <td>
+          {% if e.locked %}<span class="pill lock">verrouillé</span>
+          {% elif e.validated %}<span class="pill ok">validé</span>
+          {% else %}<span class="pill wait">en cours</span>{% endif %}
+        </td>
+        <td>
+          <a class="client-link" href="{{ url_for('poses.client', token=e.clientToken) }}" target="_blank">
+            ouvrir la sélection ↗
+          </a>
+        </td>
+        <td>
+          <a class="client-link" href="{{ url_for('poses.field', token=e.clientToken) }}">
+            check-list 📋
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">Aucun événement pour l'instant. Crée le premier ci-dessus.</div>
+  {% endif %}
+</div>
+
+<script>
+  function copyLink() {
+    var el = document.getElementById('clientLink');
+    el.select(); el.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(el.value);
+  }
+</script>
+{% endblock %}

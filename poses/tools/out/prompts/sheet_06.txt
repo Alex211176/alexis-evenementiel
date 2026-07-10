@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Le Sandwich Câlin — Mariée serrée par ses demoiselles en groupe.
+2. La Ronde — Groupe se tenant les mains en cercle, vu de dessus.
+3. Le Champagne qui Saute — Bouchon qui saute, réactions de surprise.
+4. La Promenade — Couple marchant vers l'objectif, mains liées, regards complices.
+5. La Marche de Dos — Couple s'éloignant sur un chemin, main dans la main.
+6. Le Tourbillon — Le marié fait tourner la mariée, robe qui s'envole.
+7. La Course Joyeuse — Couple courant vers la caméra en riant.
+8. L'Étreinte Intime — Front contre front, yeux clos, mains sur la poitrine.
+9. Le Câlin Enveloppant — Marié enlaçant la mariée par derrière, joue contre joue.
+10. La Tête sur l'Épaule — Mariée blottie contre l'épaule du marié.
+11. L'Étreinte Frontale — Couple enlacé face à face, yeux fermés, sourire.
+12. Le Baiser Chuchoté — Visages proches, lèvres effleurant, murmure.

@@ -1,0 +1,27 @@
+Illustration de mariage en PLANCHE DE CROQUIS, style éditorial haut de gamme.
+
+STYLE (strictement identique pour toutes les cases) :
+- trait à l'encre noire, monoligne, fin et régulier ; minimaliste et élégant ;
+- aucun ombrage, aucune couleur ; personnages stylisés, visages à peine suggérés ;
+- fond CRÈME UNI (#f3ede1), identique partout.
+
+MISE EN PAGE (impératif pour le découpage automatique) :
+- grille RÉGULIÈRE de 3 colonnes × 4 rangées, cases de TAILLE STRICTEMENT ÉGALE ;
+- cases séparées par des GOUTTIÈRES BLANCHES nettes et larges ; marges égales sur les 4 bords ;
+- UNE seule pose par case, bien centrée ;
+- AUCUN texte, chiffre, cadre ni légende où que ce soit dans l'image ;
+- 12 cases remplies au total ; toute case restante de la dernière rangée reste VIDE (blanche).
+
+CONTENU des cases (ordre de lecture : gauche→droite puis haut→bas) :
+1. Adossé au Mur — Marié appuyé contre un mur texturé, décontracté.
+2. La Veste sur l'Épaule — Marié tenant sa veste sur l'épaule, en chemise.
+3. Le Rire Naturel — Marié riant, tête légèrement renversée.
+4. L'Ambiance Générale — Vue large du cocktail, invités et décor.
+5. Les Retrouvailles — Invités s'embrassant, discussions animées.
+6. Le Trinquement — Gros plan de coupes qui s'entrechoquent.
+7. Les Enfants qui Jouent — Enfants sur la pelouse, spontanéité.
+8. Le Livre d'Or — Invités laissant un mot ou signant le livre d'or.
+9. Les Petits Fours — Plan détail des mets et boissons.
+10. Les Mariés Circulant — Couple saluant les groupes d'invités.
+11. Le Rire d'un Groupe — Candid d'un groupe d'invités riant.
+12. La Salle Dressée — Vue d'ensemble de la salle décorée, avant l'entrée.

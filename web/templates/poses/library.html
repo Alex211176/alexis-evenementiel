@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title | default("Poses — Bibliothèque") }}</title>
+  <style>
+    /* Jalon 0 — styles inline volontaires (pas encore d'asset static/poses/).
+       Aperçu de la charte « luxe nocturne » : fond sombre, or discret, sobre. */
+    :root {
+      --bg: #0d0f14;
+      --bg-card: #161a22;
+      --bg-phase: #12151c;
+      --line: #262b36;
+      --text: #e7e4dd;
+      --text-dim: #9aa0ab;
+      --gold: #c9a24b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    header.page {
+      text-align: center;
+      padding: 24px 0 12px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
+    }
+    header.page h1 {
+      font-weight: 600;
+      font-size: 1.7rem;
+      letter-spacing: .02em;
+      margin: 0 0 6px;
+    }
+    header.page .sub { color: var(--text-dim); font-size: .95rem; }
+    header.page .count { color: var(--gold); }
+
+    .phase { margin-bottom: 30px; }
+    .phase-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 10px 4px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(var(--bg) 70%, transparent);
+      z-index: 1;
+    }
+    .phase-head .icon { font-size: 1.3rem; }
+    .phase-head .order {
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      font-size: .85rem;
+      opacity: .8;
+    }
+    .phase-head h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0;
+      flex: 1;
+    }
+    .phase-head .meta { color: var(--text-dim); font-size: .8rem; }
+    .badge-opt {
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      font-size: .68rem;
+      padding: 1px 8px;
+      opacity: .8;
+    }
+
+    .poses {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    .pose {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .pose .pid {
+      color: var(--text-dim);
+      font-size: .7rem;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .04em;
+    }
+    .pose .ptitle { font-weight: 600; font-size: .98rem; margin: 2px 0 4px; }
+    .pose .pdesc { color: var(--text-dim); font-size: .85rem; }
+
+    footer.page {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: .8rem;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page">
+      <h1>{{ lib.meta.name }}</h1>
+      <div class="sub">
+        <span class="count">{{ total_phases }} phases · {{ total_poses }} poses</span>
+        — ordre chronologique de la journée
+      </div>
+    </header>
+
+    {% for phase in lib.phases %}
+    <section class="phase">
+      <div class="phase-head">
+        <span class="order">{{ "%02d"|format(phase.order) }}</span>
+        <span class="icon">{{ phase.icon }}</span>
+        <h2>{{ phase.label }}</h2>
+        {% if phase.optional %}<span class="badge-opt">optionnel</span>{% endif %}
+        <span class="meta">{{ phase.moment }} · {{ phase.poses|length }}</span>
+      </div>
+      <div class="poses">
+        {% for pose in phase.poses %}
+        <article class="pose">
+          <div class="pid">{{ pose.id }}</div>
+          <div class="ptitle">{{ pose.title }}</div>
+          <div class="pdesc">{{ pose.desc }}</div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+
+    <footer class="page">
+      Poses Mariage — Jalon 0 (lecture seule) · {{ lib.meta.version }}
+    </footer>
+  </div>
+</body>
+</html>
