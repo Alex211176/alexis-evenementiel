@@ -53,6 +53,28 @@ def _validate(lib: dict) -> None:
             seen_pose_ids.add(poid)
 
 
+# Catégorie transverse (« type de photo ») par phase — sert au filtre côté
+# mariés et côté jour J. Recoupe les phases chronologiques.
+_PHASE_CATEGORY = {
+    "prep-mariee": "Préparatifs", "prep-marie": "Préparatifs",
+    "details": "Détails", "details-reception": "Détails",
+    "first-look": "Cérémonie", "ceremonie": "Cérémonie", "sortie": "Cérémonie",
+    "famille": "Groupes", "temoins": "Groupes",
+    "couple": "Couple",
+    "portrait-mariee": "Portraits", "portrait-marie": "Portraits",
+    "vin-honneur": "Réception", "repas": "Réception",
+    "gateau": "Fête", "ouverture-bal": "Fête", "soiree": "Fête",
+}
+CATEGORY_ORDER = ["Préparatifs", "Détails", "Cérémonie", "Groupes",
+                  "Couple", "Portraits", "Réception", "Fête"]
+
+
+def categories_in_order(lib: dict) -> list:
+    """Catégories réellement présentes, dans l'ordre canonique."""
+    present = {ph.get("category") for ph in lib["phases"]}
+    return [c for c in CATEGORY_ORDER if c in present]
+
+
 @lru_cache(maxsize=1)
 def load_library() -> dict:
     """
@@ -75,6 +97,8 @@ def load_library() -> dict:
 
     _validate(lib)
     lib["phases"] = sorted(lib["phases"], key=lambda p: p["order"])
+    for ph in lib["phases"]:
+        ph["category"] = _PHASE_CATEGORY.get(ph["id"], "Autre")
     return lib
 
 
@@ -110,6 +134,7 @@ def resolve_checklist(lib: dict, selected_ids, must_have_ids) -> list:
                 "label": phase["label"],
                 "icon": phase["icon"],
                 "order": phase["order"],
+                "category": _PHASE_CATEGORY.get(phase["id"], "Autre"),
                 "poses": rows,
             })
     return out

@@ -61,6 +61,23 @@ body {
 .save-state.show { opacity: 1; }
 .save-state.ok { color: var(--ok); }
 
+/* ---------- Barre de filtre par type ---------- */
+.typebar {
+  position: sticky; top: 42px; z-index: 4;
+  background: rgba(11,13,18,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.typebar::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; border: 1px solid var(--line); background: var(--bg-card);
+  color: var(--text-dim); border-radius: 999px; padding: 7px 14px;
+  font-size: .85rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.chip.active { background: var(--gold-soft); color: var(--gold); border-color: var(--gold); }
+
 /* ---------- Layout ---------- */
 .wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 40px; }
 

@@ -115,6 +115,7 @@
   }
 
   var currentFilter = "all";
+  var currentCat = "all";
   function applyFilter() {
     getRows().forEach(function (row) {
       var d = row.classList.contains("done");
@@ -122,7 +123,9 @@
       row.style.display = show ? "" : "none";
     });
     document.querySelectorAll(".fphase[data-phase-id]").forEach(function (ph) {
-      var any = Array.prototype.slice.call(ph.querySelectorAll(".row")).some(function (r) { return r.style.display !== "none"; });
+      var catOk = currentCat === "all" || ph.getAttribute("data-category") === currentCat;
+      var any = catOk && Array.prototype.slice.call(ph.querySelectorAll(".row"))
+        .some(function (r) { return r.style.display !== "none"; });
       ph.style.display = any ? "" : "none";
     });
   }
@@ -135,6 +138,18 @@
     b.classList.add("active");
     applyFilter();
   });
+
+  var typebar = document.getElementById("typebar");
+  if (typebar) {
+    typebar.addEventListener("click", function (e) {
+      var b = e.target.closest(".chip");
+      if (!b) return;
+      currentCat = b.getAttribute("data-cat");
+      typebar.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+      b.classList.add("active");
+      applyFilter();
+    });
+  }
 
   // ---- Cochage (délégation : marche aussi sur les lignes injectées) -------
   main.addEventListener("click", function (e) {

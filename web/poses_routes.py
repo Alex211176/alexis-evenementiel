@@ -34,7 +34,8 @@ sys.path.insert(0, str(ROOT))
 
 from app_storage import STORAGE
 from poses.loader import (
-    load_library, count_poses, available_thumb_ids, resolve_checklist, LibraryError,
+    load_library, count_poses, available_thumb_ids, resolve_checklist,
+    categories_in_order, CATEGORY_ORDER, LibraryError,
 )
 from poses import events as ev
 from poses.tokens import is_valid_token
@@ -74,12 +75,25 @@ def admin():
 
 @poses_bp.route("/catalogue.pdf")
 def catalogue_pdf():
-    """Catalogue imprimable de toutes les poses (à présenter aux mariés)."""
+    """
+    Catalogue imprimable de toutes les poses (à présenter aux mariés).
+    MIS EN CACHE : régénéré seulement si les vignettes ont changé (nombre ou date),
+    pour ne pas refabriquer 167 images à chaque visite.
+    """
     from poses.catalogue import render_pdf
     thumbs = Path(current_app.static_folder) / "poses" / "thumbs"
-    out = Path(tempfile.gettempdir()) / "poses_catalogue.pdf"
-    render_pdf(thumbs, out)
-    return send_file(out, mimetype="application/pdf",
+    files = sorted(thumbs.glob("*.webp"))
+    mtime = int(max((f.stat().st_mtime for f in files), default=0))
+    sig = f"{len(files)}-{mtime}"
+    cache = Path(tempfile.gettempdir()) / f"poses_catalogue_{sig}.pdf"
+    if not cache.exists():
+        for old in Path(tempfile.gettempdir()).glob("poses_catalogue_*.pdf"):
+            try:
+                old.unlink()          # purge les anciennes versions
+            except OSError:
+                pass
+        render_pdf(thumbs, cache)
+    return send_file(cache, mimetype="application/pdf",
                      as_attachment=False, download_name="Poses-Mariage-Catalogue.pdf")
 
 
@@ -119,6 +133,7 @@ def client(token):
         event=event,
         total_poses=count_poses(lib),
         thumbs=available_thumb_ids(current_app.static_folder),
+        categories=categories_in_order(lib),
         title=f"Vos poses — {event.get('couple', '')}",
     )
 
@@ -173,12 +188,15 @@ def field(token):
 
     checklist = resolve_checklist(lib, event.get("selections"), event.get("mustHave"))
     shown_total = sum(len(p["poses"]) for p in checklist) + len(event.get("custom", []))
+    present = {p["category"] for p in checklist}
+    field_categories = [c for c in CATEGORY_ORDER if c in present]
     return render_template(
         "poses/field.html",
         lib=lib,
         event=event,
         checklist=checklist,
         shown_total=shown_total,
+        categories=field_categories,
         title=f"Jour J — {event.get('couple', '')}",
     )
 

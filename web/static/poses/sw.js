@@ -8,14 +8,14 @@
      - tout le reste / POST d'API    : passthrough réseau (la file de synchro vit dans la page)
 
    Bump CACHE à chaque changement d'asset pour purger l'ancien cache. */
-const CACHE = "poses-field-v3";
+const CACHE = "poses-field-v4";
 
 // Pré-cache : garantit que les assets sont dispo hors-ligne DÈS la 1re visite,
 // même s'ils avaient été chargés avant que le SW prenne le contrôle.
 // (URLs versionnées : les tenir synchro avec field.html + bumper CACHE.)
 const PRECACHE = [
-  "/poses/a/field.css?v=1",
-  "/poses/a/field.js?v=3",
+  "/poses/a/field.css?v=2",
+  "/poses/a/field.js?v=4",
   "/poses/app.webmanifest",
   "/poses/a/icons/icon-192.png"
 ];

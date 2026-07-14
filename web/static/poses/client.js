@@ -237,6 +237,24 @@
     });
   }
 
+  // --- Filtre par type ------------------------------------------------------
+  var typebar = document.getElementById("typebar");
+  if (typebar) {
+    var phaseEls = Array.prototype.slice.call(document.querySelectorAll(".phase[data-category]"));
+    typebar.addEventListener("click", function (e) {
+      var b = e.target.closest(".chip");
+      if (!b) return;
+      var cat = b.getAttribute("data-cat");
+      typebar.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+      b.classList.add("active");
+      phaseEls.forEach(function (ph) {
+        var c = ph.getAttribute("data-category");
+        ph.style.display = (cat === "all" || c === cat) ? "" : "none";
+      });
+      window.scrollTo(0, 0);
+    });
+  }
+
   // --- Init -----------------------------------------------------------------
   renderCustom();
   renderValidated();
