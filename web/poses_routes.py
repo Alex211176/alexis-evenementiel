@@ -22,9 +22,11 @@ Client — PUBLIC par token (jalon 1) ; exempté du gate via _PUBLIC_PREFIXES
 import sys
 from pathlib import Path
 
+import tempfile
+
 from flask import (
     Blueprint, render_template, request, redirect, url_for, jsonify, abort,
-    current_app, Response, send_from_directory,
+    current_app, Response, send_from_directory, send_file,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -68,6 +70,17 @@ def admin():
         events=ev.list_events(STORAGE),
         title="Poses — Événements",
     )
+
+
+@poses_bp.route("/catalogue.pdf")
+def catalogue_pdf():
+    """Catalogue imprimable de toutes les poses (à présenter aux mariés)."""
+    from poses.catalogue import render_pdf
+    thumbs = Path(current_app.static_folder) / "poses" / "thumbs"
+    out = Path(tempfile.gettempdir()) / "poses_catalogue.pdf"
+    render_pdf(thumbs, out)
+    return send_file(out, mimetype="application/pdf",
+                     as_attachment=False, download_name="Poses-Mariage-Catalogue.pdf")
 
 
 @poses_bp.route("/admin/new", methods=["POST"])

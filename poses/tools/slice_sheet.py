@@ -64,14 +64,59 @@ def _coarse_cells(w, h, cols, rows, margin, gutter):
     return rects
 
 
-def _ink_bbox(cell_rgb: Image.Image, threshold: int):
-    """Boîte englobante des pixels sombres (encre). None si case vide (que du clair)."""
+def _ink_bbox(cell_rgb: Image.Image, threshold: int, keep_largest: bool = False):
+    """
+    Boîte englobante du DESSIN (pixels sombres). None si case vide.
+
+    Détecte et IGNORE automatiquement un éventuel bandeau-titre en texte que
+    Gemini aurait ajouté en haut de la case : une bande d'encre fine, large et
+    située en haut, suivie d'un blanc. On distingue un titre (s'étale en largeur)
+    d'une tête de personnage (étroite) pour ne jamais rogner le dessin.
+
+    keep_largest : ne conserver que le plus gros bloc d'encre connexe (utile pour
+    un PORTRAIT SOLO qui a débordé de sa case / capté un voisin). À NE PAS utiliser
+    sur une scène de groupe (les personnages séparés seraient supprimés).
+    """
     gray = np.asarray(cell_rgb.convert("L"))
-    mask = gray < threshold
-    if not mask.any():
+    H, W = gray.shape
+    inkmask = gray < threshold
+    if not inkmask.any():
         return None
-    ys, xs = np.where(mask)
-    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+    if keep_largest:
+        from scipy import ndimage
+        lbl, n = ndimage.label(inkmask, structure=np.ones((3, 3)))
+        if n >= 1:
+            sizes = ndimage.sum(inkmask, lbl, range(1, n + 1))
+            inkmask = lbl == (int(np.argmax(sizes)) + 1)
+
+    ink_rows = inkmask.sum(axis=1) > max(3, int(W * 0.01))
+    # bandes d'encre contiguës (verticalement)
+    bands, start = [], None
+    for i, v in enumerate(ink_rows):
+        if v and start is None:
+            start = i
+        elif not v and start is not None:
+            bands.append((start, i)); start = None
+    if start is not None:
+        bands.append((start, len(ink_rows)))
+    if not bands:
+        return None
+
+    # titre présumé : 1re bande fine + haute + LARGE, suivie d'un blanc
+    if len(bands) >= 2:
+        t0, t1 = bands[0]
+        band_h, gap = t1 - t0, bands[1][0] - t1
+        top_cols = np.where(inkmask[t0:t1, :].any(axis=0))[0]
+        top_width = (top_cols.max() - top_cols.min()) if len(top_cols) else 0
+        if t0 < H * 0.30 and band_h < H * 0.16 and gap > H * 0.025 and top_width > W * 0.45:
+            bands = bands[1:]  # -> on saute le titre
+
+    y0, y1 = bands[0][0], bands[-1][1]
+    cols = np.where(inkmask[y0:y1, :].any(axis=0))[0]
+    if not len(cols):
+        return None
+    return int(cols.min()), int(y0), int(cols.max()) + 1, int(y1)
 
 
 def _compose(crop: Image.Image) -> Image.Image:
@@ -117,6 +162,12 @@ def main():
     ap.add_argument("--gutter", type=float, default=0.02, help="gouttière (fraction)")
     ap.add_argument("--ink-threshold", type=int, default=200, help="seuil encre (0-255)")
     ap.add_argument("--pad", type=float, default=0.06, help="marge autour du croquis recadré (fraction de case)")
+    ap.add_argument("--top-crop", type=float, default=0.0,
+                    help="retire cette fraction du HAUT de chaque case avant recadrage "
+                         "(utile si Gemini a ajouté un titre en texte)")
+    ap.add_argument("--largest-blob", action="store_true",
+                    help="ne garder que le plus gros bloc d'encre par case "
+                         "(PORTRAITS SOLO uniquement — jamais sur des groupes)")
     ap.add_argument("--dry-run", action="store_true", help="ne fabrique QUE la planche de contrôle")
     args = ap.parse_args()
 
@@ -141,7 +192,10 @@ def main():
             break
         x0, y0, x1, y1 = rects[k]
         coarse = img.crop((x0, y0, x1, y1))
-        bbox = _ink_bbox(coarse, args.ink_threshold)
+        if args.top_crop > 0:                          # retire la bande de titre en haut
+            cw0, ch0 = coarse.size
+            coarse = coarse.crop((0, int(ch0 * args.top_crop), cw0, ch0))
+        bbox = _ink_bbox(coarse, args.ink_threshold, keep_largest=args.largest_blob)
         if bbox is None:
             empty.append(cell["pose_id"])
             continue
