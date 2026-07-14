@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{{ title | default("Jour J") }}</title>
-  <link rel="stylesheet" href="/poses/a/field.css?v=1">
+  <link rel="stylesheet" href="/poses/a/field.css?v=2">
   <link rel="manifest" href="/poses/app.webmanifest">
   <meta name="theme-color" content="#14181f">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -38,11 +38,17 @@
       <button class="filter" data-filter="todo">À faire</button>
       <button class="filter" data-filter="done">Faites</button>
     </div>
+    {% if categories %}
+    <div class="typebar" id="typebar">
+      <button class="chip active" data-cat="all">Tout type</button>
+      {% for c in categories %}<button class="chip" data-cat="{{ c }}">{{ c }}</button>{% endfor %}
+    </div>
+    {% endif %}
   </header>
 
   <main class="fwrap">
     {% for phase in checklist %}
-    <section class="fphase" data-phase-id="{{ phase.id }}" data-order="{{ phase.order }}">
+    <section class="fphase" data-phase-id="{{ phase.id }}" data-order="{{ phase.order }}" data-category="{{ phase.category }}">
       <div class="fphase-head">
         <span class="icon">{{ phase.icon }}</span>
         <h2>{{ phase.label }}</h2>
@@ -67,7 +73,7 @@
     {% endfor %}
 
     {% if event.custom %}
-    <section class="fphase" data-phase-id="__custom__" data-order="999">
+    <section class="fphase" data-phase-id="__custom__" data-order="999" data-category="__custom__">
       <div class="fphase-head">
         <span class="icon">💡</span>
         <h2>Idées des mariés</h2>
@@ -134,6 +140,6 @@
       });
     }
   </script>
-  <script src="/poses/a/field.js?v=3"></script>
+  <script src="/poses/a/field.js?v=4"></script>
 </body>
 </html>
