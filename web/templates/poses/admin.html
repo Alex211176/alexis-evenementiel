@@ -49,7 +49,8 @@
 
 <div class="poses-admin">
   <h1>Poses Mariage — Événements</h1>
-  <p class="lead">Crée un mariage, envoie le lien aux mariés, retrouve leur sélection le jour J.</p>
+  <p class="lead">Crée un mariage, envoie le lien aux mariés, retrouve leur sélection le jour J.
+    &nbsp;·&nbsp; <a class="client-link" href="{{ url_for('poses.catalogue_pdf') }}" target="_blank">📖 Catalogue PDF à imprimer</a></p>
 
   {% if request.args.get('created') %}
     {% set tok = request.args.get('created') %}
