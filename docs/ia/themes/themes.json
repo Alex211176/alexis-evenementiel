@@ -224,6 +224,20 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "fiesta-mexicaine",
+      "label": "Fiesta mexicaine",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Fiesta mexicaine",
+          "avant": "avant.jpeg",
+          "apres": "apres.jpeg",
+          "montage": null,
+          "extras": []
+        }
+      ]
     }
   ]
 }
