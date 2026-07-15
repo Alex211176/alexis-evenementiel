@@ -351,8 +351,6 @@ LOC_FILTER_JS = """
 # Bouton injecté côté client sur les cartes présentes dans docs/exemples/index.json,
 # ouvre une lightbox navigable (flèches/swipe/clavier + vidéos muettes).
 EXEMPLES_CSS = """
-    .loc-note-general { display:flex; align-items:center; gap:10px; margin:0 0 22px; padding:12px 18px; border:1px solid var(--line); border-radius:8px; color:var(--gris-clair); font-size:0.88rem; background:rgba(201,165,92,0.04); }
-    .loc-note-general b { color:var(--or-clair); font-weight:500; }
     .ex-btn { display:block; width:calc(100% - 40px); margin:0 20px 10px; background:transparent; border:1px dashed var(--line); color:var(--gris-clair); border-radius:4px; padding:9px; font:500 0.74rem/1 'Jost',sans-serif; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:all .25s; }
     .ex-btn:hover { border-color:var(--or-sombre); color:var(--or-clair); }
     .ex-btn span { opacity:0.55; }
@@ -483,10 +481,9 @@ def build_html(equipements, prestations, packs) -> str:
     else:
         equip_html = equip_groups
 
-    # Note générale : montage/installation possible en option (sur devis) pour toute la location
-    loc_note = ('<div class="loc-note-general">&#128295; <span>Montage / installation '
-                'possible <b>en option, sur devis</b>, pour tout le matériel en location.</span></div>')
-    equip_html = loc_note + equip_html + EXEMPLES_BLOCK
+    # La mention « montage/installation possible en option, sur devis » est désormais
+    # fondue dans le paragraphe d'intro de la section Location (plus d'encadré séparé).
+    equip_html = equip_html + EXEMPLES_BLOCK
 
     maj = datetime.now().strftime("%d/%m/%Y")
     return HTML_TEMPLATE.format(
@@ -701,7 +698,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="section-head">
             <div class="num">03</div>
             <h2>Location de <span class="italic">matériel</span></h2>
-            <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
+            <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous. Montage / installation possible en option, sur devis, pour tout le matériel en location.</p>
         </div>
         {equipements}
     </div>
