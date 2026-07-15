@@ -186,8 +186,6 @@
     #cart-msg{ font-size:0.85rem; text-align:center; padding:8px 0 0; }
 
 
-    .loc-note-general { display:flex; align-items:center; gap:10px; margin:0 0 22px; padding:12px 18px; border:1px solid var(--line); border-radius:8px; color:var(--gris-clair); font-size:0.88rem; background:rgba(201,165,92,0.04); }
-    .loc-note-general b { color:var(--or-clair); font-weight:500; }
     .ex-btn { display:block; width:calc(100% - 40px); margin:0 20px 10px; background:transparent; border:1px dashed var(--line); color:var(--gris-clair); border-radius:4px; padding:9px; font:500 0.74rem/1 'Jost',sans-serif; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:all .25s; }
     .ex-btn:hover { border-color:var(--or-sombre); color:var(--or-clair); }
     .ex-btn span { opacity:0.55; }
@@ -444,17 +442,27 @@
         <div class="section-head">
             <div class="num">03</div>
             <h2>Location de <span class="italic">matériel</span></h2>
-            <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
+            <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous. Montage / installation possible en option, sur devis, pour tout le matériel en location.</p>
         </div>
-        <div class="loc-note-general">&#128295; <span>Montage / installation possible <b>en option, sur devis</b>, pour tout le matériel en location.</span></div><div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button><button type="button" class="loc-chip" data-loc-filter="son">Sonorisation <span class="loc-n">4</span></button><button type="button" class="loc-chip" data-loc-filter="regie">Régie DJ <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="lumiere">Lumière <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="effet">Effets <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="video">Vidéo <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="photo">Photo / Booth <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="energie">Énergie <span class="loc-n">3</span></button></div><div class="cat-group" data-loc-cat="son"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
+        <div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button><button type="button" class="loc-chip" data-loc-filter="son">Sonorisation <span class="loc-n">5</span></button><button type="button" class="loc-chip" data-loc-filter="regie">Régie DJ <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="lumiere">Lumière <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="effet">Effets <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="video">Vidéo <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="photo">Photo / Booth <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="energie">Énergie <span class="loc-n">3</span></button></div><div class="cat-group" data-loc-cat="son"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/bose-f1-systeme.png" alt="Bose F1 (système complet)" loading="lazy"></div>
             <div class="equip-body">
                 <span class="equip-marque">Bose</span>
                 <h3>Bose F1 (système complet)</h3>
-                <p class="card-desc">Sonorisation pour plus de 100 personnes</p>
+                <p class="card-desc">Sonorisation pour plus de 200 personnes</p>
                 <div class="price">250 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="bose-f1-systeme" data-type="equip" data-nom="Bose F1 (système complet)" data-kind="fixe" data-max="1" data-unite="système" data-prix="250.0">+ Ajouter au devis</button>
+            </div>
+        </article>
+        <article class="card equip-card">
+            <div class="equip-photo"><img src="photos/bose-l1.png" alt="Bose L1" loading="lazy"></div>
+            <div class="equip-body">
+                <span class="equip-marque">Bose</span>
+                <h3>Bose L1</h3>
+                <p class="card-desc">Sonorisation conseillée jusqu&#x27;à 100 personnes</p>
+                <div class="price">200 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="bose-l1" data-type="equip" data-nom="Bose L1" data-kind="fixe" data-max="1" data-unite="système" data-prix="200.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -462,7 +470,7 @@
             <div class="equip-body">
                 <span class="equip-marque">Bose</span>
                 <h3>Bose S1 Pro</h3>
-                <p class="card-desc">Sonorisation Mairie, Église, vin d&#x27;honneur (&lt;50 pers.), fin de soirée</p>
+                <p class="card-desc">Sonorisation Mairie, Église, vin d&#x27;honneur, fin de soirée. Sonorisation conseillée jusqu&#x27;à 30 personnes</p>
                 <div class="price">50 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="bose-s1" data-type="equip" data-nom="Bose S1 Pro" data-kind="fixe" data-max="1" data-unite="unité" data-prix="50.0">+ Ajouter au devis</button>
             </div>
@@ -472,7 +480,7 @@
             <div class="equip-body">
                 <span class="equip-marque">Bose</span>
                 <h3>Bose S1 Pro+ + Sub1 + pied ajustable</h3>
-                <p class="card-desc">Système son compact Bose : S1 Pro+ sur pied + caisson Sub1. Bluetooth, mixette 3 voies.</p>
+                <p class="card-desc">Système son compact Bose : S1 Pro+ sur pied + caisson Sub1. Bluetooth, mixette 3 voies. Sonorisation conseillée jusqu&#x27;à 60 personnes</p>
                 <div class="price">100 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="bose-s1-pro-sub1-pied-ajustable" data-type="equip" data-nom="Bose S1 Pro+ + Sub1 + pied ajustable" data-kind="fixe" data-max="1" data-unite="unité" data-prix="100.0">+ Ajouter au devis</button>
             </div>
@@ -482,7 +490,7 @@
             <div class="equip-body">
                 <span class="equip-marque">RCF</span>
                 <h3>RCF ART 915 (paire)</h3>
-                <p class="card-desc">Sonorisation vin d&#x27;honneur pour plus de 50 personnes</p>
+                <p class="card-desc">Sonorisation conseillée jusqu&#x27;à 200 personnes</p>
                 <div class="price">150 € <span class="price-unit">/ location</span></div>
                 <button type="button" class="add-cart" data-id="rcf-915" data-type="equip" data-nom="RCF ART 915 (paire)" data-kind="fixe" data-max="1" data-unite="paire" data-prix="150.0">+ Ajouter au devis</button>
             </div>
