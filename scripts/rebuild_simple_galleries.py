@@ -99,12 +99,11 @@ def load_existing_caps(manifest: Path):
     return caps
 
 
-def build_gallery(slug: str) -> dict:
-    base = ROOT / "docs" / slug
+def _build_at(base) -> dict:
     photos_dir = base / "photos"
     manifest = base / "gallery.json"
     if not photos_dir.is_dir():
-        return {"slug": slug, "count": 0, "missing": True}
+        return {"count": 0, "missing": True}
 
     old_caps = load_existing_caps(manifest)
 
@@ -138,7 +137,33 @@ def build_gallery(slug: str) -> dict:
         json.dumps({"photos": photos}, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    return {"slug": slug, "count": len(photos), "missing": False}
+    return {"count": len(photos), "missing": False}
+
+
+def build_gallery(slug: str) -> dict:
+    res = _build_at(ROOT / "docs" / slug)
+    res["slug"] = slug
+    return res
+
+
+def build_exemples() -> list:
+    """Galeries d'exemples par article : docs/exemples/<id-article>/photos/ →
+    un gallery.json par article + un index.json (liste des articles + nb de médias).
+    Le catalogue lit index.json côté client pour injecter le bouton « Voir des exemples »."""
+    root = ROOT / "docs" / "exemples"
+    if not root.is_dir():
+        return []
+    index = []
+    for d in sorted(root.iterdir()):
+        if not d.is_dir():
+            continue
+        res = _build_at(d)
+        if res.get("missing") or res["count"] == 0:
+            continue
+        index.append({"id": d.name, "count": res["count"]})
+    (root / "index.json").write_text(
+        json.dumps({"items": index}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return index
 
 
 def main():
@@ -152,6 +177,12 @@ def main():
         total += res["count"]
         print(f"  · {g['titre']} ({g['slug']}) : {res['count']} photo(s).")
     print(f"✅ {len(GALLERIES)} galerie(s) simple(s), {total} photo(s) au total.")
+    ex = build_exemples()
+    if ex:
+        print("> Galeries d'exemples par article (docs/exemples/) :")
+        for e in ex:
+            print(f"  · {e['id']} : {e['count']} média(s).")
+        print(f"✅ {len(ex)} article(s) avec exemples (index.json généré).")
     return 0
 
 
