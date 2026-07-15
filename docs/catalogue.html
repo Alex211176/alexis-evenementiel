@@ -185,6 +185,23 @@
         font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-weight:500; }
     #cart-msg{ font-size:0.85rem; text-align:center; padding:8px 0 0; }
 
+
+    .loc-note-general { display:flex; align-items:center; gap:10px; margin:0 0 22px; padding:12px 18px; border:1px solid var(--line); border-radius:8px; color:var(--gris-clair); font-size:0.88rem; background:rgba(201,165,92,0.04); }
+    .loc-note-general b { color:var(--or-clair); font-weight:500; }
+    .ex-btn { display:block; width:calc(100% - 40px); margin:0 20px 10px; background:transparent; border:1px dashed var(--line); color:var(--gris-clair); border-radius:4px; padding:9px; font:500 0.74rem/1 'Jost',sans-serif; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:all .25s; }
+    .ex-btn:hover { border-color:var(--or-sombre); color:var(--or-clair); }
+    .ex-btn span { opacity:0.55; }
+    .ex-lightbox { position:fixed; inset:0; z-index:300; background:rgba(5,5,7,0.95); display:none; align-items:center; justify-content:center; padding:40px; backdrop-filter:blur(6px); }
+    .ex-lightbox.open { display:flex; }
+    .ex-lightbox img, .ex-lightbox video { max-width:92vw; max-height:86vh; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+    .ex-close { position:absolute; top:26px; right:34px; color:var(--creme); font-size:2.2rem; background:none; border:none; cursor:pointer; z-index:2; line-height:1; }
+    .ex-close:hover { color:var(--or-clair); }
+    .ex-cap { position:absolute; bottom:22px; left:0; right:0; text-align:center; color:var(--or-clair); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; }
+    .ex-nav { position:absolute; top:50%; transform:translateY(-50%); width:54px; height:54px; border-radius:50%; border:1px solid var(--line); background:rgba(18,17,22,0.6); color:var(--creme); font-size:2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; }
+    .ex-nav:hover { background:rgba(40,38,48,0.9); }
+    .ex-prev { left:18px; } .ex-next { right:18px; }
+    @media (max-width:700px){ .ex-nav{ width:42px; height:42px; font-size:1.6rem; } .ex-prev{ left:6px; } .ex-next{ right:6px; } }
+
 </style>
 </head>
 <body>
@@ -435,7 +452,7 @@
             <h2>Location de <span class="italic">matériel</span></h2>
             <p>Notre parc son, lumière et vidéo, à louer pour vos propres événements. Tarif à la journée ou au week-end selon le matériel — contactez-nous.</p>
         </div>
-        <div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button><button type="button" class="loc-chip" data-loc-filter="son">Sonorisation <span class="loc-n">4</span></button><button type="button" class="loc-chip" data-loc-filter="regie">Régie DJ <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="lumiere">Lumière <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="effet">Effets <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="video">Vidéo <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="photo">Photo / Booth <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="energie">Énergie <span class="loc-n">3</span></button></div><div class="cat-group" data-loc-cat="son"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
+        <div class="loc-note-general">&#128295; <span>Montage / installation possible <b>en option, sur devis</b>, pour tout le matériel en location.</span></div><div class="loc-filters" id="loc-filters"><button type="button" class="loc-chip on" data-loc-filter="">Tout</button><button type="button" class="loc-chip" data-loc-filter="son">Sonorisation <span class="loc-n">4</span></button><button type="button" class="loc-chip" data-loc-filter="regie">Régie DJ <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="lumiere">Lumière <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="effet">Effets <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="video">Vidéo <span class="loc-n">3</span></button><button type="button" class="loc-chip" data-loc-filter="photo">Photo / Booth <span class="loc-n">7</span></button><button type="button" class="loc-chip" data-loc-filter="energie">Énergie <span class="loc-n">3</span></button></div><div class="cat-group" data-loc-cat="son"><h3 class="cat-title">Sonorisation</h3><div class="card-grid equip-grid">
         <article class="card equip-card">
             <div class="equip-photo"><img src="photos/bose-f1-systeme.png" alt="Bose F1 (système complet)" loading="lazy"></div>
             <div class="equip-body">
@@ -462,8 +479,8 @@
                 <span class="equip-marque">Bose</span>
                 <h3>Bose S1 Pro+ + Sub1 + pied ajustable</h3>
                 <p class="card-desc">Système son compact Bose : S1 Pro+ sur pied + caisson Sub1. Bluetooth, mixette 3 voies.</p>
-                <div class="price">100 € <span class="price-unit">/ location</span></div>
-                <button type="button" class="add-cart" data-id="bose-s1-pro-sub1-pied-ajustable" data-type="equip" data-nom="Bose S1 Pro+ + Sub1 + pied ajustable" data-kind="fixe" data-max="1" data-unite="unité" data-prix="100.0">+ Ajouter au devis</button>
+                <div class="price">150 € <span class="price-unit">/ location</span></div>
+                <button type="button" class="add-cart" data-id="bose-s1-pro-sub1-pied-ajustable" data-type="equip" data-nom="Bose S1 Pro+ + Sub1 + pied ajustable" data-kind="fixe" data-max="1" data-unite="unité" data-prix="150.0">+ Ajouter au devis</button>
             </div>
         </article>
         <article class="card equip-card">
@@ -748,6 +765,51 @@
   });
 })();</script>
 
+<div class="ex-lightbox" id="ex-lightbox">
+  <button class="ex-close" id="ex-close" type="button" aria-label="Fermer">&times;</button>
+  <button class="ex-nav ex-prev" id="ex-prev" type="button" aria-label="Précédent">&#8249;</button>
+  <button class="ex-nav ex-next" id="ex-next" type="button" aria-label="Suivant">&#8250;</button>
+  <div id="ex-media"></div>
+  <div class="ex-cap" id="ex-cap"></div>
+</div>
+<script>
+(function(){
+  var INDEX={}, photos=[], pos=-1, base='';
+  var lb=document.getElementById('ex-lightbox'), media=document.getElementById('ex-media'), cap=document.getElementById('ex-cap');
+  var prev=document.getElementById('ex-prev'), next=document.getElementById('ex-next');
+  var _sw=false,_x=0,_y=0;
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  fetch('exemples/index.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():{items:[]}; }).then(function(d){
+    (d.items||[]).forEach(function(it){ INDEX[it.id]=it.count; });
+    var btns=document.querySelectorAll('.add-cart[data-id]');
+    for(var i=0;i<btns.length;i++){ var btn=btns[i], id=btn.getAttribute('data-id');
+      if(!INDEX[id]) continue;
+      var card=btn.closest?btn.closest('article'):null; if(!card||card.querySelector('.ex-btn')) continue;
+      var b=document.createElement('button'); b.type='button'; b.className='ex-btn';
+      b.innerHTML='\ud83d\udcf7 Voir des exemples <span>('+INDEX[id]+')</span>';
+      (function(theId){ b.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); open(theId); }); })(id);
+      btn.parentNode.insertBefore(b, btn);
+    }
+  }).catch(function(){});
+  function open(id){ base='exemples/'+id+'/photos/';
+    fetch('exemples/'+id+'/gallery.json',{cache:'no-store'}).then(function(r){ return r.json(); })
+      .then(function(d){ photos=(d.photos||[]); if(photos.length) show(0); }).catch(function(){}); }
+  function show(i){ if(!photos.length) return; pos=(i+photos.length)%photos.length; var p=photos[pos];
+    if(p.type==='video'){ media.innerHTML='<video src="'+base+p.src+'" muted autoplay loop playsinline controls></video>'; }
+    else { media.innerHTML='<img class="ex-img" src="'+base+p.src+'" alt="'+esc(p.cap||'')+'">'; }
+    cap.textContent=p.cap||''; var m=photos.length>1; prev.style.display=next.style.display=m?'flex':'none'; lb.classList.add('open'); }
+  function close(){ lb.classList.remove('open'); media.innerHTML=''; }
+  function nav(d){ if(pos<0||photos.length<2) return; show(pos+d); }
+  document.getElementById('ex-close').addEventListener('click', function(e){ e.stopPropagation(); close(); });
+  prev.addEventListener('click', function(e){ e.stopPropagation(); nav(-1); });
+  next.addEventListener('click', function(e){ e.stopPropagation(); nav(1); });
+  lb.addEventListener('click', function(e){ if(_sw){ _sw=false; return; } if(e.target===lb||(e.target.classList&&e.target.classList.contains('ex-img'))) close(); });
+  lb.addEventListener('touchstart', function(e){ _x=e.changedTouches[0].clientX; _y=e.changedTouches[0].clientY; }, {passive:true});
+  lb.addEventListener('touchend', function(e){ var dx=e.changedTouches[0].clientX-_x, dy=e.changedTouches[0].clientY-_y; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){ _sw=true; nav(dx<0?1:-1); } }, {passive:true});
+  document.addEventListener('keydown', function(e){ if(!lb.classList.contains('open')) return; if(e.key==='Escape') close(); else if(e.key==='ArrowLeft') nav(-1); else if(e.key==='ArrowRight') nav(1); });
+})();
+</script>
+
     </div>
 </section>
 
@@ -756,7 +818,7 @@
         <div class="brand">Alexis<span>.</span> Événementiel</div>
         <p>Albi & Tarn (81) — déplacements jusqu'à 200 km</p>
         <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
-        <p class="maj">Catalogue mis à jour le 13/07/2026 · TVA non applicable, art. 293 B du CGI</p>
+        <p class="maj">Catalogue mis à jour le 15/07/2026 · TVA non applicable, art. 293 B du CGI</p>
         <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
         <script>
         (function(){
