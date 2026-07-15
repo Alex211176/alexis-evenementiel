@@ -196,6 +196,34 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "fusion-franco-mexicaine",
+      "label": "Fusion franco-mexicaine",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Fusion franco-mexicaine",
+          "avant": "avant.jpeg",
+          "apres": "apres.png",
+          "montage": null,
+          "extras": []
+        }
+      ]
+    },
+    {
+      "slug": "paris-romantique",
+      "label": "Paris romantique",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Paris romantique",
+          "avant": "avant.jpeg",
+          "apres": "apres.jpeg",
+          "montage": null,
+          "extras": []
+        }
+      ]
     }
   ]
 }
