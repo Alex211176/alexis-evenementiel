@@ -93,7 +93,11 @@
     footer a { color: var(--or-clair); text-decoration: none; }
 
     /* Avant / Après — slider */
-    .ba-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px,1fr)); gap:24px; }
+    /* align-items:start = chaque carte garde SA hauteur naturelle. Sans ça, la grille
+       étire les cartes à la hauteur de la plus haute de la ligne : l'avant (object-fit:cover)
+       remplit l'étirement mais l'après (height:auto) non -> bande noire + calques décalés
+       dès qu'un thème n'a pas le même ratio que ses voisins (ex. aquarelle 1.83 vs carrés 1.0). */
+    .ba-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px,1fr)); gap:24px; align-items:start; }
     .ba { position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--line); user-select:none; -webkit-user-select:none; touch-action:none; cursor:ew-resize; background:var(--noir-3); }
     .ba img { display:block; width:100%; height:auto; pointer-events:none; -webkit-user-drag:none; }
     .ba-apres { position:relative; }
