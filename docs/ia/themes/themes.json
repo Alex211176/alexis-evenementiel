@@ -289,6 +289,21 @@
           "extras": []
         }
       ]
+    },
+    {
+      "slug": "foot-espagne",
+      "label": "Foot Espagne",
+      "montages": [
+        {
+          "slug": "exemple-01",
+          "label": "Exemple 01",
+          "avant": "avant.jpeg",
+          "apres": "apres.jpeg",
+          "montage": null,
+          "extras": []
+        }
+      ],
+      "category": "sport"
     }
   ]
 }
