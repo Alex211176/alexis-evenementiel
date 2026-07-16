@@ -293,6 +293,7 @@
     {
       "slug": "foot-espagne",
       "label": "Foot Espagne",
+      "category": "sport",
       "montages": [
         {
           "slug": "exemple-01",
@@ -302,8 +303,7 @@
           "montage": null,
           "extras": []
         }
-      ],
-      "category": "sport"
+      ]
     }
   ]
 }
