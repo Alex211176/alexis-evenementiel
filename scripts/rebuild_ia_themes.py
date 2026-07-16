@@ -97,14 +97,21 @@ def find_extras(folder: Path):
 
 
 def load_existing():
+    """Conserve ce que ce script ne sait pas déduire des dossiers : libellés, ordre,
+    et les CATÉGORIES (définies dans l'application et poussées ici par
+    sync_borne_themes.py — surtout ne pas les écraser à chaque rebuild)."""
     labels_t, labels_m, order_t, order_m, doc = {}, {}, [], {}, DEFAULT_DOC
+    cats_t, categories = {}, []
     if JSON_PATH.exists():
         try:
             data = json.loads(JSON_PATH.read_text(encoding="utf-8"))
             doc = data.get("_doc", DEFAULT_DOC)
+            categories = data.get("categories", [])
             for t in data.get("themes", []):
                 s = t["slug"]
                 labels_t[s] = t.get("label")
+                if t.get("category"):
+                    cats_t[s] = t["category"]
                 order_t.append(s)
                 order_m[s] = []
                 labels_m[s] = {}
@@ -113,7 +120,7 @@ def load_existing():
                     order_m[s].append(m["slug"])
         except Exception as e:  # noqa: BLE001
             print(f"⚠️  themes.json existant illisible ({e}) — on repart de zéro.")
-    return labels_t, labels_m, order_t, order_m, doc
+    return labels_t, labels_m, order_t, order_m, doc, cats_t, categories
 
 
 def ordered(existing_order, present):
@@ -139,7 +146,7 @@ def main():
         for r in renamed:
             print(f"   · {r}")
 
-    labels_t, labels_m, order_t, order_m, doc = load_existing()
+    labels_t, labels_m, order_t, order_m, doc, cats_t, categories = load_existing()
 
     disk = {}
     for tdir in sorted(d for d in THEMES_DIR.iterdir() if d.is_dir()):
@@ -172,9 +179,16 @@ def main():
                 n_sliders += 1
             else:
                 warns.append(f"« {tslug}/{mslug} » sans avant+apres → n'apparaîtra PAS en slider")
-        themes.append({"slug": tslug, "label": tlabel, "montages": montages})
+        entry = {"slug": tslug, "label": tlabel}
+        if cats_t.get(tslug):                 # catégorie définie par l'APPLICATION -> préservée
+            entry["category"] = cats_t[tslug]
+        entry["montages"] = montages
+        themes.append(entry)
 
-    out = {"_doc": doc, "themes": themes}
+    out = {"_doc": doc}
+    if categories:                  # liste des pastilles (ordre + libellés) — vient de l'appli
+        out["categories"] = categories
+    out["themes"] = themes
     JSON_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(f"✅ themes.json reconstruit : {len(themes)} thème(s), {n_montages} montage(s), {n_sliders} slider(s).")

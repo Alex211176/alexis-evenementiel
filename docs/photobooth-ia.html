@@ -245,29 +245,42 @@
   fetch('ia/themes/themes.json', {cache:'no-store'})
     .then(function(r){ return r.json(); })
     .then(function(data){
+      // Les CATÉGORIES viennent de l'application (source de vérité) via themes.json.
+      // Repli : si elles manquent (ancienne donnée), on retombe sur une pastille par thème.
+      var cats = data.categories || [];
+      var byCat = cats.length && (data.themes || []).some(function(t){ return t.category; });
       var made = 0, counts = {}, labels = {};
       (data.themes || []).forEach(function(t){
+        var key = byCat ? (t.category || '') : t.slug;
         (t.montages || []).forEach(function(m){
           if(m.avant && m.apres){
-            host.appendChild(buildBA(t, m)); made++;
-            counts[t.slug] = (counts[t.slug] || 0) + 1;
-            labels[t.slug] = t.label;
+            var node = buildBA(t, m);
+            node.setAttribute('data-f', key);          // clé de filtre (catégorie ou thème)
+            host.appendChild(node); made++;
+            if(key){ counts[key] = (counts[key] || 0) + 1; }
+            labels[key] = byCat ? (cats.filter(function(c){ return c.key === key; })[0] || {}).label || key
+                                : t.label;
           }
         });
       });
       if(!made){ host.innerHTML = '<div class="ba-empty">Exemples avant/après à venir très bientôt.</div>'; }
-      else { buildChips(counts, labels, made); }
+      else { buildChips(counts, labels, made, byCat ? cats.map(function(c){ return c.key; }) : null); }
     })
     .catch(function(){ host.innerHTML = '<div class="ba-empty">Galerie momentanément indisponible.</div>'; });
 
-  // Pastilles : « Tous » + un thème par pastille (triées alphabétiquement).
+  // Pastilles : « Tous » + une par CATÉGORIE (ordre défini dans l'application).
+  // `order` = ordre voulu ; null => repli par thème, trié alphabétiquement.
   // Le compteur n'apparaît que s'il y a plusieurs montages (sinon « 1 » partout = bruit).
-  function buildChips(counts, labels, total){
+  function buildChips(counts, labels, total, order){
     var bar = document.getElementById('ba-filters');
     if(!bar) return;
     var slugs = Object.keys(counts);
-    if(slugs.length < 2) return;  // une seule famille de thème : pastilles inutiles
-    slugs.sort(function(a, b){ return labels[a].localeCompare(labels[b], 'fr'); });
+    if(slugs.length < 2) return;  // une seule famille : pastilles inutiles
+    if(order){                    // ordre de l'appli, catégories vides ignorées
+      slugs = order.filter(function(k){ return counts[k]; });
+    } else {
+      slugs.sort(function(a, b){ return labels[a].localeCompare(labels[b], 'fr'); });
+    }
     function chip(f, label, n){
       var b = document.createElement('button');
       b.type = 'button';
@@ -290,7 +303,7 @@
       for(var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i] === b);
       var items = host.querySelectorAll('.ba');
       for(var j = 0; j < items.length; j++){
-        items[j].style.display = (!f || items[j].getAttribute('data-theme') === f) ? '' : 'none';
+        items[j].style.display = (!f || items[j].getAttribute('data-f') === f) ? '' : 'none';
       }
     });
   }

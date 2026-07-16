@@ -1,9 +1,44 @@
 {
   "_doc": "Registre Photobooth IA. Arbo : docs/ia/themes/<theme>/<montage>/ avec avant.jpg, apres.jpg (pour le slider), montage.jpg (optionnel) et extras (autres photos). La galerie affiche un slider par montage ayant avant + apres ; le clic ouvre ia/montage.html?theme=<t>&montage=<m>. Voir README.md.",
+  "categories": [
+    {
+      "key": "evenement",
+      "label": "🎉 Fête & Événement"
+    },
+    {
+      "key": "sport",
+      "label": "⚽ Sport"
+    },
+    {
+      "key": "enfants",
+      "label": "🧒 Enfants"
+    },
+    {
+      "key": "danse",
+      "label": "💃 Danse"
+    },
+    {
+      "key": "voyage",
+      "label": "🌍 Voyage"
+    },
+    {
+      "key": "style",
+      "label": "🎨 Artistique"
+    },
+    {
+      "key": "personnage",
+      "label": "🦸 Héros & Personnages"
+    },
+    {
+      "key": "effets",
+      "label": "✨ Effets"
+    }
+  ],
   "themes": [
     {
       "slug": "disco",
       "label": "Rétro & Disco",
+      "category": "evenement",
       "montages": [
         {
           "slug": "exemple-01",
@@ -18,6 +53,7 @@
     {
       "slug": "cartoon",
       "label": "Cartoon / 3D",
+      "category": "enfants",
       "montages": [
         {
           "slug": "exemple-01",
@@ -32,6 +68,7 @@
     {
       "slug": "avatar",
       "label": "Avatar 3D",
+      "category": "style",
       "montages": [
         {
           "slug": "exemple-01",
@@ -46,6 +83,7 @@
     {
       "slug": "foot",
       "label": "Supporter / Sport",
+      "category": "sport",
       "montages": [
         {
           "slug": "exemple-01",
@@ -60,6 +98,7 @@
     {
       "slug": "halloween",
       "label": "Halloween",
+      "category": "evenement",
       "montages": [
         {
           "slug": "exemple-01",
@@ -74,6 +113,7 @@
     {
       "slug": "super-heros",
       "label": "Super-héros",
+      "category": "enfants",
       "montages": [
         {
           "slug": "exemple-01",
@@ -88,6 +128,7 @@
     {
       "slug": "mariage",
       "label": "Mariage",
+      "category": "evenement",
       "montages": [
         {
           "slug": "exemple-01",
@@ -102,6 +143,7 @@
     {
       "slug": "salsa",
       "label": "Salsa",
+      "category": "danse",
       "montages": [
         {
           "slug": "exemple-01",
@@ -116,6 +158,7 @@
     {
       "slug": "tango-argentin",
       "label": "Tango argentin",
+      "category": "danse",
       "montages": [
         {
           "slug": "exemple-01",
@@ -130,6 +173,7 @@
     {
       "slug": "aquarelle-artistique",
       "label": "Aquarelle Artistique",
+      "category": "style",
       "montages": [
         {
           "slug": "exemple-01",
@@ -144,6 +188,7 @@
     {
       "slug": "danse-de-rue-hip-hop",
       "label": "Danse de rue (hip-hop)",
+      "category": "danse",
       "montages": [
         {
           "slug": "exemple-01",
@@ -158,6 +203,7 @@
     {
       "slug": "dresseur-de-monstres",
       "label": "Dresseur de monstres",
+      "category": "enfants",
       "montages": [
         {
           "slug": "exemple-01",
@@ -172,6 +218,7 @@
     {
       "slug": "pirates",
       "label": "Pirates",
+      "category": "enfants",
       "montages": [
         {
           "slug": "exemple-01",
@@ -186,6 +233,7 @@
     {
       "slug": "princesse-feerique",
       "label": "Princesse féerique",
+      "category": "enfants",
       "montages": [
         {
           "slug": "exemple-01",
@@ -200,6 +248,7 @@
     {
       "slug": "fusion-franco-mexicaine",
       "label": "Fusion franco-mexicaine",
+      "category": "voyage",
       "montages": [
         {
           "slug": "exemple-01",
@@ -214,6 +263,7 @@
     {
       "slug": "paris-romantique",
       "label": "Paris romantique",
+      "category": "voyage",
       "montages": [
         {
           "slug": "exemple-01",
@@ -228,6 +278,7 @@
     {
       "slug": "fiesta-mexicaine",
       "label": "Fiesta mexicaine",
+      "category": "voyage",
       "montages": [
         {
           "slug": "exemple-01",
