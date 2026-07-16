@@ -107,6 +107,14 @@
     .ba-open { position:absolute; bottom:12px; right:12px; font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--noir); background:var(--or); padding:6px 13px; border-radius:99px; text-decoration:none; opacity:0.92; transition:opacity .3s, transform .2s; }
     .ba-open:hover { opacity:1; transform:translateY(-1px); }
     .ba-empty { text-align:center; color:var(--gris); padding:30px 0; }
+    /* Pastilles de navigation par thème (même identité que les chips du catalogue) */
+    .ia-filters { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 0 26px; }
+    .ia-chip { border:1px solid var(--line); background:transparent; color:var(--gris-clair); border-radius:99px; padding:7px 16px; font-family:'Jost',sans-serif; font-size:0.8rem; letter-spacing:0.03em; cursor:pointer; transition:all .25s; white-space:nowrap; }
+    .ia-chip:hover { border-color:var(--or-sombre); color:var(--or-clair); }
+    .ia-chip.on { background:var(--or); color:var(--noir); border-color:var(--or); }
+    .ia-chip .n { opacity:0.55; font-size:0.72rem; margin-left:3px; }
+    .ia-chip.on .n { opacity:0.8; }
+    @media (max-width:700px) { .ia-filters { gap:6px; margin-bottom:20px; } .ia-chip { padding:6px 13px; font-size:0.76rem; } }
 
     .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(5,5,7,0.95); display: none; align-items: center; justify-content: center; padding: 40px; backdrop-filter: blur(6px); }
     .lightbox.open { display: flex; }
@@ -170,6 +178,7 @@
             <h2>Avant / <span class="italic">après</span></h2>
             <p>Glissez la barre — ou laissez-la balayer — pour dévoiler la version IA.</p>
         </div>
+        <div id="ba-filters" class="ia-filters"></div>
         <div id="ba-gallery" class="ba-grid"></div>
     </div>
 </section>
@@ -236,20 +245,61 @@
   fetch('ia/themes/themes.json', {cache:'no-store'})
     .then(function(r){ return r.json(); })
     .then(function(data){
-      var made = 0;
+      var made = 0, counts = {}, labels = {};
       (data.themes || []).forEach(function(t){
         (t.montages || []).forEach(function(m){
-          if(m.avant && m.apres){ host.appendChild(buildBA(t, m)); made++; }
+          if(m.avant && m.apres){
+            host.appendChild(buildBA(t, m)); made++;
+            counts[t.slug] = (counts[t.slug] || 0) + 1;
+            labels[t.slug] = t.label;
+          }
         });
       });
       if(!made){ host.innerHTML = '<div class="ba-empty">Exemples avant/après à venir très bientôt.</div>'; }
+      else { buildChips(counts, labels, made); }
     })
     .catch(function(){ host.innerHTML = '<div class="ba-empty">Galerie momentanément indisponible.</div>'; });
+
+  // Pastilles : « Tous » + un thème par pastille (triées alphabétiquement).
+  // Le compteur n'apparaît que s'il y a plusieurs montages (sinon « 1 » partout = bruit).
+  function buildChips(counts, labels, total){
+    var bar = document.getElementById('ba-filters');
+    if(!bar) return;
+    var slugs = Object.keys(counts);
+    if(slugs.length < 2) return;  // une seule famille de thème : pastilles inutiles
+    slugs.sort(function(a, b){ return labels[a].localeCompare(labels[b], 'fr'); });
+    function chip(f, label, n){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ia-chip' + (f === '' ? ' on' : '');
+      b.setAttribute('data-f', f);
+      b.textContent = label;
+      if(n > 1 || f === ''){
+        var s = document.createElement('span'); s.className = 'n'; s.textContent = n;
+        b.appendChild(document.createTextNode(' ')); b.appendChild(s);
+      }
+      return b;
+    }
+    bar.appendChild(chip('', 'Tous', total));
+    slugs.forEach(function(s){ bar.appendChild(chip(s, labels[s], counts[s])); });
+    bar.addEventListener('click', function(e){
+      var b = e.target.closest ? e.target.closest('.ia-chip') : null;
+      if(!b) return;
+      var f = b.getAttribute('data-f');
+      var chips = bar.querySelectorAll('.ia-chip');
+      for(var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i] === b);
+      var items = host.querySelectorAll('.ba');
+      for(var j = 0; j < items.length; j++){
+        items[j].style.display = (!f || items[j].getAttribute('data-theme') === f) ? '' : 'none';
+      }
+    });
+  }
 
   function buildBA(t, m){
     var base = 'ia/themes/' + t.slug + '/' + m.slug + '/';
     var href = 'ia/montage.html?theme=' + encodeURIComponent(t.slug) + '&montage=' + encodeURIComponent(m.slug);
     var el = document.createElement('div'); el.className = 'ba';
+    el.setAttribute('data-theme', t.slug);
     el.innerHTML =
       '<div class="ba-apres"><img src="'+base+m.apres+'" alt="Après IA — '+t.label+'" loading="lazy"></div>'+
       '<div class="ba-avant"><img src="'+base+m.avant+'" alt="Avant — '+t.label+'" loading="lazy"></div>'+
