@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .avis-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:18px; }
+  .avis-stats{ display:flex; gap:10px; flex-wrap:wrap; }
+  .stat{ background:#15151c; border:1px solid #262633; border-radius:9px; padding:9px 15px; font-size:13px; }
+  .stat b{ font-size:18px; display:block; }
+  .stat.wait b{ color:#e6b34a; }
+  .stat.ok b{ color:#5bbd7a; }
+  .lnk-form{ font-size:13px; color:#8a8aa0; }
+  .lnk-form a{ color:#e6c986; }
+  .avis-list{ display:flex; flex-direction:column; gap:12px; }
+  .avis-card{ background:#14141b; border:1px solid #262633; border-radius:12px; padding:16px 18px; }
+  .avis-card.wait{ border-color:#5a4a1e; }
+  .avis-card.rej{ opacity:.55; }
+  .avis-top{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .avis-pseudo{ font-weight:700; font-size:15px; }
+  .avis-date{ color:#7a7a90; font-size:12.5px; }
+  .avis-stars{ color:#c9a55c; letter-spacing:2px; }
+  .badge{ font-size:11px; padding:2px 9px; border-radius:99px; border:1px solid #333; color:#bbb; }
+  .badge.src{ background:#1c1c26; }
+  .badge.st-en_attente{ background:rgba(230,179,74,.14); border-color:#5a4a1e; color:#e6b34a; }
+  .badge.st-approuve{ background:rgba(91,189,122,.14); border-color:#2c5a3a; color:#7fd39a; }
+  .badge.st-rejete{ background:#20202a; color:#888; }
+  .avis-prest{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .pbadge{ font-size:11.5px; padding:3px 10px; border-radius:99px; background:#1e1e28; border:1px solid #33333f; color:#cdb98a; }
+  .avis-comment{ color:#d7d7e0; font-size:14px; margin:6px 0 12px; white-space:pre-wrap; }
+  .avis-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .avis-actions form{ display:inline; }
+  .btn-sm{ border:1px solid #333; background:#1b1b24; color:#ccc; border-radius:7px; padding:7px 13px; font-size:13px; cursor:pointer; }
+  .btn-sm.ok{ border-color:#2c5a3a; color:#7fd39a; }
+  .btn-sm.rej{ border-color:#5a3030; color:#e0a0a0; }
+  .btn-sm.del{ color:#888; }
+  .btn-sm:hover{ filter:brightness(1.25); }
+  .avis-empty{ color:#7a7a90; text-align:center; padding:40px 0; }
+</style>
+
+<div class="avis-head">
+  <h1 style="margin:0;">Avis clients</h1>
+  <div class="avis-stats">
+    <div class="stat"><b>{{ stats.total }}</b> reçus</div>
+    <div class="stat wait"><b>{{ stats.en_attente }}</b> en attente</div>
+    <div class="stat ok"><b>{{ stats.approuve }}</b> publiés</div>
+    <div class="stat"><b>{{ stats.moyenne if stats.moyenne is not none else "—" }}</b> note moy.</div>
+  </div>
+</div>
+
+<p class="lnk-form">Lien à donner à tes clients : <a href="{{ url_for('avis.form', _external=True) }}" target="_blank">{{ url_for('avis.form', _external=True) }}</a> — les avis <b>approuvés</b> partent sur le site au prochain « Publier vitrine ».</p>
+
+{% if not avis %}
+  <div class="avis-empty">Aucun avis pour l'instant.</div>
+{% else %}
+<div class="avis-list">
+  {% for a in avis %}
+  <div class="avis-card {{ 'wait' if a.status == 'en_attente' else ('rej' if a.status == 'rejete' else '') }}">
+    <div class="avis-top">
+      <span class="avis-pseudo">{{ a.pseudo }}</span>
+      {% if a.stars %}<span class="avis-stars">{{ '★' * a.stars }}{{ '☆' * (5 - a.stars) }}</span>{% endif %}
+      <span class="avis-date">{{ fmt_date(a.ts) }}{% if a.event_type %} · {{ a.event_type }}{% endif %}</span>
+      <span class="badge src">{{ 'borne' if a.source == 'borne' else 'site' }}</span>
+      <span class="badge st-{{ a.status }}">{{ {'en_attente':'en attente','approuve':'publié','rejete':'rejeté'}.get(a.status, a.status) }}</span>
+    </div>
+    {% if a.prestations %}
+    <div class="avis-prest">
+      {% for k in a.prestations %}<span class="pbadge">{{ labels.get(k, k) }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    {% if a.comment %}<div class="avis-comment">{{ a.comment }}</div>{% endif %}
+    <div class="avis-actions">
+      {% if a.status != 'approuve' %}
+      <form method="POST" action="{{ url_for('avis.moderer', aid=a.id, action='approuver') }}">
+        <button class="btn-sm ok" type="submit">✓ Approuver</button></form>
+      {% endif %}
+      {% if a.status != 'rejete' %}
+      <form method="POST" action="{{ url_for('avis.moderer', aid=a.id, action='rejeter') }}">
+        <button class="btn-sm rej" type="submit">✕ Rejeter</button></form>
+      {% endif %}
+      <form method="POST" action="{{ url_for('avis.moderer', aid=a.id, action='supprimer') }}"
+            onsubmit="return confirm('Supprimer définitivement cet avis ?');">
+        <button class="btn-sm del" type="submit">🗑 Supprimer</button></form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

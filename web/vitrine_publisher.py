@@ -18,6 +18,7 @@ Config via variables d'environnement (à définir sur Render) :
 """
 
 import os
+import json
 import base64
 
 import requests
@@ -67,6 +68,29 @@ def _gh(method, path, token, **kw):
     return r
 
 
+def _avis_publies(storage) -> str:
+    """JSON (texte) des avis clients APPROUVÉS, champs sûrs uniquement, récents d'abord.
+
+    Lu depuis le store (avis/avis.json), écrit tel quel dans docs/avis.json ; le site
+    l'affiche côté client. Ne remonte JAMAIS un avis non approuvé."""
+    try:
+        data = storage.read_json("avis/avis.json")
+    except Exception:
+        data = None
+    items = (data or {}).get("avis", []) if isinstance(data, dict) else []
+    pub = [{
+        "id": a.get("id"),
+        "ts": a.get("ts"),
+        "pseudo": a.get("pseudo") or "Anonyme",
+        "stars": a.get("stars") or 0,
+        "prestations": a.get("prestations") or [],
+        "comment": a.get("comment") or "",
+        "event_type": a.get("event_type") or "",
+    } for a in items if a.get("status") == "approuve"]
+    pub.sort(key=lambda a: a.get("ts") or 0, reverse=True)
+    return json.dumps({"avis": pub}, ensure_ascii=False, indent=2) + "\n"
+
+
 def _photos_referencees(equipements):
     """Noms de fichiers photo des équipements visibles dans le catalogue vitrine."""
     noms = []
@@ -101,6 +125,15 @@ def publier(storage) -> dict:
     tree_entries.append({
         "path": f"{DOCS}/catalogue.html", "mode": "100644",
         "type": "blob", "sha": blob["sha"],
+    })
+
+    # 3b) Avis clients approuvés -> docs/avis.json (affiché côté client par le site)
+    avis_json = _avis_publies(storage)
+    avis_blob = _gh("POST", f"/repos/{repo}/git/blobs", token,
+                    json={"content": avis_json, "encoding": "utf-8"}).json()
+    tree_entries.append({
+        "path": f"{DOCS}/avis.json", "mode": "100644",
+        "type": "blob", "sha": avis_blob["sha"],
     })
 
     # 4) Photos référencées absentes du repo -> on les ajoute depuis la prod

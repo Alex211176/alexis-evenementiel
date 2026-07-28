@@ -53,16 +53,20 @@ from catalogue_routes import catalogue_bp
 from parametres_routes import parametres_bp
 from devis_routes import devis_bp
 from poses_routes import poses_bp
+from avis_routes import avis_bp
 app.register_blueprint(catalogue_bp)
 app.register_blueprint(parametres_bp)
 app.register_blueprint(devis_bp)
 app.register_blueprint(poses_bp)
+app.register_blueprint(avis_bp)
 
 
 # --- Authentification globale ------------------------------------------------
 # /poses/s/ = pages client Poses Mariage (accès par token non devinable, pas de
 # mot de passe admin). L'admin Poses (/poses/admin) reste, lui, derrière le gate.
-_PUBLIC_PREFIXES = ("/login", "/static", "/healthz", "/poses/s/")
+# /avis + /api/avis = formulaire public d'avis clients (sans login).
+# La modération reste sous /moderation/avis (protégée par le gate).
+_PUBLIC_PREFIXES = ("/login", "/static", "/healthz", "/poses/s/", "/avis", "/api/avis")
 
 
 @app.before_request
