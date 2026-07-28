@@ -202,6 +202,30 @@
     .lb-prev { left: 18px; } .lb-next { right: 18px; }
     @media (max-width: 700px) { .lb-nav { width: 42px; height: 42px; font-size: 1.6rem; background: rgba(18,17,22,0.8); } .lb-prev { left: 6px; } .lb-next { right: 6px; } }
 
+
+    #avis .section-head p b { color:var(--or-clair); font-weight:500; }
+    .avis-filters { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 0 26px; }
+    .avis-chip { border:1px solid var(--line); background:transparent; color:var(--gris-clair); border-radius:99px; padding:7px 16px; font-family:'Jost',sans-serif; font-size:0.8rem; letter-spacing:0.03em; cursor:pointer; transition:all .25s; white-space:nowrap; }
+    .avis-chip:hover { border-color:var(--or-sombre); color:var(--or-clair); }
+    .avis-chip.on { background:var(--or); color:var(--noir); border-color:var(--or); }
+    .avis-chip .n { opacity:0.55; font-size:0.72rem; margin-left:3px; }
+    .avis-chip.on .n { opacity:0.8; }
+    .avis-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:18px; }
+    .av-card { background:var(--noir-3); border:1px solid var(--line); border-radius:8px; padding:20px 22px; display:flex; flex-direction:column; }
+    .av-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .av-stars { color:var(--or); letter-spacing:2px; font-size:0.95rem; }
+    .av-stars .av-off { color:var(--or-sombre); opacity:0.35; }
+    .av-date { color:var(--gris); font-size:0.72rem; letter-spacing:0.04em; text-transform:uppercase; text-align:right; }
+    .av-comment { color:var(--creme); font-size:0.95rem; line-height:1.6; margin:0 0 14px; white-space:pre-wrap; }
+    .av-foot { margin-top:auto; }
+    .av-pseudo { color:var(--or-clair); font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.15rem; }
+    .av-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .av-badge { font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--gris-clair); border:1px solid var(--line); border-radius:99px; padding:3px 10px; }
+    .avis-cta { text-align:center; margin-top:34px; }
+    .avis-cta a { display:inline-block; background:var(--or); color:var(--noir); text-decoration:none; padding:14px 32px; border-radius:4px; font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; transition:all .3s; }
+    .avis-cta a:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.22); }
+    @media (max-width:700px){ .avis-grid { grid-template-columns:1fr; } }
+
 </style>
 </head>
 <body>
@@ -606,7 +630,7 @@
             </div>
         </article>
         <article class="card equip-card">
-            <div class="equip-photo"><img src="photos/chauvet-bubble-king.jpg" alt="Chauvet Bubble King" loading="lazy"></div>
+            <div class="equip-photo"><img src="photos/chauvet-bubble-king.png" alt="Chauvet Bubble King" loading="lazy"></div>
             <div class="equip-body">
                 <span class="equip-marque">Chauvet DJ</span>
                 <h3>Chauvet Bubble King</h3>
@@ -736,7 +760,7 @@
             </div>
         </article>
         <article class="card equip-card">
-            <div class="equip-photo"><img src="photos/telephone-livre-dor.jpg" alt="Téléphone Livre d&#x27;Or" loading="lazy"></div>
+            <div class="equip-photo"><img src="photos/telephone-livre-dor.png" alt="Téléphone Livre d&#x27;Or" loading="lazy"></div>
             <div class="equip-body">
                 <span class="equip-marque">Vintage</span>
                 <h3>Téléphone Livre d&#x27;Or</h3>
@@ -837,6 +861,53 @@
 
     </div>
 </section>
+
+
+<section id="avis">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="num">04</div>
+            <h2>Ils m'ont <span class="italic">fait confiance</span></h2>
+            <p>Les retours de celles et ceux qui m'ont fait confiance. <span id="avis-moy"></span></p>
+        </div>
+        <div id="avis-filters" class="avis-filters"></div>
+        <div id="avis-grid" class="avis-grid"></div>
+        <div class="avis-cta"><a href="https://alexis-evenementiel.onrender.com/avis" target="_blank" rel="noopener">Laisser un avis</a></div>
+    </div>
+</section>
+<script>
+(function(){
+  var host=document.getElementById('avis-grid'); if(!host) return;
+  var sec=document.getElementById('avis');
+  var LABELS={dj:'DJ / Animation',bingo:'Bingo Musical',booth:'Photobooth',sonlum:'Sono & Lumière',ecran:'Écran géant',loc:'Location matériel',photo:'Photo / Vidéo'};
+  var MOIS=['','janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fdate(ts){ if(!ts) return ''; var d=new Date(ts*1000); return MOIS[d.getMonth()+1]+' '+d.getFullYear(); }
+  function stars(n){ n=n||0; return '<span class="av-stars">'+Array(n+1).join('★')+'<span class="av-off">'+Array(6-n).join('★')+'</span></span>'; }
+  fetch('avis.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():{avis:[]}; }).then(function(d){
+    var avis=(d.avis||[]);
+    if(!avis.length){ if(sec) sec.style.display='none'; return; }
+    var noted=avis.filter(function(a){ return a.stars; });
+    if(noted.length){ var moy=noted.reduce(function(s,a){return s+a.stars;},0)/noted.length; var m=document.getElementById('avis-moy'); if(m) m.innerHTML='<b>'+moy.toFixed(1).replace('.',',')+'/5</b> · '+avis.length+' avis'; }
+    avis.forEach(function(a){
+      var badges=(a.prestations||[]).map(function(k){ return '<span class="av-badge">'+esc(LABELS[k]||k)+'</span>'; }).join('');
+      var el=document.createElement('div'); el.className='av-card'; el.setAttribute('data-prest',(a.prestations||[]).join(' '));
+      el.innerHTML='<div class="av-top">'+stars(a.stars)+'<span class="av-date">'+fdate(a.ts)+(a.event_type?(' · '+esc(a.event_type)):'')+'</span></div>'+(a.comment?'<p class="av-comment">'+esc(a.comment)+'</p>':'')+'<div class="av-foot"><span class="av-pseudo">'+esc(a.pseudo)+'</span></div>'+(badges?'<div class="av-badges">'+badges+'</div>':'');
+      host.appendChild(el);
+    });
+    var counts={}; avis.forEach(function(a){ (a.prestations||[]).forEach(function(k){ counts[k]=(counts[k]||0)+1; }); });
+    var keys=Object.keys(LABELS).filter(function(k){ return counts[k]; });
+    if(keys.length>=2){
+      var bar=document.getElementById('avis-filters');
+      function chip(f,label,n,on){ var b=document.createElement('button'); b.type='button'; b.className='avis-chip'+(on?' on':''); b.setAttribute('data-f',f); b.textContent=label; if(n){ var s=document.createElement('span'); s.className='n'; s.textContent=n; b.appendChild(document.createTextNode(' ')); b.appendChild(s);} return b; }
+      bar.appendChild(chip('','Tous',avis.length,true));
+      keys.forEach(function(k){ bar.appendChild(chip(k,LABELS[k],counts[k],false)); });
+      bar.addEventListener('click',function(e){ var b=e.target.closest?e.target.closest('.avis-chip'):null; if(!b) return; var f=b.getAttribute('data-f'); var cs=bar.querySelectorAll('.avis-chip'); for(var i=0;i<cs.length;i++) cs[i].classList.toggle('on',cs[i]===b); var cards=host.querySelectorAll('.av-card'); for(var j=0;j<cards.length;j++){ cards[j].style.display=(!f||(' '+cards[j].getAttribute('data-prest')+' ').indexOf(' '+f+' ')>=0)?'':'none'; } });
+    }
+  }).catch(function(){ if(sec) sec.style.display='none'; });
+})();
+</script>
+
 
 <footer>
     <div class="wrap">
