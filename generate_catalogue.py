@@ -456,7 +456,7 @@ AVIS_SECTION = """
         </div>
         <div id="avis-filters" class="avis-filters"></div>
         <div id="avis-grid" class="avis-grid"></div>
-        <div class="avis-cta"><a href="https://alexis-evenementiel.onrender.com/avis" target="_blank" rel="noopener">Laisser un avis</a></div>
+        <div class="avis-cta"><a href="/avis" target="_blank" rel="noopener">Laisser un avis</a></div>
     </div>
 </section>
 <script>
