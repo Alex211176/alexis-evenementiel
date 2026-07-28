@@ -367,6 +367,38 @@
     </div>
 </section>
 
+<!-- TEASER AVIS (masqué tant qu'il n'y a aucun avis publié) -->
+<section class="section-pad" id="avis-teaser" style="display:none">
+    <div class="wrap reveal" style="text-align:center">
+        <div class="section-label" style="justify-content:center">Vos retours</div>
+        <h2 class="section-title">Ils m'ont <span class="italic">fait confiance</span></h2>
+        <div id="avt-moy" style="margin:14px 0 28px; color:var(--or-clair,#e6c986); font-family:'Cormorant Garamond',serif; font-size:1.5rem;"></div>
+        <div id="avt-list" style="display:flex; gap:18px; justify-content:center; flex-wrap:wrap; max-width:1040px; margin:0 auto;"></div>
+        <div style="margin-top:32px;"><a href="catalogue.html#avis" class="btn btn-ghost">Voir tous les avis</a></div>
+    </div>
+</section>
+<script>
+(function(){
+  var sec=document.getElementById('avis-teaser'); if(!sec) return;
+  var list=document.getElementById('avt-list');
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  fetch('avis.json',{cache:'no-store'}).then(function(r){ return r.ok?r.json():{avis:[]}; }).then(function(d){
+    var avis=(d.avis||[]); if(!avis.length) return;
+    var noted=avis.filter(function(a){ return a.stars; });
+    if(noted.length){ var moy=noted.reduce(function(s,a){return s+a.stars;},0)/noted.length;
+      document.getElementById('avt-moy').innerHTML='<span style="color:var(--or,#c9a55c)">★</span> '+moy.toFixed(1).replace('.',',')+'/5 · '+avis.length+' avis'; }
+    avis.slice(0,3).forEach(function(a){
+      var el=document.createElement('div');
+      el.style.cssText='flex:1 1 280px; max-width:320px; background:var(--noir-2,#121116); border:1px solid var(--line,rgba(201,165,92,0.18)); border-radius:8px; padding:20px 22px; text-align:left;';
+      var st=a.stars?('<div style="color:var(--or,#c9a55c); letter-spacing:2px; margin-bottom:9px;">'+Array((a.stars||0)+1).join('★')+'</div>'):'';
+      el.innerHTML=st+(a.comment?'<p style="color:var(--creme,#f4efe6); font-size:0.92rem; line-height:1.55; margin-bottom:12px;">'+esc(a.comment)+'</p>':'')+'<div style="color:var(--or-clair,#e6c986); font-family:\'Cormorant Garamond\',serif; font-style:italic; font-size:1.15rem;">'+esc(a.pseudo)+'</div>';
+      list.appendChild(el);
+    });
+    sec.style.display='';
+  }).catch(function(){});
+})();
+</script>
+
 <!-- CTA FINAL -->
 <section class="cta-final section-pad" id="contact">
     <div class="wrap reveal">
