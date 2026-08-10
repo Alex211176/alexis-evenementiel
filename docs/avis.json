@@ -1,3 +1,19 @@
 {
-  "avis": []
+  "avis": [
+    {
+      "id": "caro-fredo-0801",
+      "ts": 1785585600,
+      "pseudo": "Caro et Fredo",
+      "stars": 5,
+      "prestations": [
+        "dj",
+        "booth",
+        "sonlum",
+        "ecran",
+        "photo"
+      ],
+      "comment": "Grand professionnalisme, à l'écoute, disponible. Total confiance en Alexis ! Prestations plus qu'à la hauteur de ce qu'on attendait ! Tous les invités et nous même avons été conquis de toutes ses prestations sans exception ! Vous pouvez faire appel à Alexis sans hésitation. Aucune ombre au tableau. Bravo et merci encore 🙏",
+      "event_type": "Mariage"
+    }
+  ]
 }
