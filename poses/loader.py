@@ -59,13 +59,13 @@ _PHASE_CATEGORY = {
     "prep-mariee": "Préparatifs", "prep-marie": "Préparatifs",
     "details": "Détails", "details-reception": "Détails",
     "first-look": "Cérémonie", "ceremonie": "Cérémonie", "sortie": "Cérémonie",
-    "famille": "Groupes", "temoins": "Groupes",
+    "famille": "Famille & témoins", "temoins": "Famille & témoins",
     "couple": "Couple",
     "portrait-mariee": "Portraits", "portrait-marie": "Portraits",
     "vin-honneur": "Réception", "repas": "Réception",
     "gateau": "Fête", "ouverture-bal": "Fête", "soiree": "Fête",
 }
-CATEGORY_ORDER = ["Préparatifs", "Détails", "Cérémonie", "Groupes",
+CATEGORY_ORDER = ["Préparatifs", "Détails", "Cérémonie", "Famille & témoins",
                   "Couple", "Portraits", "Réception", "Fête"]
 
 

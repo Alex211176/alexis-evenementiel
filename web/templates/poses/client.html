@@ -52,6 +52,7 @@
     <button class="chip sel-toggle" data-sel-toggle>♥ Ma sélection</button>
     <button class="chip active" data-cat="all">Tout</button>
     {% for c in categories %}<button class="chip" data-cat="{{ c }}">{{ c }}</button>{% endfor %}
+    <button class="chip" data-cat="__groups__">📸 Photos de groupe</button>
   </div>
   {% endif %}
 
