@@ -244,7 +244,8 @@
         { "id": "vh05", "title": "Le Livre d'Or", "desc": "Invités laissant un mot ou signant le livre d'or." },
         { "id": "vh06", "title": "Les Petits Fours", "desc": "Plan détail des mets et boissons." },
         { "id": "vh07", "title": "Les Mariés Circulant", "desc": "Couple saluant les groupes d'invités." },
-        { "id": "vh08", "title": "Le Rire d'un Groupe", "desc": "Candid d'un groupe d'invités riant." }
+        { "id": "vh08", "title": "Le Rire d'un Groupe", "desc": "Candid d'un groupe d'invités riant." },
+        { "id": "sr02", "title": "Le Lancer du Bouquet", "desc": "Mariée de dos lançant le bouquet, invitées bras tendus." }
       ]
     },
     {
@@ -319,7 +320,6 @@
       "moment": "nuit",
       "poses": [
         { "id": "sr01", "title": "La Piste en Folie", "desc": "Foule dansant, ambiance de fête." },
-        { "id": "sr02", "title": "Le Lancer du Bouquet", "desc": "Mariée de dos lançant le bouquet, invitées bras tendus." },
         { "id": "sr03", "title": "La Jarretière", "desc": "Jeu de la jarretière, ambiance et rires." },
         { "id": "sr04", "title": "Le Saut Groupé", "desc": "Invités sautant, mains en l'air." },
         { "id": "sr05", "title": "La Mariée qui Danse", "desc": "Mariée robe relevée, en plein mouvement." },
