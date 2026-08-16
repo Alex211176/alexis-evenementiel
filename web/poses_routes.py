@@ -214,7 +214,8 @@ def field_planche(token):
     from poses.catalogue import render_pdf
     thumbs = Path(current_app.static_folder) / "poses" / "thumbs"
     out = Path(tempfile.gettempdir()) / f"poses_planche_{token}.pdf"
-    render_pdf(thumbs, out, only_ids=ids, subtitle=subtitle, customs=event.get("custom") or None)
+    render_pdf(thumbs, out, only_ids=ids, subtitle=subtitle,
+               customs=event.get("custom") or None, notes=event.get("notes") or None)
     stem = (couple or "planche").replace(" ", "_").replace("/", "-")
     return send_file(out, mimetype="application/pdf",
                      as_attachment=False, download_name=f"Planche-{stem}.pdf")

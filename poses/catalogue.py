@@ -60,13 +60,18 @@ def _thumb_flowable(thumbs_dir: Path, pose_id: str):
     return Paragraph("<i>croquis à venir</i>", _DESC)
 
 
-def _card(thumbs_dir: Path, pose: dict):
-    inner = Table(
-        [[_thumb_flowable(thumbs_dir, pose["id"])],
-         [Paragraph(pose["title"], _TITLE)],
-         [Paragraph(pose["desc"], _DESC)]],
-        colWidths=[_CARD_W - 8],
-    )
+_NOTE = ParagraphStyle("note", fontName="Helvetica-Oblique", fontSize=7.5, leading=9,
+                       textColor=colors.HexColor("#6b5a1e"), backColor=colors.HexColor("#fff8e6"),
+                       borderPadding=3, spaceBefore=3)
+
+
+def _card(thumbs_dir: Path, pose: dict, note=None):
+    rows = [[_thumb_flowable(thumbs_dir, pose["id"])],
+            [Paragraph(pose["title"], _TITLE)],
+            [Paragraph(pose["desc"], _DESC)]]
+    if note:
+        rows.append([Paragraph("📝 " + note, _NOTE)])   # note écrite par les mariés
+    inner = Table(rows, colWidths=[_CARD_W - 8])
     inner.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, 0), CREAM),
         ("BOX", (0, 0), (0, 0), 0.5, colors.HexColor("#e6e0d2")),
@@ -108,12 +113,14 @@ def _text_card(c):
     return inner
 
 
-def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None):
+def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None, notes=None):
     """
     only_ids : si fourni, ne garde que ces poses (planche d'un couple).
     subtitle : sous-titre de couverture (ex. « Romain & Mathilde · 20/07/2026 »).
     customs  : idées perso [{title, desc}] ajoutées en fin (cartes texte).
+    notes    : {pose_id: note} — les notes écrites par les mariés, affichées sur la carte.
     """
+    notes = notes or {}
     thumbs_dir = Path(thumbs_dir)
     lib = load_library()
     phases = lib["phases"]
@@ -164,7 +171,7 @@ def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None):
         story.append(head)
         story.append(Spacer(1, 5 * mm))
 
-        cards = [_card(thumbs_dir, pose) for pose in phase["poses"]]
+        cards = [_card(thumbs_dir, pose, note=notes.get(pose["id"])) for pose in phase["poses"]]
         grid = Table(list(_chunk(cards, _COLS)), colWidths=[_CARD_W] * _COLS)
         grid.setStyle(TableStyle([
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -196,12 +203,13 @@ def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None):
     return story
 
 
-def render_pdf(thumbs_dir, out_path, only_ids=None, subtitle=None, customs=None) -> str:
+def render_pdf(thumbs_dir, out_path, only_ids=None, subtitle=None, customs=None, notes=None) -> str:
     doc = SimpleDocTemplate(
         str(out_path), pagesize=A4,
         leftMargin=15 * mm, rightMargin=15 * mm, topMargin=16 * mm, bottomMargin=18 * mm,
         title="Poses de mariage — Alexis Événementiel",
     )
-    doc.build(build_story(thumbs_dir, only_ids=only_ids, subtitle=subtitle, customs=customs),
+    doc.build(build_story(thumbs_dir, only_ids=only_ids, subtitle=subtitle,
+                          customs=customs, notes=notes),
               onFirstPage=_footer, onLaterPages=_footer)
     return str(out_path)
