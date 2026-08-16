@@ -8,6 +8,7 @@
   var LOCKED = body.getAttribute("data-locked") === "1";
   var SAVE_URL = body.getAttribute("data-save-url");
   var VALIDATE_URL = body.getAttribute("data-validate-url");
+  var GROUPS_URL = body.getAttribute("data-groups-url");
 
   // --- État initial ---------------------------------------------------------
   var state = { selections: [], notes: {}, custom: [], validated: false };
@@ -17,12 +18,16 @@
     state.selections = Array.isArray(parsed.selections) ? parsed.selections : [];
     state.notes = (parsed.notes && typeof parsed.notes === "object") ? parsed.notes : {};
     state.custom = Array.isArray(parsed.custom) ? parsed.custom : [];
+    state.groups = Array.isArray(parsed.groups) ? parsed.groups : [];
     state.validated = !!parsed.validated;
   } catch (e) { /* état vierge */ }
 
   var selectedSet = {};
   state.selections.forEach(function (id) { selectedSet[id] = true; });
   var customState = state.custom.slice();
+  var groupsState = (state.groups || []).map(function (g) {
+    return { id: g.id, title: g.title || "", people: (g.people || []).slice() };
+  });
 
   // --- Éléments -------------------------------------------------------------
   var countN = document.getElementById("countN");
@@ -238,6 +243,129 @@
     });
   }
 
+  // --- Photos de groupe -----------------------------------------------------
+  var groupsList = document.getElementById("groupsList");
+  var groupsCount = document.getElementById("groupsCount");
+  var rosterList = document.getElementById("rosterList");
+  var groupsTimer = null;
+
+  function saveGroups() {
+    if (LOCKED) return;
+    if (groupsTimer) clearTimeout(groupsTimer);
+    groupsTimer = setTimeout(function () {
+      fetch(GROUPS_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ groups: groupsState })
+      }).then(function (r) {
+        if (r && r.ok) { showSave("Enregistré ✓", true); resetValidated(); }
+        else { showSave("Erreur d'enregistrement", false); }
+      }).catch(function () { showSave("Hors ligne — réessai plus tard", false); });
+    }, 700);
+  }
+
+  function updateRoster() {
+    var seen = {}, names = [];
+    groupsState.forEach(function (g) {
+      (g.people || []).forEach(function (nm) {
+        var k = nm.toLowerCase();
+        if (!seen[k]) { seen[k] = 1; names.push(nm); }
+      });
+    });
+    names.sort(function (a, b) { return a.localeCompare(b); });
+    if (rosterList) {
+      rosterList.innerHTML = "";
+      names.forEach(function (nm) { var o = document.createElement("option"); o.value = nm; rosterList.appendChild(o); });
+    }
+    if (groupsCount) {
+      groupsCount.textContent = groupsState.length + (names.length ? " · " + names.length + " pers." : "");
+    }
+  }
+
+  function randomGid() { return "grp_" + Math.random().toString(36).slice(2, 8); }
+
+  function makeChip(g, nm, chipsEl) {
+    var chip = document.createElement("span");
+    chip.className = "person-chip";
+    chip.appendChild(document.createTextNode(nm));
+    if (!LOCKED) {
+      var x = document.createElement("button");
+      x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Retirer");
+      x.addEventListener("click", function () {
+        var i = g.people.indexOf(nm);
+        if (i !== -1) g.people.splice(i, 1);
+        if (chip.parentNode) chip.parentNode.removeChild(chip);
+        updateRoster(); saveGroups();
+      });
+      chip.appendChild(x);
+    }
+    chipsEl.appendChild(chip);
+  }
+
+  function addPerson(g, raw, chipsEl) {
+    (raw || "").split(",").forEach(function (part) {
+      var nm = part.trim();
+      if (nm && g.people.indexOf(nm) === -1) { g.people.push(nm); makeChip(g, nm, chipsEl); }
+    });
+    updateRoster(); saveGroups();
+  }
+
+  function renderGroups() {
+    if (!groupsList) return;
+    groupsList.innerHTML = "";
+    groupsState.forEach(function (g) {
+      var card = document.createElement("div"); card.className = "group-card";
+      var head = document.createElement("div"); head.className = "group-head";
+      if (LOCKED) {
+        var h = document.createElement("div"); h.className = "group-title-static";
+        h.textContent = g.title || "(sans titre)"; head.appendChild(h);
+      } else {
+        var ti = document.createElement("input");
+        ti.type = "text"; ti.className = "group-title"; ti.value = g.title || ""; ti.maxLength = 140;
+        ti.placeholder = "Titre du groupe";
+        ti.addEventListener("input", function () { g.title = ti.value; saveGroups(); });
+        head.appendChild(ti);
+        var rm = document.createElement("button");
+        rm.type = "button"; rm.className = "group-remove"; rm.textContent = "✕"; rm.title = "Supprimer le groupe";
+        rm.addEventListener("click", function () {
+          groupsState = groupsState.filter(function (x) { return x !== g; });
+          renderGroups(); updateRoster(); saveGroups();
+        });
+        head.appendChild(rm);
+      }
+      card.appendChild(head);
+
+      var chips = document.createElement("div"); chips.className = "chips";
+      (g.people || []).forEach(function (nm) { makeChip(g, nm, chips); });
+      card.appendChild(chips);
+
+      if (!LOCKED) {
+        var pin = document.createElement("input");
+        pin.type = "text"; pin.className = "person-add"; pin.setAttribute("list", "rosterList");
+        pin.placeholder = "Prénom + Entrée";
+        pin.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addPerson(g, pin.value, chips); pin.value = ""; }
+        });
+        pin.addEventListener("blur", function () { if (pin.value.trim()) { addPerson(g, pin.value, chips); pin.value = ""; } });
+        card.appendChild(pin);
+      }
+      groupsList.appendChild(card);
+    });
+  }
+
+  if (!LOCKED && document.getElementById("newGroupBtn")) {
+    var newGroupBtn = document.getElementById("newGroupBtn");
+    var newGroupTitle = document.getElementById("newGroupTitle");
+    var addGroup = function () {
+      var t = (newGroupTitle.value || "").trim();
+      if (!t) { newGroupTitle.focus(); return; }
+      groupsState.push({ id: randomGid(), title: t.slice(0, 140), people: [] });
+      newGroupTitle.value = "";
+      renderGroups(); updateRoster(); saveGroups();
+    };
+    newGroupBtn.addEventListener("click", addGroup);
+    newGroupTitle.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
+  }
+
   // --- Filtres : type + « Ma sélection » ------------------------------------
   var typebar = document.getElementById("typebar");
   var phaseEls = Array.prototype.slice.call(document.querySelectorAll(".phase[data-category]"));
@@ -261,8 +389,8 @@
         c.style.display = sel ? "" : "none";
         if (sel) anyVisible = true;
       });
-      // la section « idées perso » n'a pas de .pose -> on la garde en mode récap
-      if (cat === "__custom__") { ph.style.display = ""; return; }
+      // les sections « idées perso » et « photos de groupe » n'ont pas de .pose -> gardées en mode récap
+      if (cat === "__custom__" || cat === "__groups__") { ph.style.display = ""; return; }
       ph.style.display = anyVisible ? "" : "none";
     });
   }
@@ -286,6 +414,8 @@
 
   // --- Init -----------------------------------------------------------------
   renderCustom();
+  renderGroups();
+  updateRoster();
   renderValidated();
   updateCounts();
   applyFilter();

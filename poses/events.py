@@ -29,6 +29,11 @@ _MAX_CUSTOM_TITLE = 120
 _MAX_CUSTOM_DESC = 500
 _MAX_ID_LEN = 40
 _ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
+# Photos de groupe
+_MAX_GROUPS = 60
+_MAX_PEOPLE = 80
+_MAX_NAME = 60
+_MAX_GTITLE = 140
 
 
 class EventError(Exception):
@@ -109,6 +114,33 @@ def _clean_custom(raw) -> list:
     return out
 
 
+def _clean_groups(raw) -> list:
+    """Photos de groupe : [{id, title, people:[str]}]. Borné (endpoint public)."""
+    if not isinstance(raw, list):
+        return []
+    out, seen = [], set()
+    for g in raw[:_MAX_GROUPS]:
+        if not isinstance(g, dict):
+            continue
+        gid = _clean_id(g.get("id")) or ("grp_" + generate_token(4))
+        if gid in seen:
+            gid = "grp_" + generate_token(4)
+        title = (g.get("title") or "").strip()[:_MAX_GTITLE]
+        people = []
+        praw = g.get("people")
+        if isinstance(praw, list):
+            for p in praw[:_MAX_PEOPLE]:
+                if isinstance(p, str):
+                    nm = p.strip()[:_MAX_NAME]
+                    if nm:
+                        people.append(nm)
+        if not title and not people:
+            continue
+        seen.add(gid)
+        out.append({"id": gid, "title": title, "people": people})
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # CRUD
 # --------------------------------------------------------------------------- #
@@ -137,6 +169,8 @@ def new_event(storage, couple: str, date: str) -> dict:
         "mustHave": [],
         "notes": {},
         "custom": [],
+        "groups": [],
+        "groupsDone": [],
         "done": [],
         "doneAt": {},
         "validated": False,
@@ -164,6 +198,8 @@ def _ensure_defaults(ev: dict) -> dict:
     ev.setdefault("mustHave", [])
     ev.setdefault("notes", {})
     ev.setdefault("custom", [])
+    ev.setdefault("groups", [])
+    ev.setdefault("groupsDone", [])
     ev.setdefault("done", [])
     ev.setdefault("doneAt", {})
     ev.setdefault("locked", False)
@@ -187,6 +223,24 @@ def save_client_state(storage, token: str, selections, notes, custom) -> dict:
     ev["selections"] = _clean_selections(selections)
     ev["notes"] = _clean_notes(notes)
     ev["custom"] = _clean_custom(custom)
+    ev["updatedAt"] = _now_iso()
+    storage.write_json(_rel(token), ev)
+    return ev
+
+
+def save_groups(storage, token: str, groups) -> dict:
+    """
+    Sauvegarde SEULEMENT les photos de groupe (champ client), en préservant tout
+    le reste (sélections, notes, etc.). Endpoint dédié -> pas de risque d'écraser
+    la sélection. Respecte le verrou.
+    """
+    ev = load_by_token(storage, token)
+    if ev is None:
+        raise EventError("Événement introuvable.")
+    _ensure_defaults(ev)
+    if ev.get("locked"):
+        raise EventLocked()
+    ev["groups"] = _clean_groups(groups)
     ev["updatedAt"] = _now_iso()
     storage.write_json(_rel(token), ev)
     return ev
@@ -266,6 +320,26 @@ def set_lock(storage, token: str, locked: bool) -> dict:
         raise EventError("Événement introuvable.")
     _ensure_defaults(ev)
     ev["locked"] = bool(locked)
+    ev["updatedAt"] = _now_iso()
+    storage.write_json(_rel(token), ev)
+    return ev
+
+
+def toggle_group_done(storage, token: str, group_id: str, done: bool) -> dict:
+    """Coche/décoche une photo de groupe faite le jour J (champ photographe)."""
+    ev = load_by_token(storage, token)
+    if ev is None:
+        raise EventError("Événement introuvable.")
+    _ensure_defaults(ev)
+    gid = _clean_id(group_id)
+    if not gid:
+        raise EventError("Identifiant de groupe invalide.")
+    s = set(ev.get("groupsDone", []))
+    if done:
+        s.add(gid)
+    else:
+        s.discard(gid)
+    ev["groupsDone"] = sorted(s)
     ev["updatedAt"] = _now_iso()
     storage.write_json(_rel(token), ev)
     return ev

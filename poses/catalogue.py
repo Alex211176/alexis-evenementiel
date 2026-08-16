@@ -113,12 +113,13 @@ def _text_card(c):
     return inner
 
 
-def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None, notes=None):
+def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None, notes=None, groups=None):
     """
     only_ids : si fourni, ne garde que ces poses (planche d'un couple).
     subtitle : sous-titre de couverture (ex. « Romain & Mathilde · 20/07/2026 »).
     customs  : idées perso [{title, desc}] ajoutées en fin (cartes texte).
     notes    : {pose_id: note} — les notes écrites par les mariés, affichées sur la carte.
+    groups   : photos de groupe [{title, people:[str]}] — section dédiée en fin.
     """
     notes = notes or {}
     thumbs_dir = Path(thumbs_dir)
@@ -200,16 +201,46 @@ def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None, notes=No
         ]))
         story.append(grid)
 
+    if groups:
+        story.append(PageBreak())
+        head = Table([[Paragraph("<font color='#c9a24b'>📸</font>  Photos de groupe", _PH), ""]],
+                     colWidths=[380, 130])
+        head.setStyle(TableStyle([
+            ("LINEBELOW", (0, 0), (-1, -1), 0.6, colors.HexColor("#e3ddcf")),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ]))
+        story.append(head)
+        story.append(Spacer(1, 4 * mm))
+        _GT = ParagraphStyle("gt", fontName="Helvetica-Bold", fontSize=11, leading=13, textColor=INK, spaceBefore=8)
+        _GP = ParagraphStyle("gp", fontName="Helvetica", fontSize=10, leading=14, textColor=GREY)
+        _GCHK = ParagraphStyle("gk", fontName="Helvetica", fontSize=11, textColor=colors.HexColor("#c9a24b"))
+        for g in groups:
+            title = (g.get("title") or "").strip() or "Groupe"
+            people = ", ".join(g.get("people") or [])
+            row = Table([[Paragraph("☐", _GCHK),
+                          Paragraph("<b>" + title + "</b><br/><font color='#7a7a7a'>" +
+                                    (people or "—") + "</font>", _GP)]],
+                        colWidths=[16, 494])
+            row.setStyle(TableStyle([
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("LINEBELOW", (0, 0), (-1, -1), 0.4, colors.HexColor("#eee8db")),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+            ]))
+            story.append(row)
+
     return story
 
 
-def render_pdf(thumbs_dir, out_path, only_ids=None, subtitle=None, customs=None, notes=None) -> str:
+def render_pdf(thumbs_dir, out_path, only_ids=None, subtitle=None, customs=None, notes=None, groups=None) -> str:
     doc = SimpleDocTemplate(
         str(out_path), pagesize=A4,
         leftMargin=15 * mm, rightMargin=15 * mm, topMargin=16 * mm, bottomMargin=18 * mm,
         title="Poses de mariage — Alexis Événementiel",
     )
     doc.build(build_story(thumbs_dir, only_ids=only_ids, subtitle=subtitle,
-                          customs=customs, notes=notes),
+                          customs=customs, notes=notes, groups=groups),
               onFirstPage=_footer, onLaterPages=_footer)
     return str(out_path)

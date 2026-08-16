@@ -10,6 +10,7 @@
   var DONE_URL = body.getAttribute("data-done-url");
   var MH_URL = body.getAttribute("data-musthave-url");
   var LOCK_URL = body.getAttribute("data-lock-url");
+  var GDONE_URL = body.getAttribute("data-groupdone-url");
   var locked = body.getAttribute("data-locked") === "1";
 
   var STORE_KEY = "posesField:" + TOKEN;
@@ -45,6 +46,7 @@
   function sendOp(op) {
     var url, payload;
     if (op.t === "done") { url = DONE_URL; payload = { pose_id: op.id, done: op.done }; }
+    else if (op.t === "gdone") { url = GDONE_URL; payload = { group_id: op.id, done: op.done }; }
     else if (op.t === "mh") { url = MH_URL; payload = { pose_id: op.id, add: op.add }; }
     else if (op.t === "lock") { url = LOCK_URL; payload = { locked: op.locked }; }
     else return Promise.resolve("drop");
@@ -112,12 +114,22 @@
       var badge = ph.querySelector("[data-phase-count='" + pid + "']");
       if (badge) { badge.textContent = d + "/" + n; badge.classList.toggle("complete", n > 0 && d === n); }
     });
+    // compteur des photos de groupe (séparé du total poses)
+    var gsec = document.querySelector(".fphase[data-phase-id='__groups__']");
+    if (gsec) {
+      var grs = gsec.querySelectorAll(".row[data-group-id]");
+      var gd = 0; grs.forEach(function (r) { if (r.classList.contains("done")) gd++; });
+      var gb = gsec.querySelector("[data-groupcount]");
+      if (gb) { gb.textContent = gd + "/" + grs.length; gb.classList.toggle("complete", grs.length > 0 && gd === grs.length); }
+    }
   }
 
   var currentFilter = "all";
   var currentCat = "all";
   function applyFilter() {
-    getRows().forEach(function (row) {
+    var filterables = Array.prototype.slice.call(
+      document.querySelectorAll(".row[data-pose-id], .row[data-group-id]"));
+    filterables.forEach(function (row) {
       var d = row.classList.contains("done");
       var show = currentFilter === "all" || (currentFilter === "done" && d) || (currentFilter === "todo" && !d);
       row.style.display = show ? "" : "none";
@@ -162,6 +174,19 @@
     updateProgress();
     applyFilter();
     enqueue({ t: "done", id: row.getAttribute("data-pose-id"), done: nowDone });
+  });
+
+  // ---- Cochage des photos de groupe --------------------------------------
+  main.addEventListener("click", function (e) {
+    var btn = e.target.closest(".check");
+    if (!btn) return;
+    var grow = btn.closest(".row[data-group-id]");
+    if (!grow) return;
+    var nowDone = !grow.classList.contains("done");
+    grow.classList.toggle("done", nowDone);
+    updateProgress();
+    applyFilter();
+    enqueue({ t: "gdone", id: grow.getAttribute("data-group-id"), done: nowDone });
   });
 
   // ---- Injection / retrait dynamique d'une ligne (incontournables) -------
@@ -263,14 +288,16 @@
 
   // ---- Hydratation initiale (serveur + file en attente) ------------------
   function hydrate() {
-    var doneSet = {};
+    var doneSet = {}, gdoneSet = {};
     try {
       var st = JSON.parse(document.getElementById("field-state").textContent) || {};
       (st.done || []).forEach(function (id) { doneSet[id] = true; });
+      (st.groupsDone || []).forEach(function (id) { gdoneSet[id] = true; });
     } catch (e) {}
     // Rejoue les ops en attente PAR-DESSUS le snapshot serveur (offline compris)
     store.queue.forEach(function (op) {
       if (op.t === "done") doneSet[op.id] = op.done;
+      else if (op.t === "gdone") gdoneSet[op.id] = op.done;
       else if (op.t === "mh") {
         var chk = document.querySelector(".mh-check[data-pose-id='" + op.id + "']");
         if (op.add && chk) { addRowFromCheck(chk); if (chk) chk.checked = true; }
@@ -279,6 +306,9 @@
     });
     getRows().forEach(function (row) {
       row.classList.toggle("done", !!doneSet[row.getAttribute("data-pose-id")]);
+    });
+    document.querySelectorAll(".row[data-group-id]").forEach(function (row) {
+      row.classList.toggle("done", !!gdoneSet[row.getAttribute("data-group-id")]);
     });
     renderLock();
   }

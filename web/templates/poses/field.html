@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{{ title | default("Jour J") }}</title>
-  <link rel="stylesheet" href="/poses/a/field.css?v=3">
+  <link rel="stylesheet" href="/poses/a/field.css?v=4">
   <link rel="manifest" href="/poses/app.webmanifest">
   <meta name="theme-color" content="#14181f">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,10 +17,11 @@
   data-done-url="{{ url_for('poses.field_done', token=event.clientToken) }}"
   data-musthave-url="{{ url_for('poses.field_musthave', token=event.clientToken) }}"
   data-lock-url="{{ url_for('poses.field_lock', token=event.clientToken) }}"
+  data-groupdone-url="{{ url_for('poses.field_group_done', token=event.clientToken) }}"
   data-locked="{{ '1' if event.locked else '0' }}"
 >
   <script type="application/json" id="field-state">
-    {{ { "done": event.done } | tojson }}
+    {{ { "done": event.done, "groupsDone": event.groupsDone } | tojson }}
   </script>
 
   <header class="fhead">
@@ -101,6 +102,25 @@
     </section>
     {% endif %}
 
+    {% if event.groups %}
+    <section class="fphase" data-phase-id="__groups__" data-order="998" data-category="__groups__">
+      <div class="fphase-head">
+        <span class="icon">📸</span>
+        <h2>Photos de groupe</h2>
+        <span class="fphase-count" data-groupcount>0/{{ event.groups|length }}</span>
+      </div>
+      {% for g in event.groups %}
+      <div class="row grow" data-group-id="{{ g.id }}">
+        <button type="button" class="check" aria-label="Marquer comme fait">✓</button>
+        <div class="row-body">
+          <div class="rtitle">{{ g.title }}</div>
+          {% if g.people %}<div class="gpeople">{{ g.people|join(', ') }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
     {% if not checklist and not event.custom %}
       <div class="empty">Les mariés n'ont pas encore sélectionné de poses.</div>
     {% endif %}
@@ -159,6 +179,6 @@
       });
     }
   </script>
-  <script src="/poses/a/field.js?v=5"></script>
+  <script src="/poses/a/field.js?v=6"></script>
 </body>
 </html>

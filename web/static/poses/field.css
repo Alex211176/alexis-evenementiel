@@ -150,3 +150,7 @@ body {
   width: 46px; height: 46px; border-radius: 50%; border: 0;
   background: rgba(255,255,255,.14); color: #fff; font-size: 1.3rem; cursor: pointer;
 }
+
+/* ---------- Photos de groupe (jour J) ---------- */
+.gpeople { color: var(--ink); font-size: .95rem; margin-top: 3px; line-height: 1.45; }
+.row.grow.done .gpeople { color: var(--dim); }

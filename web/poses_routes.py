@@ -163,6 +163,21 @@ def client_save(token):
     })
 
 
+@poses_bp.route("/s/<token>/api/groups", methods=["POST"])
+def client_groups(token):
+    """Sauvegarde des photos de groupe (champ client dédié, préserve la sélection)."""
+    if not is_valid_token(token):
+        abort(404)
+    payload = request.get_json(silent=True) or {}
+    try:
+        event = ev.save_groups(STORAGE, token, payload.get("groups"))
+    except ev.EventLocked:
+        return jsonify({"ok": False, "locked": True}), 409
+    except ev.EventError:
+        abort(404)
+    return jsonify({"ok": True, "count": len(event.get("groups", []))})
+
+
 @poses_bp.route("/s/<token>/api/validate", methods=["POST"])
 def client_validate(token):
     if not is_valid_token(token):
@@ -203,6 +218,18 @@ def field(token):
     )
 
 
+@poses_bp.route("/field/<token>/api/group-done", methods=["POST"])
+def field_group_done(token):
+    if not is_valid_token(token):
+        abort(404)
+    payload = request.get_json(silent=True) or {}
+    try:
+        event = ev.toggle_group_done(STORAGE, token, payload.get("group_id"), bool(payload.get("done")))
+    except ev.EventError:
+        abort(404)
+    return jsonify({"ok": True, "groupsDone": event.get("groupsDone", [])})
+
+
 @poses_bp.route("/field/<token>/planche.pdf")
 def field_planche(token):
     """Planche papier des poses choisies par CE couple (à imprimer pour le jour J)."""
@@ -215,7 +242,8 @@ def field_planche(token):
     thumbs = Path(current_app.static_folder) / "poses" / "thumbs"
     out = Path(tempfile.gettempdir()) / f"poses_planche_{token}.pdf"
     render_pdf(thumbs, out, only_ids=ids, subtitle=subtitle,
-               customs=event.get("custom") or None, notes=event.get("notes") or None)
+               customs=event.get("custom") or None, notes=event.get("notes") or None,
+               groups=event.get("groups") or None)
     stem = (couple or "planche").replace(" ", "_").replace("/", "-")
     return send_file(out, mimetype="application/pdf",
                      as_attachment=False, download_name=f"Planche-{stem}.pdf")
