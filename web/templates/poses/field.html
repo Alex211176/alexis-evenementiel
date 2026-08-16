@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{{ title | default("Jour J") }}</title>
-  <link rel="stylesheet" href="/poses/a/field.css?v=2">
+  <link rel="stylesheet" href="/poses/a/field.css?v=3">
   <link rel="manifest" href="/poses/app.webmanifest">
   <meta name="theme-color" content="#14181f">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,7 +26,10 @@
   <header class="fhead">
     <div class="fhead-top">
       <div class="couple">{{ event.couple }}</div>
-      <a class="back" href="{{ url_for('poses.admin') }}">Événements</a>
+      <div class="fhead-links">
+        <a class="planche" href="{{ url_for('poses.field_planche', token=event.clientToken) }}" target="_blank">🖨 Planche</a>
+        <a class="back" href="{{ url_for('poses.admin') }}">Événements</a>
+      </div>
     </div>
     <div class="progress">
       <div class="progress-bar"><span id="progressFill"></span></div>
@@ -57,6 +60,13 @@
       {% for pose in phase.poses %}
       <div class="row" data-pose-id="{{ pose.id }}">
         <button type="button" class="check" aria-label="Marquer comme fait">✓</button>
+        {% if pose.id in thumbs %}
+        <button type="button" class="row-thumb"
+                data-full="{{ url_for('poses.thumb', pose_id=pose.id) }}"
+                data-title="{{ pose.title }}" aria-label="Voir le croquis en grand">
+          <img src="{{ url_for('poses.thumb', pose_id=pose.id) }}" loading="lazy" alt="">
+        </button>
+        {% endif %}
         <div class="row-body">
           <div class="rtitle">
             {{ pose.title }}
@@ -127,6 +137,15 @@
     <button type="button" id="lockBtn" class="lock-btn">🔒 Verrouiller la sélection</button>
   </footer>
 
+  <!-- Aperçu plein écran du croquis -->
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lightbox-inner">
+      <img id="lightboxImg" alt="">
+      <div class="lightbox-title" id="lightboxTitle"></div>
+    </div>
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Fermer">✕</button>
+  </div>
+
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
@@ -140,6 +159,6 @@
       });
     }
   </script>
-  <script src="/poses/a/field.js?v=4"></script>
+  <script src="/poses/a/field.js?v=5"></script>
 </body>
 </html>
