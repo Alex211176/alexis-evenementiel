@@ -77,6 +77,8 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .chip.active { background: var(--gold-soft); color: var(--gold); border-color: var(--gold); }
+.chip.sel-toggle { color: var(--gold); border-color: var(--gold); }
+.chip.sel-toggle.active { background: var(--gold); color: #1a1406; border-color: var(--gold); }
 
 /* ---------- Layout ---------- */
 .wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 40px; }
