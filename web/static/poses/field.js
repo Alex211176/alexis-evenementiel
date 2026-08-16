@@ -233,6 +233,24 @@
     });
   });
 
+  // ---- Aperçu plein écran du croquis -------------------------------------
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightboxImg");
+  var lightboxTitle = document.getElementById("lightboxTitle");
+  function closeLightbox() { if (lightbox) { lightbox.hidden = true; lightboxImg.src = ""; } }
+  main.addEventListener("click", function (e) {
+    var t = e.target.closest(".row-thumb");
+    if (!t || !lightbox) return;
+    lightboxImg.src = t.getAttribute("data-full");
+    lightboxTitle.textContent = t.getAttribute("data-title") || "";
+    lightbox.hidden = false;
+  });
+  if (lightbox) {
+    document.getElementById("lightboxClose").addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", function (e) { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeLightbox(); });
+  }
+
   // ---- Verrou ------------------------------------------------------------
   function renderLock() {
     lockBtn.classList.toggle("locked", locked);

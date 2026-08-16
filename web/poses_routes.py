@@ -22,6 +22,7 @@ Client — PUBLIC par token (jalon 1) ; exempté du gate via _PUBLIC_PREFIXES
 import sys
 from pathlib import Path
 
+import re
 import tempfile
 
 from flask import (
@@ -197,8 +198,26 @@ def field(token):
         checklist=checklist,
         shown_total=shown_total,
         categories=field_categories,
+        thumbs=available_thumb_ids(current_app.static_folder),
         title=f"Jour J — {event.get('couple', '')}",
     )
+
+
+@poses_bp.route("/field/<token>/planche.pdf")
+def field_planche(token):
+    """Planche papier des poses choisies par CE couple (à imprimer pour le jour J)."""
+    event = _load_event_or_404(token)
+    ids = set(event.get("selections", [])) | set(event.get("mustHave", []))
+    couple = event.get("couple", "")
+    date = event.get("date", "")
+    subtitle = couple + (f" · {date}" if date else "")
+    from poses.catalogue import render_pdf
+    thumbs = Path(current_app.static_folder) / "poses" / "thumbs"
+    out = Path(tempfile.gettempdir()) / f"poses_planche_{token}.pdf"
+    render_pdf(thumbs, out, only_ids=ids, subtitle=subtitle, customs=event.get("custom") or None)
+    stem = (couple or "planche").replace(" ", "_").replace("/", "-")
+    return send_file(out, mimetype="application/pdf",
+                     as_attachment=False, download_name=f"Planche-{stem}.pdf")
 
 
 @poses_bp.route("/field/<token>/api/done", methods=["POST"])
@@ -282,6 +301,23 @@ def manifest():
         ],
     }
     return Response(jsonify(data).get_data(), mimetype="application/manifest+json")
+
+
+@poses_bp.route("/thumb/<pose_id>")
+def thumb(pose_id):
+    """
+    Sert une vignette DANS le périmètre /poses/ (donc cachable par le service
+    worker → dispo hors-ligne côté mode terrain). Les pages publiques mariés
+    continuent d'utiliser /static/poses/thumbs/ directement.
+    """
+    if not re.match(r"^[A-Za-z0-9_-]{1,40}$", pose_id or ""):
+        abort(404)
+    d = Path(current_app.static_folder) / "poses" / "thumbs"
+    if not (d / f"{pose_id}.webp").exists():
+        abort(404)
+    resp = send_from_directory(d, f"{pose_id}.webp", mimetype="image/webp")
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
 
 
 @poses_bp.route("/a/<path:filename>")

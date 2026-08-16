@@ -8,14 +8,14 @@
      - tout le reste / POST d'API    : passthrough réseau (la file de synchro vit dans la page)
 
    Bump CACHE à chaque changement d'asset pour purger l'ancien cache. */
-const CACHE = "poses-field-v4";
+const CACHE = "poses-field-v5";
 
 // Pré-cache : garantit que les assets sont dispo hors-ligne DÈS la 1re visite,
 // même s'ils avaient été chargés avant que le SW prenne le contrôle.
 // (URLs versionnées : les tenir synchro avec field.html + bumper CACHE.)
 const PRECACHE = [
-  "/poses/a/field.css?v=2",
-  "/poses/a/field.js?v=4",
+  "/poses/a/field.css?v=3",
+  "/poses/a/field.js?v=5",
   "/poses/app.webmanifest",
   "/poses/a/icons/icon-192.png"
 ];
@@ -53,6 +53,7 @@ self.addEventListener("message", function (e) {
 function isField(url) { return url.pathname.indexOf("/poses/field/") !== -1; }
 function isAsset(url) {
   return url.pathname.indexOf("/poses/a/") !== -1 ||
+         url.pathname.indexOf("/poses/thumb/") !== -1 ||   // vignettes -> dispo hors-ligne
          url.pathname.indexOf("/poses/app.webmanifest") !== -1;
 }
 

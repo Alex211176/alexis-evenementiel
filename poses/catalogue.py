@@ -95,21 +95,56 @@ def _footer(canvas, doc):
     canvas.restoreState()
 
 
-def build_story(thumbs_dir):
+def _text_card(c):
+    """Carte texte seule (idée perso des mariés, sans croquis)."""
+    inner = Table([[Paragraph(c.get("title", ""), _TITLE)],
+                   [Paragraph(c.get("desc", ""), _DESC)]], colWidths=[_CARD_W - 8])
+    inner.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#e6e0d2")),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#faf7f0")),
+        ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6), ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    return inner
+
+
+def build_story(thumbs_dir, only_ids=None, subtitle=None, customs=None):
+    """
+    only_ids : si fourni, ne garde que ces poses (planche d'un couple).
+    subtitle : sous-titre de couverture (ex. « Romain & Mathilde · 20/07/2026 »).
+    customs  : idées perso [{title, desc}] ajoutées en fin (cartes texte).
+    """
     thumbs_dir = Path(thumbs_dir)
     lib = load_library()
     phases = lib["phases"]
-    total = sum(len(p["poses"]) for p in phases)
+    if only_ids is not None:
+        keep = set(only_ids)
+        phases = [{**ph, "poses": [p for p in ph["poses"] if p["id"] in keep]} for ph in phases]
+        phases = [ph for ph in phases if ph["poses"]]
+    total = sum(len(p["poses"]) for p in phases) + (len(customs) if customs else 0)
+
+    if only_ids is None:
+        h1 = "Vos poses de mariage"
+        blurb = (f"Un répertoire de {total} poses, organisé selon le déroulé d'une journée "
+                 "de mariage — des préparatifs à la soirée dansante.<br/>Parcourez, repérez "
+                 "celles qui vous ressemblent, et nous les réaliserons le jour J.")
+    else:
+        h1 = "Votre planche de poses"
+        blurb = (f"{total} poses sélectionnées, dans l'ordre du déroulé de la journée — "
+                 "la feuille de route du jour J.")
 
     story = [
-        Spacer(1, 70 * mm),
+        Spacer(1, 60 * mm),
         Paragraph("ALEXIS ÉVÉNEMENTIEL", _COVER_EYE),
-        Paragraph("Vos poses de mariage", _COVER_H1),
+        Paragraph(h1, _COVER_H1),
+    ]
+    if subtitle:
+        story.append(Paragraph(subtitle, ParagraphStyle(
+            "sub", fontName="Helvetica", fontSize=14, alignment=TA_CENTER,
+            textColor=GOLD, spaceBefore=2, spaceAfter=6)))
+    story += [
         Spacer(1, 6 * mm),
-        Paragraph(
-            f"Un répertoire de {total} poses, organisé selon le déroulé d'une journée "
-            "de mariage — des préparatifs à la soirée dansante.<br/>Parcourez, repérez "
-            "celles qui vous ressemblent, et nous les réaliserons le jour J.", _COVER_P),
+        Paragraph(blurb, _COVER_P),
         PageBreak(),
     ]
 
@@ -139,14 +174,34 @@ def build_story(thumbs_dir):
         story.append(grid)
         story.append(PageBreak())
 
+    if customs:
+        head = Table([[Paragraph("<font color='#c9a24b'>💡</font>  Idées des mariés", _PH), ""]],
+                     colWidths=[380, 130])
+        head.setStyle(TableStyle([
+            ("LINEBELOW", (0, 0), (-1, -1), 0.6, colors.HexColor("#e3ddcf")),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ]))
+        story.append(head)
+        story.append(Spacer(1, 5 * mm))
+        cards = [_text_card(c) for c in customs]
+        grid = Table(list(_chunk(cards, _COLS)), colWidths=[_CARD_W] * _COLS)
+        grid.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+            ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+        ]))
+        story.append(grid)
+
     return story
 
 
-def render_pdf(thumbs_dir, out_path) -> str:
+def render_pdf(thumbs_dir, out_path, only_ids=None, subtitle=None, customs=None) -> str:
     doc = SimpleDocTemplate(
         str(out_path), pagesize=A4,
         leftMargin=15 * mm, rightMargin=15 * mm, topMargin=16 * mm, bottomMargin=18 * mm,
         title="Poses de mariage — Alexis Événementiel",
     )
-    doc.build(build_story(thumbs_dir), onFirstPage=_footer, onLaterPages=_footer)
+    doc.build(build_story(thumbs_dir, only_ids=only_ids, subtitle=subtitle, customs=customs),
+              onFirstPage=_footer, onLaterPages=_footer)
     return str(out_path)
