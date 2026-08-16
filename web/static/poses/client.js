@@ -130,6 +130,7 @@
         card.classList.toggle("selected", now);
         selectedSet[id] = now;
         updateCounts();
+        applyFilter();
         scheduleSave();
       });
       var noteToggle = card.querySelector(".note-toggle");
@@ -237,20 +238,48 @@
     });
   }
 
-  // --- Filtre par type ------------------------------------------------------
+  // --- Filtres : type + « Ma sélection » ------------------------------------
   var typebar = document.getElementById("typebar");
+  var phaseEls = Array.prototype.slice.call(document.querySelectorAll(".phase[data-category]"));
+  var currentCat = "all";
+  var selectedOnly = false;
+
+  function applyFilter() {
+    phaseEls.forEach(function (ph) {
+      var cat = ph.getAttribute("data-category");
+      if (currentCat !== "all" && cat !== currentCat) { ph.style.display = "none"; return; }
+      var cards = ph.querySelectorAll(".pose[data-pose-id]");
+      if (!selectedOnly) {
+        cards.forEach(function (c) { c.style.display = ""; });
+        ph.style.display = "";
+        return;
+      }
+      // mode récap : ne montrer que les poses cochées
+      var anyVisible = false;
+      cards.forEach(function (c) {
+        var sel = c.classList.contains("selected");
+        c.style.display = sel ? "" : "none";
+        if (sel) anyVisible = true;
+      });
+      // la section « idées perso » n'a pas de .pose -> on la garde en mode récap
+      if (cat === "__custom__") { ph.style.display = ""; return; }
+      ph.style.display = anyVisible ? "" : "none";
+    });
+  }
+
   if (typebar) {
-    var phaseEls = Array.prototype.slice.call(document.querySelectorAll(".phase[data-category]"));
     typebar.addEventListener("click", function (e) {
       var b = e.target.closest(".chip");
       if (!b) return;
-      var cat = b.getAttribute("data-cat");
-      typebar.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
-      b.classList.add("active");
-      phaseEls.forEach(function (ph) {
-        var c = ph.getAttribute("data-category");
-        ph.style.display = (cat === "all" || c === cat) ? "" : "none";
-      });
+      if (b.hasAttribute("data-sel-toggle")) {
+        selectedOnly = !selectedOnly;
+        b.classList.toggle("active", selectedOnly);
+      } else {
+        currentCat = b.getAttribute("data-cat");
+        typebar.querySelectorAll(".chip:not([data-sel-toggle])").forEach(function (c) { c.classList.remove("active"); });
+        b.classList.add("active");
+      }
+      applyFilter();
       window.scrollTo(0, 0);
     });
   }
@@ -259,4 +288,5 @@
   renderCustom();
   renderValidated();
   updateCounts();
+  applyFilter();
 })();

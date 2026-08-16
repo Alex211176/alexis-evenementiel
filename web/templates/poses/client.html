@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title | default("Vos poses de mariage") }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='poses/client.css') }}?v=3">
+  <link rel="stylesheet" href="{{ url_for('static', filename='poses/client.css') }}?v=4">
 </head>
 <body
   data-save-url="{{ url_for('poses.client_save', token=event.clientToken) }}"
@@ -47,6 +47,7 @@
 
   {% if categories %}
   <div class="typebar" id="typebar">
+    <button class="chip sel-toggle" data-sel-toggle>♥ Ma sélection</button>
     <button class="chip active" data-cat="all">Tout</button>
     {% for c in categories %}<button class="chip" data-cat="{{ c }}">{{ c }}</button>{% endfor %}
   </div>
@@ -110,6 +111,6 @@
     </div>
   </footer>
 
-  <script src="{{ url_for('static', filename='poses/client.js') }}?v=2"></script>
+  <script src="{{ url_for('static', filename='poses/client.js') }}?v=3"></script>
 </body>
 </html>
