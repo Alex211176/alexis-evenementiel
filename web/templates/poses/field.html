@@ -46,6 +46,7 @@
     <div class="typebar" id="typebar">
       <button class="chip active" data-cat="all">Tout type</button>
       {% for c in categories %}<button class="chip" data-cat="{{ c }}">{{ c }}</button>{% endfor %}
+      {% if event.groups %}<button class="chip" data-cat="__groups__">📸 Photos de groupe</button>{% endif %}
     </div>
     {% endif %}
   </header>
