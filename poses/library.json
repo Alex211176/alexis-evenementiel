@@ -140,7 +140,9 @@
         { "id": "te06", "title": "Le Porté du Marié", "desc": "Témoins soulevant le marié, énergie." },
         { "id": "te07", "title": "Le Sandwich Câlin", "desc": "Mariée serrée par ses demoiselles en groupe." },
         { "id": "te08", "title": "La Ronde", "desc": "Groupe se tenant les mains en cercle, vu de dessus." },
-        { "id": "te09", "title": "Le Champagne qui Saute", "desc": "Bouchon qui saute, réactions de surprise." }
+        { "id": "te09", "title": "Le Champagne qui Saute", "desc": "Bouchon qui saute, réactions de surprise." },
+        { "id": "te10", "title": "Le Marié Enlevé", "desc": "Les témoins emportent le marié à l'horizontale, la mariée le retient par la main, éclats de rire." },
+        { "id": "te11", "title": "Le Cortège en Folie", "desc": "La bande hurle de joie autour du couple (ou d'un panneau), énergie et rires." }
       ]
     },
     {
@@ -189,7 +191,9 @@
         { "id": "cp37", "title": "La Main sur la Joue", "desc": "Mariée posant la main sur la joue du marié." },
         { "id": "cp38", "title": "Le Front Baissé", "desc": "Couple front contre front, mains jointes au centre." },
         { "id": "cp39", "title": "L'Enlacement au Sol", "desc": "Mariée assise entre les jambes du marié, tendresse." },
-        { "id": "cp40", "title": "Le Slow Enlacé", "desc": "Couple en position de danse lente, joue contre joue." }
+        { "id": "cp40", "title": "Le Slow Enlacé", "desc": "Couple en position de danse lente, joue contre joue." },
+        { "id": "cp41", "title": "Le Cœur avec les Mains", "desc": "Le couple forme un cœur avec leurs mains autour de leurs visages, complices." },
+        { "id": "cp42", "title": "La Marche Triomphale", "desc": "Couple avançant vers l'objectif, bras levés et bouquet en l'air, jubilation." }
       ]
     },
     {
@@ -245,7 +249,8 @@
         { "id": "vh06", "title": "Les Petits Fours", "desc": "Plan détail des mets et boissons." },
         { "id": "vh07", "title": "Les Mariés Circulant", "desc": "Couple saluant les groupes d'invités." },
         { "id": "vh08", "title": "Le Rire d'un Groupe", "desc": "Candid d'un groupe d'invités riant." },
-        { "id": "sr02", "title": "Le Lancer du Bouquet", "desc": "Mariée de dos lançant le bouquet, invitées bras tendus." }
+        { "id": "sr02", "title": "Le Lancer du Bouquet", "desc": "Mariée de dos lançant le bouquet, invitées bras tendus." },
+        { "id": "vh09", "title": "Le Lancer du Saucisson", "desc": "Version décalée du lancer : le marié lance un saucisson, invités hilares bras tendus." }
       ]
     },
     {
@@ -325,7 +330,8 @@
         { "id": "sr05", "title": "La Mariée qui Danse", "desc": "Mariée robe relevée, en plein mouvement." },
         { "id": "sr06", "title": "Le Slow de Fin", "desc": "Couple enlacé au milieu de la piste." },
         { "id": "sr07", "title": "Le Selfie Géant", "desc": "Groupe compact, sourires, téléphone tendu." },
-        { "id": "sr08", "title": "La Sortie aux Cierges", "desc": "Couple sortant sous une haie de cierges magiques." }
+        { "id": "sr08", "title": "La Sortie aux Cierges", "desc": "Couple sortant sous une haie de cierges magiques." },
+        { "id": "sr09", "title": "La Course à la Bouteille", "desc": "Jeu du soir : le marié court après et attrape une bouteille de vin, ambiance et rires." }
       ]
     }
   ]
