@@ -206,22 +206,6 @@
     .galerie-item .shine { position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(201,165,92,0.12), transparent 60%); opacity: 0; transition: opacity 0.5s; }
     .galerie-item:hover .shine { opacity: 1; }
 
-    /* ===== Vidéo en vedette (YouTube Short, vertical 9:16) ===== */
-    .video-feature { display: flex; gap: 44px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 54px 0 10px; }
-    .vf-player { flex: 0 0 auto; width: 300px; max-width: 86vw; aspect-ratio: 9 / 16; position: relative; border-radius: 16px; overflow: hidden; cursor: pointer; border: 1px solid var(--line, rgba(201,165,92,0.18)); background: #000; box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
-    .vf-player img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .vf-player iframe { width: 100%; height: 100%; border: 0; display: block; }
-    .vf-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(10,10,12,0.08), rgba(10,10,12,0.5)); transition: background .3s; }
-    .vf-player:hover .vf-play { background: linear-gradient(180deg, rgba(10,10,12,0.02), rgba(10,10,12,0.35)); }
-    .vf-play span { width: 66px; height: 66px; border-radius: 50%; background: var(--or, #c9a55c); color: var(--noir, #0a0a0c); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; padding-left: 5px; box-shadow: 0 8px 26px rgba(0,0,0,0.45); transition: transform .25s; }
-    .vf-player:hover .vf-play span { transform: scale(1.08); }
-    .vf-text { flex: 1 1 320px; max-width: 460px; }
-    .vf-text .section-label { margin-bottom: 8px; }
-    .vf-text h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1.1; margin-bottom: 14px; }
-    .vf-text h3 .italic { font-style: italic; color: var(--or-clair, #e6c986); }
-    .vf-text p { color: var(--gris-clair, #b8b4bf); margin-bottom: 24px; }
-    @media (max-width: 760px) { .video-feature { gap: 26px; } .vf-text { flex-basis: 100%; text-align: center; } .vf-text p { margin-left: auto; margin-right: auto; } }
-
     /* ===== CTA final ===== */
     .cta-final { text-align: center; background:
         radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.10), transparent 60%), var(--noir); }
@@ -355,20 +339,6 @@
             <h2 class="section-title">Des moments <span class="italic">qui restent</span></h2>
             <p class="section-intro">Un aperçu des événements orchestrés — mariages, galas, soirées privées et corporate.</p>
         </div>
-
-        <div class="video-feature reveal">
-            <div class="vf-player" id="vf-bingo" data-id="ZlsuibNhBDo" role="button" tabindex="0" aria-label="Lire la vidéo : soirée Bingodisco">
-                <img src="https://i.ytimg.com/vi/ZlsuibNhBDo/oardefault.jpg" alt="Soirée Bingodisco animée par Alexis Événementiel" loading="lazy">
-                <div class="vf-play"><span>&#9658;</span></div>
-            </div>
-            <div class="vf-text">
-                <div class="section-label">En vidéo</div>
-                <h3>L'ambiance <span class="italic">Bingodisco</span>, en quelques secondes</h3>
-                <p>Blind test géant, dancefloor et fous rires : voilà à quoi ressemble une soirée animée par Yoann et Alexis. Montez le son ! 🔊</p>
-                <a href="https://www.youtube.com/@BingoDisco" target="_blank" rel="noopener" class="btn btn-ghost">Voir la chaîne YouTube</a>
-            </div>
-        </div>
-
         <div class="galerie-grid">
             <div class="galerie-item big reveal" style="background-image:url('photos/hero-danse.jpg')"><div class="shine"></div><span class="tag">Soirée dansante</span></div>
             <div class="galerie-item reveal" style="background-image:url('photos/couple-cave.jpg')"><div class="shine"></div><span class="tag">Mariage</span></div>
@@ -381,17 +351,6 @@
         </div>
     </div>
 </section>
-<script>
-(function(){
-  var p = document.getElementById('vf-bingo'); if(!p) return;
-  function load(){
-    var id = p.getAttribute('data-id');
-    p.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen title="Soirée Bingodisco"></iframe>';
-  }
-  p.addEventListener('click', load, { once:true });
-  p.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); load(); } }, { once:true });
-})();
-</script>
 
 <!-- À PROPOS -->
 <section class="intro section-pad" id="apropos">
