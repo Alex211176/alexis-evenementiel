@@ -136,9 +136,9 @@
         <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
         <script>
         (function(){
-            fetch('https://api.counterapi.dev/v1/alexis-evenementiel/visites-site/up')
+            fetch('https://abacus.jasoncameron.dev/hit/alexis-evenementiel/visites-site')
                 .then(function(r){ return r.json(); })
-                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.count === 'number') { el.textContent = d.count.toLocaleString('fr-FR'); } })
+                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.value === 'number') { el.textContent = d.value.toLocaleString('fr-FR'); } })
                 .catch(function(){ var p = document.querySelector('.visit-counter'); if (p) { p.style.display = 'none'; } });
         })();
         </script>
