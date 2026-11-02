@@ -182,7 +182,7 @@ function notifier_(d, test, urlTableau) {
 
 function recapClient_(d) {
   MailApp.sendEmail({
-    to: d.email, replyTo: CONFIG.NOTIF_EMAIL, name: CONFIG.NOM,
+    to: d.email, replyTo: 'contact@alexisevenementiel.fr', name: CONFIG.NOM,
     subject: 'Votre demande de devis — ' + CONFIG.NOM,
     body: 'Bonjour ' + d.prenom + ',\n\nMerci pour votre demande, je reviens vers vous très vite avec une proposition.\n\n' +
       'Récapitulatif :\n\n' + resume_(d) + '\n\nÀ bientôt,\nAlexis — ' + CONFIG.NOM + '\n06 18 85 58 92 · alexisevenementiel.fr'
