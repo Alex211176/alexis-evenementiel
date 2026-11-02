@@ -954,7 +954,7 @@ CART_HTML = """
 CART_JS = """
 (function(){
   var KEY='ae_cart_v1';
-  var DEVIS_ENDPOINT='';                         // <-- URL de l'application Web Google Apps Script (.../exec) ; vide = repli mailto
+  var DEVIS_ENDPOINT='https://script.google.com/macros/s/AKfycbzC2G6LHNy4zeqM7w4W_4212TwFeh3qh0yNW50UFIBcAlqycD-LlPQjBCnKGXWyHGd8/exec';   // application Web Google Apps Script (google-apps-script/demandes-devis) ; vide = repli mailto
   var reqId='', openedAt=0;
   var CONTACT='contact@alexisevenementiel.fr';
   // Jeux d'options du panier (sélecteur par article). Impressions : imprimante + consommables INCLUS dans ces tarifs.
