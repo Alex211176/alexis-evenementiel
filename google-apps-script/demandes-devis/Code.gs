@@ -13,7 +13,7 @@
  */
 const CONFIG = {
   NOM: 'Alexis Événementiel',
-  NOTIF_EMAIL: 'contact@alexisevenementiel.fr',   // reçoit une notification par demande
+  NOTIF_EMAIL: Session.getEffectiveUser().getEmail(),   // le compte Google du script (une redirection depuis contact@ serait masquée par Gmail)
   AGENDA_NOM: 'Demandes de devis',
   TABLEAU_NOM: 'Demandes de devis — Alexis Événementiel',
   ONGLET: 'Demandes',

@@ -4,7 +4,7 @@ Le formulaire « Ma demande de devis » du catalogue (alexisevenementiel.fr) env
 
 1. ajoute une ligne au tableau **Demandes de devis — Alexis Événementiel** (Drive), avec une colonne **Statut** (Nouveau, Rappelé, Devis envoyé, Signé, Perdu) ;
 2. crée un événement dans l'agenda dédié **Demandes de devis** (créneau début → fin, ou journée entière si pas d'horaires ; rien si pas de date). L'événement ne bloque pas la journée et n'envoie aucune invitation ;
-3. envoie une notification à `contact@alexisevenementiel.fr` — « Répondre » écrit directement au client.
+3. envoie une notification au compte Google qui exécute le script — « Répondre » écrit directement au client.
 
 Anti-spam : champ piège invisible, envoi en moins de 3 s ignoré, 30 demandes/heure maximum, pas de doublon sur double clic.
 Tant que l'URL n'est pas renseignée dans le site, le formulaire garde l'ancien fonctionnement (ouverture de la messagerie du visiteur). Si le script est injoignable, il y revient aussi.
