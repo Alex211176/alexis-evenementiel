@@ -70,6 +70,14 @@ function installer() {
   return ss.getUrl();
 }
 
+/** Réécrit la ligne d'en-têtes et le nom du tableau (ex. après un collage aux accents abîmés). Les demandes ne sont pas touchées. */
+function reparerEntetes() {
+  const ss = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('TABLEAU_ID'));
+  ss.setName(CONFIG.TABLEAU_NOM);
+  ss.getSheetByName(CONFIG.ONGLET).getRange(1, 1, 1, ENTETES.length).setValues([ENTETES]);
+  console.log('En-têtes et nom du tableau corrigés : ' + ss.getUrl());
+}
+
 /* ===================== Réception du formulaire ===================== */
 
 function doGet() {
