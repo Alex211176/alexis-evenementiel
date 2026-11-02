@@ -1010,7 +1010,7 @@ CART_JS = """
   function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
   function cartLines(){ if(cart.length===0) return '(aucun matériel sélectionné — à définir ensemble)';
     var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt;
-      var nom=it.nom; if(it.opt&&it.optv) nom+=' + '+optLbl(it.opt,it.optv); l.push('- '+nom+' x'+it.qty+' : '+p); });
+      var nom=it.nom; if(it.opt&&it.optv){ var ol=optLbl(it.opt,it.optv); nom+=(ol.charAt(0)==='+'?' ':' + ')+ol; } l.push('- '+nom+' x'+it.qty+' : '+p); });
     l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\\n'); }
   function cartSub(){ var s=0; cart.forEach(function(it){ var lt=lineTotal(it); if(lt!==null) s+=lt; }); return Math.round(s*100)/100; }
   function briefText(d){ var L=[];
