@@ -992,6 +992,7 @@
         <div class="row2"><input name="prenom" placeholder="Prénom *" required><input name="nom" placeholder="Nom"></div>
         <div class="row2"><input name="email" type="email" placeholder="Email *" required><input name="tel" placeholder="Téléphone"></div>
         <textarea name="message" rows="2" placeholder="Un mot sur votre projet (optionnel)"></textarea>
+        <input name="site_web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       </div>
 
     </div>
@@ -1006,7 +1007,8 @@
 
 (function(){
   var KEY='ae_cart_v1';
-  var FORMSPREE_ENDPOINT='';                     // <-- à remplir : "https://formspree.io/f/XXXXXXXX" (sinon repli mailto)
+  var DEVIS_ENDPOINT='';                         // <-- URL de l'application Web Google Apps Script (.../exec) ; vide = repli mailto
+  var reqId='', openedAt=0;
   var CONTACT='contact@alexisevenementiel.fr';
   // Jeux d'options du panier (sélecteur par article). Impressions : imprimante + consommables INCLUS dans ces tarifs.
   var OPTSETS={
@@ -1057,12 +1059,13 @@
       var txt=(lt===null)?'Sur devis':fmt(lt)+((it.qty>1&&it.kind==='unitaire')?' ('+it.qty+'\u00d7)':''); if(lt!==null) sub+=lt;
       html+='<div class="ci"><div class="ci-nom">'+esc(it.nom)+'</div><div class="ci-line">'+txt+'</div>'+opt+ctrl+'<button class="ci-del" onclick="AECart.del(\''+it.key+'\')">Retirer</button></div>'; });
     w.innerHTML=html; document.getElementById('cart-subtotal').textContent=fmt(sub); }
-  function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); render(); }
+  function open(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-panel').classList.add('open'); openedAt=openedAt||Date.now(); render(); }
   function close(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-panel').classList.remove('open'); }
   function cartLines(){ if(cart.length===0) return '(aucun matériel sélectionné — à définir ensemble)';
     var l=[], sub=0; cart.forEach(function(it){ var lt=lineTotal(it), p=(lt===null)?'sur devis':fmt(lt); if(lt!==null) sub+=lt;
       var nom=it.nom; if(it.opt&&it.optv) nom+=' + '+optLbl(it.opt,it.optv); l.push('- '+nom+' x'+it.qty+' : '+p); });
     l.push('Estimation à la carte : '+fmt(sub)+' (prix pack à définir)'); return l.join('\n'); }
+  function cartSub(){ var s=0; cart.forEach(function(it){ var lt=lineTotal(it); if(lt!==null) s+=lt; }); return Math.round(s*100)/100; }
   function briefText(d){ var L=[];
     L.push('=== ÉVÉNEMENT ===');
     if(d.occasion) L.push('Occasion : '+d.occasion);
@@ -1087,18 +1090,22 @@
       prenom:g('prenom'), nom:g('nom'), email:g('email'), tel:g('tel'), message:g('message') };
     var brief=briefText(d);
     var b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Envoi…';
-    var done=function(ok){ b.disabled=false; b.textContent='Envoyer ma demande de devis';
-      if(ok){ cart=[]; save(); render(); f.reset(); msg('Demande envoyée. Nous revenons vers vous avec une proposition de prix pack.', false); }
-      else{ msg('Échec de l\'envoi. Réessayez ou écrivez à '+CONTACT, true); } };
-    if(FORMSPREE_ENDPOINT){
-      var payload=Object.assign({}, d, {prestations:d.prestations.join(', '), selection:cartLines(), brief:brief, _subject:'Demande de devis — '+d.prenom+' '+d.nom});
-      fetch(FORMSPREE_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'}, body:JSON.stringify(payload)})
-        .then(function(r){ done(r.ok); }).catch(function(){ done(false); });
-    } else {
+    var done=function(ok, err){ b.disabled=false; b.textContent='Envoyer ma demande de devis';
+      if(ok){ cart=[]; save(); render(); f.reset(); reqId=''; msg('Demande envoyée. Nous revenons vers vous avec une proposition de prix pack.', false); }
+      else{ msg(err||('Échec de l\'envoi. Réessayez ou écrivez à '+CONTACT), true); } };
+    var viaMail=function(){
       var body='Bonjour,\n\nVoici ma demande de devis :\n\n'+brief+'\n\n=== CONTACT ===\n'+d.prenom+' '+d.nom+'\nEmail : '+d.email+'\nTéléphone : '+d.tel+(d.message?('\nMessage : '+d.message):'')+'\n';
       window.location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent('Demande de devis — '+d.prenom+' '+d.nom)+'&body='+encodeURIComponent(body);
-      setTimeout(function(){ done(true); }, 500);
-    }
+      setTimeout(function(){ done(true); }, 500); };
+    if(DEVIS_ENDPOINT){
+      if(!reqId) reqId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+      var payload=Object.assign({}, d, {id:reqId, prestations:d.prestations.join(', '), selection:cartLines(), estimation:cartSub(), site_web:g('site_web'), delai:openedAt?(Date.now()-openedAt):0});
+      // text/plain : requête « simple » sans pré-vérification CORS, ce qu'exige Google Apps Script
+      fetch(DEVIS_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)})
+        .then(function(r){ return r.json(); })
+        .then(function(j){ if(j&&j.ok) done(true); else done(false, j&&j.error?j.error:''); })
+        .catch(function(){ viaMail(); });   // service injoignable : repli sur l'e-mail
+    } else { viaMail(); }
     return false; }
   document.addEventListener('click', function(e){ var b=e.target.closest?e.target.closest('.add-cart'):null; if(b) add(b); });
   window.AECart={ open:open, close:close, q:q, del:del, submit:submit, setOpt:setOpt };
