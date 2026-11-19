@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Jeu des 12 mois — animation de mariage dans le Tarn (81) — Alexis Événementiel</title>
+<meta name="description" content="Le Jeu des 12 mois : une animation de mariage interactive et originale, personnalisée à vos prénoms et à vos couleurs. 12 manches, tous vos invités en jeu, environ 30 minutes. DJ mariage à Albi, Castres, Toulouse et dans tout le Tarn.">
+<meta name="keywords" content="animation mariage Tarn, animation mariage 81, DJ mariage Albi, DJ mariage Castres, DJ mariage Toulouse, jeu interactif mariage, animation originale soirée de mariage, jeu des 12 mois mariage">
+<link rel="canonical" href="https://alexisevenementiel.fr/jeu-des-12-mois.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Le Jeu des 12 mois — l'animation qui fait courir toute la salle">
+<meta property="og:description" content="Douze manches, un objet à trouver à chaque mois, des gages à votre image. Une animation de mariage préparée à vos couleurs par DJ Alexis.">
+<meta property="og:url" content="https://alexisevenementiel.fr/jeu-des-12-mois.html">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Le Jeu des 12 mois",
+  "serviceType": "Animation de mariage",
+  "description": "Animation de mariage interactive en 12 manches : les invités rapportent un objet, le dernier arrivé relève un gage. Personnalisée aux prénoms, aux invités et aux couleurs des mariés.",
+  "url": "https://alexisevenementiel.fr/jeu-des-12-mois.html",
+  "areaServed": [
+    {"@type": "AdministrativeArea", "name": "Tarn (81)"},
+    {"@type": "City", "name": "Albi"},
+    {"@type": "City", "name": "Castres"},
+    {"@type": "City", "name": "Toulouse"}
+  ],
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "Alexis Événementiel",
+    "url": "https://alexisevenementiel.fr/",
+    "telephone": "+33618855892",
+    "email": "contact@alexisevenementiel.fr",
+    "address": {"@type": "PostalAddress", "addressLocality": "Albi", "addressRegion": "Tarn", "addressCountry": "FR"}
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.1; text-wrap: balance; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.on { color: var(--or-clair); }
+
+    .btn { display:inline-flex; align-items:center; gap:10px; padding:16px 34px; font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all .35s ease; cursor:pointer; border:none; }
+    .btn-gold { background:var(--or); color:var(--noir); }
+    .btn-gold:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.25); }
+    .btn-ghost { border:1px solid var(--or); color:var(--or); }
+    .btn-ghost:hover { background:var(--or); color:var(--noir); }
+    .actions { display:flex; gap:16px; flex-wrap:wrap; }
+
+    /* ── Ouverture : le cadran des 12 mois ── */
+    header.hero { padding: 150px 0 80px; position: relative; overflow: hidden;
+        background: radial-gradient(ellipse 60% 70% at 78% 40%, rgba(201,165,92,0.14), transparent 60%), linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%); }
+    .hero-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; }
+    .badge { display:inline-block; margin-bottom:22px; font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--noir); background:var(--or); padding:6px 16px; border-radius:99px; font-weight:500; }
+    .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.8rem, 6.4vw, 5rem); margin-bottom: 24px; }
+    .italic { font-style: italic; color: var(--or-clair); }
+    .hero .accroche { color: var(--gris-clair); max-width: 520px; font-size: 1.12rem; margin-bottom: 28px; }
+    .pastilles { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:34px; }
+    .pastilles span { border:1px solid rgba(201,165,92,.45); color:var(--or-clair); border-radius:99px; padding:6px 16px; font-size:.88rem; }
+    .cadran { width:100%; max-width:440px; justify-self:center; }
+
+    section { padding: 90px 0; }
+    .alt { background: var(--noir-2); }
+    .head { margin-bottom: 48px; max-width: 680px; }
+    .head.center { text-align:center; margin-left:auto; margin-right:auto; }
+    .head .num { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; }
+    .head h2 { font-size: clamp(2rem, 4vw, 3rem); margin-top:8px; }
+    .head p { color:var(--gris-clair); margin-top:14px; font-size:1.04rem; }
+
+    /* Principe */
+    .principe { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .principe div { border-top:1px solid var(--or); padding-top:20px; }
+    .principe b { display:block; font:400 2.6rem/1 'Cormorant Garamond',serif; color:var(--or); margin-bottom:10px; }
+    .principe h3 { font-size:1.5rem; margin-bottom:8px; }
+    .principe p { color:var(--gris-clair); }
+
+    /* Une manche en 5 temps */
+    .etapes { list-style:none; display:grid; grid-template-columns:repeat(5,1fr); counter-reset:e; }
+    .etapes li { position:relative; padding-right:16px; }
+    .etapes li::before { counter-increment:e; content:counter(e); display:grid; place-items:center; width:46px; height:46px; border-radius:50%; border:1px solid var(--or); color:var(--or); font:400 1.25rem 'Cormorant Garamond',serif; background:var(--noir-2); position:relative; z-index:1; }
+    .etapes li::after { content:""; position:absolute; top:23px; left:46px; right:0; height:1px; background:var(--line); }
+    .etapes li:last-child::after { display:none; }
+    .etapes h3 { font-size:1.35rem; margin:12px 0 4px; }
+    .etapes p { color:var(--gris-clair); font-size:.95rem; }
+    .duree { margin-top:36px; color:var(--gris-clair); }
+    .duree b { color:var(--or-clair); font-weight:400; }
+
+    /* Maquettes écran + téléphone */
+    .maquettes { display:grid; grid-template-columns:1.6fr .6fr; gap:40px; align-items:end; margin-top:56px; }
+    .ecran { background:#050507; border:1px solid var(--line); border-radius:12px; padding:12px; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+    .ecran-int { aspect-ratio:16/9; border-radius:6px; background:radial-gradient(90% 90% at 50% 30%, #24202c, #0d0c10); display:grid; place-items:center; text-align:center; padding:6%; position:relative; overflow:hidden; }
+    .ecran-int::before { content:""; position:absolute; inset:4%; border:1px solid rgba(201,165,92,.4); border-radius:4px; }
+    .ecran-int small { font:500 clamp(.55rem,1.2vw,.78rem) 'Jost',sans-serif; letter-spacing:.3em; color:var(--or); text-transform:uppercase; }
+    .ecran-int .mois { font:italic 400 clamp(1rem,2.6vw,1.7rem) 'Cormorant Garamond',serif; color:var(--or-clair); margin-top:4px; }
+    .ecran-int .objet { font:500 clamp(1.4rem,4.2vw,2.9rem)/1.1 'Cormorant Garamond',serif; margin:8px 0; }
+    .ecran-int .chrono { font:400 clamp(1rem,3vw,2rem) 'Jost',sans-serif; font-variant-numeric:tabular-nums; color:var(--or); letter-spacing:.06em; }
+    figcaption { margin-top:12px; color:var(--gris); font-size:.9rem; }
+    .tel { background:#050507; border:1px solid var(--line); border-radius:30px; padding:10px; box-shadow:0 24px 60px rgba(0,0,0,.5); max-width:200px; width:100%; margin:0 auto; }
+    .tel-int { aspect-ratio:9/18.5; border-radius:22px; background:#111015; padding:14px 10px; display:grid; grid-template-rows:auto 1fr auto auto; gap:8px; }
+    .tel-int .info { background:var(--noir-3); border-radius:10px; padding:8px; font-size:.64rem; color:var(--gris-clair); line-height:1.35; }
+    .tel-int .info b { display:block; color:var(--creme); font-size:.74rem; font-weight:500; }
+    .tel-int .suivant { background:var(--or); color:var(--noir); border-radius:14px; display:grid; place-items:center; font:500 1rem 'Jost',sans-serif; }
+    .tel-int .rang { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .tel-int .rang span { background:var(--noir-3); border-radius:9px; padding:7px 0; text-align:center; font-size:.62rem; color:var(--creme); }
+
+    /* Personnalisation */
+    .chiffres { display:flex; gap:56px; flex-wrap:wrap; margin-bottom:44px; }
+    .chiffres b { display:block; font:400 3.4rem/1 'Cormorant Garamond',serif; color:var(--or-clair); }
+    .chiffres span { color:var(--gris-clair); font-size:.92rem; }
+    .perso { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .carte { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:26px 24px; transition:transform .3s, border-color .3s; }
+    .carte:hover { transform:translateY(-4px); border-color:var(--or-sombre); }
+    .carte h3 { font-size:1.4rem; margin-bottom:8px; }
+    .carte p { color:var(--gris-clair); font-size:.96rem; }
+    .carte .exemple { font:italic 400 1.08rem/1.4 'Cormorant Garamond',serif; color:var(--creme); border-left:2px solid var(--or); padding-left:12px; margin-top:12px; }
+
+    /* Appel à l'action intermédiaire */
+    .relance { padding:56px 0; text-align:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+        background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(201,165,92,0.10), transparent 70%), var(--noir); }
+    .relance h2 { font-size:clamp(1.7rem,3.4vw,2.4rem); margin-bottom:22px; }
+    .relance .actions { justify-content:center; }
+
+    /* Gain de temps */
+    .deux-col { display:grid; grid-template-columns:.9fr 1.1fr; gap:56px; align-items:start; }
+    .vous { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:30px; }
+    .vous h3 { font-size:1.6rem; margin-bottom:14px; }
+    .vous ul { list-style:none; display:grid; gap:12px; }
+    .vous li { padding-left:24px; position:relative; color:var(--gris-clair); }
+    .vous li::before { content:""; position:absolute; left:0; top:.8em; width:12px; height:1px; background:var(--or); }
+    .vous li b { color:var(--creme); font-weight:400; }
+    .calendrier { list-style:none; }
+    .calendrier li { display:grid; grid-template-columns:90px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); }
+    .calendrier li:first-child { border-top:1px solid var(--line); }
+    .calendrier .quand { font:400 1.6rem/1 'Cormorant Garamond',serif; color:var(--or); }
+    .calendrier h3 { font:400 1.05rem 'Jost',sans-serif; color:var(--creme); margin-bottom:2px; }
+    .calendrier p { color:var(--gris-clair); font-size:.95rem; }
+
+    /* Cartons */
+    .cartons { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+    .pile { position:relative; height:350px; }
+    .carton { position:absolute; width:230px; height:310px; background:#fffdf8; border-radius:3px; box-shadow:0 18px 40px rgba(0,0,0,.45); padding:24px 20px; display:grid; grid-template-rows:auto auto 1fr auto; gap:8px; text-align:center; color:#1a1820; }
+    .carton::before { content:""; position:absolute; inset:8px; border:1px solid var(--or); pointer-events:none; }
+    .carton small { font:500 .6rem 'Jost',sans-serif; letter-spacing:.25em; color:var(--or-sombre); text-transform:uppercase; }
+    .carton .m { font:italic 400 1.9rem 'Cormorant Garamond',serif; }
+    .carton .g { font:500 1.02rem/1.35 'Cormorant Garamond',serif; align-self:center; }
+    .carton .pied { font-size:.62rem; color:#6d6875; letter-spacing:.08em; }
+    .c1 { left:4%; top:20px; transform:rotate(-7deg); }
+    .c2 { left:24%; top:6px; transform:rotate(2deg); }
+    .c3 { left:44%; top:24px; transform:rotate(9deg); background:var(--noir-3); color:var(--creme); }
+    .c3 .pied { color:var(--gris); }
+    .c3 small { color:var(--or); }
+    .exemple-note { margin-top:10px; color:var(--gris); font-size:.82rem; font-style:italic; }
+    .coches { list-style:none; margin-top:24px; display:grid; gap:12px; }
+    .coches li { padding-left:30px; position:relative; color:var(--gris-clair); }
+    .coches li::before { content:""; position:absolute; left:2px; top:.45em; width:14px; height:8px; border-left:2px solid var(--or); border-bottom:2px solid var(--or); transform:rotate(-45deg); }
+
+    /* Le soir J */
+    .jourj { display:grid; grid-template-columns:repeat(4,1fr); gap:28px; }
+    .jourj div { border-top:1px solid var(--line); padding-top:18px; }
+    .jourj h3 { font-size:1.35rem; color:var(--or-clair); margin-bottom:6px; }
+    .jourj p { color:var(--gris-clair); font-size:.95rem; }
+
+    /* Fin */
+    .cta { text-align: center; padding: 100px 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.12), transparent 60%), var(--noir); }
+    .cta h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 22px; }
+    .cta p { color: var(--gris-clair); max-width: 540px; margin: 0 auto 34px; }
+    .cta .actions { justify-content:center; }
+    .autres { margin-top:30px; font-size:.92rem; color:var(--gris); }
+    .autres a { color:var(--or-clair); text-decoration:none; border-bottom:1px solid var(--line); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+
+    @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .hero-grid, .deux-col, .cartons, .maquettes { grid-template-columns:1fr; }
+        .principe, .perso { grid-template-columns:1fr; }
+        .jourj { grid-template-columns:1fr 1fr; }
+        .etapes { grid-template-columns:1fr; gap:20px; }
+        .etapes li { display:grid; grid-template-columns:46px 1fr; column-gap:16px; padding-right:0; }
+        .etapes li h3, .etapes li p { grid-column:2; }
+        .etapes li h3 { margin-top:8px; }
+        .etapes li::after { display:none; }
+        .pile { max-width:420px; height:370px; }
+        section { padding:70px 0; }
+    }
+    @media (max-width: 520px) {
+        .wrap { padding: 0 18px; }
+        header.hero { padding-top: 120px; }
+        .jourj { grid-template-columns:1fr; }
+        .carton { width:180px; height:260px; padding:20px 14px; }
+        .chiffres { gap:30px; }
+        .btn { padding:14px 24px; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .aiguille { transform-origin:220px 220px; animation:tour 60s linear infinite; }
+        @keyframes tour { to { transform:rotate(360deg); } }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html" class="on">Animations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="galerie.html">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <div class="badge">Nouveauté</div>
+            <div class="eyebrow">Animation de mariage</div>
+            <h1>Le Jeu des <span class="italic">12 mois</span></h1>
+            <p class="accroche">Douze manches, un objet à trouver à chaque mois, toute la salle qui se lève et court. Un grand moment de rire partagé, préparé à vos couleurs, sans aucun travail de votre côté.</p>
+            <div class="pastilles"><span>De 50 à 250 invités</span><span>Environ 30 minutes</span><span>Écran géant et musique</span></div>
+            <div class="actions">
+                <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+                <a href="#principe" class="btn btn-ghost">Découvrir le jeu</a>
+            </div>
+        </div>
+        <svg class="cadran" viewBox="0 0 440 440" role="img" aria-label="Cadran des douze mois de l'année">
+            <circle cx="220" cy="220" r="200" fill="none" stroke="#c9a55c" stroke-opacity=".5"/>
+            <circle cx="220" cy="220" r="150" fill="none" stroke="#c9a55c" stroke-opacity=".22"/>
+            <g id="mois"></g>
+            <text x="220" y="240" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="104" fill="#e6c986">12</text>
+            <text x="220" y="274" text-anchor="middle" font-family="Jost, sans-serif" font-size="13" letter-spacing="5" fill="#b8b4bf">MANCHES</text>
+            <line class="aiguille" x1="220" y1="220" x2="220" y2="92" stroke="#c9a55c" stroke-width="1.5"/>
+            <circle cx="220" cy="220" r="4" fill="#c9a55c"/>
+        </svg>
+    </div>
+</header>
+
+<section id="principe">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le principe</div>
+            <h2>Simple à comprendre, <span class="italic">irrésistible</span> à jouer</h2>
+        </div>
+        <div class="principe">
+            <div><b>01</b><h3>J'annonce un mois et un objet</h3><p>« Juillet : une trace de rouge à lèvres sur une joue ». L'objet apparaît sur l'écran géant, le chrono démarre.</p></div>
+            <div><b>02</b><h3>Tout le monde court</h3><p>Vos invités fouillent les sacs, les poches, la salle… et rapportent l'objet le plus vite possible, sur une musique entraînante.</p></div>
+            <div><b>03</b><h3>Le dernier relève un gage</h3><p>Il choisit entre deux gages, drôles et bienveillants, et le réalise devant la salle avec la musique qui va bien.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Une manche, cinq temps</div>
+            <h2>Un rythme <span class="italic">sans temps mort</span></h2>
+            <p>Je pilote tout depuis mon téléphone : l'écran et la musique suivent chaque étape au même instant.</p>
+        </div>
+        <ol class="etapes">
+            <li><h3>Annonce</h3><p>Le mois s'affiche en grand, la salle se prépare.</p></li>
+            <li><h3>Course</h3><p>L'objet est révélé, le chrono tourne, la musique de course démarre.</p></li>
+            <li><h3>Élimination</h3><p>« Qui est le dernier ? » Son prénom et sa photo à l'écran, si vous le souhaitez.</p></li>
+            <li><h3>Gage</h3><p>Deux gages au choix, chacun avec sa musique, et des sons « bonne » ou « mauvaise réponse » pour pimenter.</p></li>
+            <li><h3>Récapitulatif</h3><p>Les douze mois en un coup d'œil, puis le mois suivant. À la fin, le gagnant à l'écran avec sa photo et son cadeau.</p></li>
+        </ol>
+        <p class="duree">Comptez <b>2 à 3 minutes par manche</b>, soit <b>30 minutes environ</b> pour les douze mois. Le jeu peut aussi se jouer en deux parties au cours de la soirée.</p>
+
+        <div class="maquettes">
+            <figure>
+                <div class="ecran"><div class="ecran-int"><div>
+                    <small>Manche 7 sur 12</small>
+                    <div class="mois">Juillet</div>
+                    <div class="objet">Une trace de rouge à lèvres sur une joue</div>
+                    <div class="chrono">0:12</div>
+                </div></div></div>
+                <figcaption>Ce que voient vos invités : le jeu projeté sur grand écran, à vos couleurs.</figcaption>
+            </figure>
+            <figure>
+                <div class="tel"><div class="tel-int">
+                    <div class="info"><b>Juillet · Course</b>Prochaine étape : élimination</div>
+                    <div class="suivant">Suivant ▶</div>
+                    <div class="rang"><span>↩ Retour</span><span>⏸ Pause</span></div>
+                    <div class="rang"><span>🎤 Parole</span><span>🔇 Couper</span></div>
+                </div></div>
+                <figcaption style="text-align:center">Ce que je tiens en main.</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Entièrement personnalisable</div>
+            <h2>Votre jeu, <span class="italic">votre histoire</span></h2>
+            <p>Le jeu se construit à partir de mes catalogues, puis s'ajuste à vos invités, à votre thème et à votre humour.</p>
+        </div>
+        <div class="chiffres">
+            <div><b>240+</b><span>objets au catalogue</span></div>
+            <div><b>160+</b><span>gages, classés par public</span></div>
+            <div><b>12</b><span>manches sur mesure</span></div>
+        </div>
+        <div class="perso">
+            <div class="carte"><h3>Vos prénoms partout</h3><p>Les gages et les textes du jeu parlent de vous.</p><p class="exemple">« Raconter un souvenir avec les mariés »</p></div>
+            <div class="carte"><h3>Des objets pour vos invités</h3><p>Famille, amis, collègues : on choisit des objets qu'ils ont vraiment sur eux, ou des personnes à amener.</p><p class="exemple">« Une personne née le même mois que la mariée »</p></div>
+            <div class="carte"><h3>Des gages à votre mesure</h3><p>Plutôt tendres ou plutôt osés, adaptés aux enfants comme aux grands-parents. Vous validez chaque gage.</p><p class="exemple">« Faire un moonwalk sur trois mètres »</p></div>
+            <div class="carte"><h3>Une musique par moment</h3><p>Chaque gage a sa chanson, avec des clins d'œil choisis dans ma discothèque, et vos titres fétiches si vous le souhaitez.</p><p class="exemple">« Un enfant » appelé sur « Prendre un enfant par la main »</p></div>
+            <div class="carte"><h3>Aux couleurs de votre déco</h3><p>L'écran reprend votre thème : doré et chic, champêtre, bohème… Vos couleurs, votre ambiance.</p></div>
+            <div class="carte"><h3>Le gagnant à l'honneur</h3><p>Photo prise sur le vif, prénom à l'écran et cadeau de votre choix pour clore le jeu en beauté.</p></div>
+        </div>
+    </div>
+</section>
+
+<div class="relance">
+    <div class="wrap">
+        <h2>Envie de l'ajouter à <span class="italic">votre soirée</span> ?</h2>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+    </div>
+</div>
+
+<section class="alt">
+    <div class="wrap deux-col">
+        <div>
+            <div class="head" style="margin-bottom:30px">
+                <div class="num">Gain de temps</div>
+                <h2>Vous choisissez, <span class="italic">je prépare tout</span></h2>
+                <p>Un échange de vingt minutes suffit. Vous n'avez rien à fabriquer ni à mettre en page vous-mêmes.</p>
+            </div>
+            <div class="vous">
+                <h3>Ce que vous faites</h3>
+                <ul>
+                    <li><b>Me donner vos envies</b> : prénoms, ambiance, thème, public.</li>
+                    <li><b>Valider la sélection</b> d'objets et de gages que je vous propose.</li>
+                    <li><b>Profiter</b> : le soir J, vous jouez avec vos invités.</li>
+                </ul>
+            </div>
+        </div>
+        <ol class="calendrier">
+            <li><span class="quand">J-60</span><div><h3>On en parle</h3><p>Je vous présente le jeu et sa place dans votre soirée.</p></div></li>
+            <li><span class="quand">J-30</span><div><h3>Vos envies</h3><p>Un court questionnaire : prénoms, thème, couleurs, ton des gages.</p></div></li>
+            <li><span class="quand">J-15</span><div><h3>Je vous envoie l'aperçu</h3><p>Les douze manches, les gages et les visuels à vos couleurs, à valider ou à retoucher.</p></div></li>
+            <li><span class="quand">J-7</span><div><h3>Cartons prêts</h3><p>Les cartons du jeu sont générés à vos couleurs et prêts à imprimer.</p></div></li>
+            <li><span class="quand">Jour J</span><div><h3>Je m'occupe de tout</h3><p>Écran, musique, animation : le jeu tourne, vous vous amusez.</p></div></li>
+        </ol>
+    </div>
+</section>
+
+<section>
+    <div class="wrap cartons">
+        <div>
+            <div class="pile" aria-hidden="true">
+                <div class="carton c1"><small>Le jeu des 12 mois</small><div class="m">Février</div><div class="g">Faire un défilé façon mannequin, puis façon pingouin</div><div class="pied">Camille &amp; Julien · 2027</div></div>
+                <div class="carton c2"><small>Le jeu des 12 mois</small><div class="m">Mai</div><div class="g">Une ceinture</div><div class="pied">Camille &amp; Julien · 2027</div></div>
+                <div class="carton c3"><small>Le jeu des 12 mois</small><div class="m">Juillet</div><div class="g">Faire un solo d'air guitar</div><div class="pied">Camille &amp; Julien · 2027</div></div>
+            </div>
+            <p class="exemple-note">Exemple de cartons, avec des prénoms fictifs.</p>
+        </div>
+        <div>
+            <div class="head" style="margin-bottom:0">
+                <div class="num">Les cartons du jeu</div>
+                <h2>Des cartons <span class="italic">à votre image</span></h2>
+                <p>Les cartons sont générés automatiquement à partir de votre jeu, avec les mêmes couleurs et la même typographie que l'écran.</p>
+            </div>
+            <ul class="coches">
+                <li>Un fichier prêt à imprimer, sans mise en page à faire</li>
+                <li>Vos prénoms et la date sur chaque carton</li>
+                <li>Une version à jour en un instant si vous changez un gage</li>
+                <li>Impression possible par mes soins, en option</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le soir J</div>
+            <h2>Une technique <span class="italic">discrète et fiable</span></h2>
+        </div>
+        <div class="jourj">
+            <div><h3>Écran géant</h3><p>Projection grand format : tout le monde voit le mois, l'objet et le chrono, même au fond de la salle.</p></div>
+            <div><h3>Son maîtrisé</h3><p>Chaque musique est prête à l'avance et part au bon moment sur ma sono.</p></div>
+            <div><h3>Aucun temps mort</h3><p>Je pilote tout depuis mon téléphone : aucune recherche de musique, aucune attente.</p></div>
+            <div><h3>Sans internet</h3><p>Tout fonctionne sur place et chaque étape est sauvegardée : en cas de souci, le jeu reprend aussitôt là où il en était.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="wrap">
+        <div class="head center" style="margin-bottom:20px"><div class="num">On en parle ?</div></div>
+        <h2>Faisons de votre mariage <span class="italic">une soirée dont on se souvient</span></h2>
+        <p>Racontez-moi votre projet : je vous présente le jeu et je vous prépare une proposition sur mesure, partout dans le Tarn, à Albi, Castres, Toulouse et jusqu'à 200 km.</p>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+        <p class="autres">Découvrez aussi <a href="animations.html">toutes mes animations</a>.</p>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi &amp; Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
+        <p><a href="https://www.facebook.com/alexis.evenementiel/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/alexis_evenementiel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
+        <script>
+        (function(){
+            fetch('https://abacus.jasoncameron.dev/hit/alexis-evenementiel/visites-site')
+                .then(function(r){ return r.json(); })
+                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.value === 'number') { el.textContent = d.value.toLocaleString('fr-FR'); } })
+                .catch(function(){ var p = document.querySelector('.visit-counter'); if (p) { p.style.display = 'none'; } });
+        })();
+        </script>
+    </div>
+</footer>
+
+<script>
+// Les douze mois autour du cadran (juillet en surbrillance, comme sur l'écran d'exemple)
+(function(){
+    var mois = ["Janv.", "Févr.", "Mars", "Avril", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."];
+    var g = document.getElementById("mois"), ns = "http://www.w3.org/2000/svg";
+    mois.forEach(function(m, i){
+        var a = (i / 12) * 2 * Math.PI - Math.PI / 2;
+        var t = document.createElementNS(ns, "text");
+        t.setAttribute("x", (220 + 176 * Math.cos(a)).toFixed(1));
+        t.setAttribute("y", (220 + 176 * Math.sin(a) + 5).toFixed(1));
+        t.setAttribute("text-anchor", "middle");
+        t.setAttribute("font-family", "Jost, sans-serif");
+        t.setAttribute("font-size", "14");
+        t.setAttribute("fill", i === 6 ? "#e6c986" : "#8b8794");
+        t.textContent = m;
+        g.appendChild(t);
+        var tick = document.createElementNS(ns, "line");
+        tick.setAttribute("x1", (220 + 150 * Math.cos(a)).toFixed(1));
+        tick.setAttribute("y1", (220 + 150 * Math.sin(a)).toFixed(1));
+        tick.setAttribute("x2", (220 + 140 * Math.cos(a)).toFixed(1));
+        tick.setAttribute("y2", (220 + 140 * Math.sin(a)).toFixed(1));
+        tick.setAttribute("stroke", "#c9a55c");
+        g.appendChild(tick);
+    });
+})();
+</script>
+</body>
+</html>

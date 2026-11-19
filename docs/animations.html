@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animations de mariage et de soirée dans le Tarn (81) — Alexis Événementiel</title>
+<meta name="description" content="Jeux interactifs projetés sur grand écran pour impliquer vos invités : Le Jeu des 12 mois, Bingo Disco, quiz, blind-tests, karaoké… Animations originales de mariage et de soirée par DJ Alexis, à Albi, Castres, Toulouse et dans tout le Tarn.">
+<meta name="keywords" content="animation mariage Tarn, animation mariage 81, DJ mariage Albi, DJ mariage Castres, DJ mariage Toulouse, jeu interactif mariage, animation originale soirée de mariage, bingo musical mariage">
+<link rel="canonical" href="https://alexisevenementiel.fr/animations.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Les animations d'Alexis Événementiel">
+<meta property="og:description" content="Des jeux interactifs sur grand écran pour faire participer tous vos invités, du vin d'honneur à la fin de soirée.">
+<meta property="og:url" content="https://alexisevenementiel.fr/animations.html">
+<meta property="og:locale" content="fr_FR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.1; text-wrap: balance; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .italic { font-style: italic; color: var(--or-clair); }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.on { color: var(--or-clair); }
+
+    header.hero { padding: 160px 0 70px; text-align: center;
+        background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,165,92,0.16), transparent 60%), linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%); }
+    .hero .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2.4rem, 5.6vw, 4.2rem); margin-bottom: 22px; }
+    .hero p { color: var(--gris-clair); max-width: 640px; margin: 0 auto; font-size: 1.08rem; }
+
+    section { padding: 80px 0; }
+
+    /* Vedette : Le Jeu des 12 mois */
+    .vedette { display:grid; grid-template-columns:1.2fr .8fr; gap:0; border:1px solid var(--or-sombre); border-radius:8px; overflow:hidden; text-decoration:none; color:inherit; transition:border-color .3s, transform .3s; }
+    .vedette:hover { border-color:var(--or); transform:translateY(-3px); }
+    .vedette .txt { padding:44px 42px; background:var(--noir-3); }
+    .vedette .visuel { background: radial-gradient(circle at 50% 50%, rgba(201,165,92,0.18), transparent 65%), var(--noir-2); display:grid; place-items:center; padding:30px; }
+    .vedette .visuel svg { width:100%; max-width:260px; }
+    .vedette h2 { font-size:clamp(2rem,4vw,2.9rem); margin:6px 0 14px; }
+    .vedette p { color:var(--gris-clair); margin-bottom:18px; }
+    .pastilles { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px; }
+    .pastilles span { border:1px solid rgba(201,165,92,.4); color:var(--or-clair); border-radius:99px; padding:4px 14px; font-size:.82rem; }
+
+    .badge { display:inline-block; font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; padding:5px 13px; border-radius:99px; font-weight:500; }
+    .badge-or { color:var(--noir); background:var(--or); }
+    .badge-ligne { color:var(--or-clair); border:1px solid var(--or-sombre); }
+    .lien { font-size:.8rem; letter-spacing:.16em; text-transform:uppercase; color:var(--or); }
+
+    /* Grille des autres animations */
+    .grille { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:20px; margin-top:20px; }
+    .anim { background:var(--noir-3); border:1px solid var(--line); border-radius:8px; padding:32px 30px; display:flex; flex-direction:column; gap:12px; text-decoration:none; color:inherit; transition:transform .3s, border-color .3s; }
+    a.anim:hover { transform:translateY(-4px); border-color:var(--or-sombre); }
+    .anim .ic { font-size:1.6rem; color:var(--or); }
+    .anim h3 { font-size:1.6rem; }
+    .anim p { color:var(--gris-clair); font-size:.96rem; flex:1; }
+    .anim.bientot { border-style:dashed; }
+
+    .titre-bloc { text-align:center; margin-bottom:34px; }
+    .titre-bloc .num { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; }
+    .titre-bloc h2 { font-size:clamp(1.9rem,4vw,2.8rem); margin-top:8px; }
+
+    .cta { text-align: center; padding: 90px 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.10), transparent 60%), var(--noir-2); }
+    .cta h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 22px; }
+    .cta p { color: var(--gris-clair); max-width: 520px; margin: 0 auto 34px; }
+    .actions { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+    .btn { display:inline-flex; align-items:center; gap:10px; padding:16px 34px; font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all .35s ease; cursor:pointer; border:none; }
+    .btn-gold { background:var(--or); color:var(--noir); }
+    .btn-gold:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.25); }
+    .btn-ghost { border:1px solid var(--or); color:var(--or); }
+    .btn-ghost:hover { background:var(--or); color:var(--noir); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+
+    @media (max-width: 900px) { .nav-links { display: none; } .vedette { grid-template-columns:1fr; } .vedette .visuel { order:-1; padding:24px; } .vedette .visuel svg { max-width:180px; } }
+    @media (max-width: 520px) { .wrap { padding:0 18px; } .vedette .txt { padding:30px 24px; } .grille { grid-template-columns:1fr; } .btn { padding:14px 24px; } }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html" class="on">Animations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="galerie.html">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap">
+        <div class="eyebrow">Animations</div>
+        <h1>Des jeux qui <span class="italic">rassemblent</span> vos invités</h1>
+        <p>Parce qu'une belle soirée, c'est aussi des fous rires partagés : des animations interactives projetées sur grand écran, préparées à votre image, pour faire participer toutes les générations.</p>
+    </div>
+</header>
+
+<section>
+    <div class="wrap">
+        <a class="vedette" href="jeu-des-12-mois.html">
+            <div class="txt">
+                <span class="badge badge-or">Nouveauté</span>
+                <h2>Le Jeu des <span class="italic">12 mois</span></h2>
+                <p>Douze manches, un objet à trouver à chaque mois : toute la salle se lève et court, le dernier arrivé relève un gage devant les invités. Une animation de mariage entièrement personnalisée à vos prénoms et à vos couleurs.</p>
+                <div class="pastilles"><span>Mariage</span><span>De 50 à 250 invités</span><span>Environ 30 minutes</span></div>
+                <span class="lien">Découvrir le jeu →</span>
+            </div>
+            <div class="visuel" aria-hidden="true">
+                <svg viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="92" fill="none" stroke="#c9a55c" stroke-opacity=".5"/>
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#c9a55c" stroke-opacity=".22"/>
+                    <text x="100" y="114" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="56" fill="#e6c986">12</text>
+                    <text x="100" y="134" text-anchor="middle" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" fill="#b8b4bf">MOIS</text>
+                </svg>
+            </div>
+        </a>
+
+        <div class="grille">
+            <a class="anim" href="https://bingodisco.fr" target="_blank" rel="noopener">
+                <div class="ic">♫</div>
+                <h3>Bingo Disco</h3>
+                <p>Un bingo musical : chaque invité reçoit une grille, sur papier ou sur son smartphone via un simple QR code, coche les titres au fil des morceaux et gagne des cadeaux s'il complète le premier une ligne, voire le carton plein !</p>
+                <span class="lien">Voir bingodisco.fr ↗</span>
+            </a>
+            <a class="anim" href="jeu-des-binomes.html">
+                <div class="ic">♥</div>
+                <span><span class="badge badge-or">Nouveauté</span></span>
+                <h3>Le Jeu des binômes</h3>
+                <p>Chaque invité reçoit une carte personnage et part retrouver son ou ses partenaires : Astérix cherche Obélix, Marty cherche Doc. Le brise-glace idéal à l'apéritif, de 20 à 250 invités.</p>
+                <span class="lien">Découvrir le jeu →</span>
+            </a>
+            <div class="anim">
+                <div class="ic">?</div>
+                <h3>Quiz &amp; blind-tests</h3>
+                <p>Des questions et des extraits musicaux projetés sur grand écran pour faire jouer toute la salle, en équipes ou en solo.</p>
+            </div>
+            <div class="anim">
+                <div class="ic">🎤</div>
+                <h3>Karaoké</h3>
+                <p>Les paroles à l'écran, le micro qui passe de main en main : de quoi révéler les talents cachés de vos invités.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="wrap">
+        <h2>Composons <span class="italic">votre soirée</span></h2>
+        <p>Dites-moi quelles animations vous tentent : je les intègre à votre prestation DJ, partout dans le Tarn, à Albi, Castres, Toulouse et jusqu'à 200 km.</p>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi &amp; Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
+        <p><a href="https://www.facebook.com/alexis.evenementiel/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/alexis_evenementiel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
+        <script>
+        (function(){
+            fetch('https://abacus.jasoncameron.dev/hit/alexis-evenementiel/visites-site')
+                .then(function(r){ return r.json(); })
+                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.value === 'number') { el.textContent = d.value.toLocaleString('fr-FR'); } })
+                .catch(function(){ var p = document.querySelector('.visit-counter'); if (p) { p.style.display = 'none'; } });
+        })();
+        </script>
+    </div>
+</footer>
+</body>
+</html>

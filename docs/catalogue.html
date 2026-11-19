@@ -62,6 +62,13 @@
     .cat-group { margin-bottom: 50px; scroll-margin-top: 120px; }
     .cat-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 
+    .anim-encart { display: flex; align-items: center; gap: 22px; margin-top: 22px; padding: 22px 26px; border: 1px solid var(--or-sombre); border-radius: 6px; text-decoration: none; color: var(--creme); background: radial-gradient(ellipse 60% 120% at 0% 50%, rgba(201,165,92,0.12), transparent 70%), var(--noir-3); transition: border-color .3s, transform .3s; }
+    .anim-encart:hover { border-color: var(--or); transform: translateY(-2px); }
+    .anim-encart .ae-badge { flex: none; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 5px 12px; border-radius: 99px; font-weight: 500; }
+    .anim-encart .ae-txt { flex: 1; color: var(--gris-clair); font-size: 0.94rem; }
+    .anim-encart .ae-txt b { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 500; color: var(--creme); }
+    .anim-encart .ae-go { flex: none; font-size: 0.76rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--or); }
+    @media (max-width: 700px) { .anim-encart { flex-direction: column; align-items: flex-start; gap: 12px; } }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
     /* Filtres par type (chips) de la section Location */
     .loc-filters { position: sticky; top: 110px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 14px; margin-bottom: 24px; background: rgba(10,10,12,0.92); backdrop-filter: blur(10px); }
@@ -235,6 +242,7 @@
         <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
         <div class="nav-links">
             <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html">Animations</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="index.html#realisations">Réalisations</a>
             <a href="index.html#contact">Contact</a>
@@ -356,7 +364,7 @@
                 <ul><li>1× Denon SC Live 4</li><li>1× Bose L1</li><li>2× Chauvet GigBar Move + ILS</li><li>2× Chauvet Colorband T3BT</li><li>1× Martin Magnum 2500 (machine à brouillard)</li><li>1× Écran de projection KIMEX 150&quot; + vidéoprojecteur EPSON UCF</li><li>2× Set de 4 PAR H9 (architectural)</li><li>1× Bose S1 Pro</li><li>1× Station énergétique portable EcoFlow 768Wh 800W</li><li>1× Boule à facettes 50 cm + spot LED</li><li>Animation DJ — vin d&#x27;honneur à soirée (≈ 4h+)</li><li>3 réunions de préparation</li><li>Playlist personnalisée &amp; collaborative</li><li>Captation vidéo classique (cérémonie + soirée)</li><li>Captation vidéo 360°</li><li>Clip vidéo résumé cinématique</li></ul>
             </details>
             <button type="button" class="add-cart" data-id="cinematique" data-type="pack" data-nom="Cinématique" data-kind="fixe" data-max="1" data-unite="unité" data-prix="2000">+ Ajouter au devis</button>
-        </article></div></div><div class="cat-group" id="photobooth"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
+        </article></div><a class="anim-encart" href="animations.html"><span class="ae-badge">Nouveautés</span><span class="ae-txt"><b>Ajoutez une animation à votre mariage</b>Le Jeu des 12 mois, le Jeu des binômes, Bingo Disco… des jeux interactifs préparés à votre image.</span><span class="ae-go">Découvrir →</span></a></div><div class="cat-group" id="photobooth"><h3 class="cat-title">Photobooth</h3><div class="card-grid">
         <article class="card ia-promo">
             <div class="ia-badge">Formule</div>
             <div class="card-head">

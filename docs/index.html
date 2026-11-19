@@ -188,6 +188,20 @@
         font-size: 3.5rem; color: rgba(201,165,92,0.07); font-style: italic;
     }
 
+    /* ===== Nouveautés animations ===== */
+    .nouveautes { background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,165,92,0.08), transparent 70%), var(--noir); border-top: 1px solid var(--line); }
+    .nv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .nv-card { display: flex; flex-direction: column; gap: 14px; padding: 44px 40px; text-decoration: none; color: inherit;
+        border: 1px solid var(--line); border-radius: 4px; transition: all 0.4s ease;
+        background: radial-gradient(ellipse 80% 70% at 100% 0%, rgba(201,165,92,0.10), transparent 60%), var(--noir-2); }
+    .nv-card:hover { border-color: var(--or-sombre); transform: translateY(-4px); }
+    .nv-card .nv-badge { align-self: flex-start; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 5px 13px; border-radius: 99px; font-weight: 500; }
+    .nv-card h3 { font-size: clamp(1.9rem, 3.4vw, 2.6rem); line-height: 1.05; }
+    .nv-card h3 .italic { font-style: italic; color: var(--or-clair); }
+    .nv-card p { color: var(--gris-clair); flex: 1; }
+    .nv-card .nv-meta { font-size: 0.82rem; color: var(--gris); letter-spacing: 0.06em; }
+    .nv-card .go { font-size: 0.76rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--or); }
+
     /* ===== Réalisations / galerie teaser ===== */
     .galerie { background: var(--noir-2); }
     .galerie-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 220px; gap: 16px; margin-top: 60px; }
@@ -234,9 +248,18 @@
     .footer-bottom { border-top: 1px solid var(--line); padding-top: 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--gris); font-size: 0.8rem; }
 
     /* ===== Responsive ===== */
+    @media (max-width: 1240px) {
+        .logo { white-space: nowrap; }
+        nav .wrap { gap: 28px; }
+        .nav-links { gap: 18px; }
+        .nav-links a { letter-spacing: 0.08em; white-space: nowrap; }
+        .nav-cta { padding: 10px 16px !important; }
+    }
     @media (max-width: 900px) {
         .intro-grid { grid-template-columns: 1fr; gap: 50px; }
         .services-grid { grid-template-columns: 1fr; }
+        .nv-grid { grid-template-columns: 1fr; }
+        .nv-card { padding: 34px 26px; }
         .galerie-grid { grid-template-columns: repeat(2, 1fr); }
         .galerie-item.big { grid-column: span 2; grid-row: span 1; }
         .footer-grid { grid-template-columns: 1fr; gap: 36px; }
@@ -266,6 +289,7 @@
         <a href="#" class="logo">Alexis <span>Événementiel</span></a>
         <div class="nav-links">
             <a href="#prestations">Prestations</a>
+            <a href="animations.html">Animations</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="#realisations">Réalisations</a>
             <a href="#apropos">À propos</a>
@@ -331,6 +355,35 @@
     </div>
 </section>
 
+<!-- NOUVEAUTÉS ANIMATIONS -->
+<section class="nouveautes section-pad" id="animations">
+    <div class="wrap">
+        <div class="univers-head reveal">
+            <div class="section-label">Nouveautés</div>
+            <h2 class="section-title">Des animations <span class="italic">qui rassemblent</span></h2>
+            <p class="section-intro" style="margin:0 auto">Deux jeux interactifs, préparés à votre image, pour faire participer tous vos invités, de l'apéritif à la soirée.</p>
+        </div>
+        <div class="nv-grid">
+            <a class="nv-card reveal" href="jeu-des-12-mois.html">
+                <span class="nv-badge">Nouveauté</span>
+                <h3>Le Jeu des <span class="italic">12 mois</span></h3>
+                <p>Douze manches, un objet à trouver à chaque mois : toute la salle court, le dernier arrivé relève un gage. Une animation de mariage personnalisée à vos prénoms et à vos couleurs.</p>
+                <div class="nv-meta">De 50 à 250 invités · environ 30 minutes</div>
+                <div class="go">Découvrir le jeu →</div>
+            </a>
+            <a class="nv-card reveal" href="jeu-des-binomes.html">
+                <span class="nv-badge">Nouveauté</span>
+                <h3>Le Jeu des <span class="italic">binômes</span></h3>
+                <p>Chaque invité reçoit une carte personnage et part retrouver son ou ses partenaires : Astérix cherche Obélix, Marty cherche Doc. Le brise-glace idéal à l'apéritif.</p>
+                <div class="nv-meta">De 20 à 250 invités · 15 à 20 minutes</div>
+                <div class="go">Découvrir le jeu →</div>
+            </a>
+        </div>
+        <div style="text-align:center; margin-top:50px" class="reveal">
+            <a href="animations.html" class="btn btn-ghost">Toutes les animations</a>
+        </div>
+    </div>
+</section>
 <!-- RÉALISATIONS -->
 <section class="galerie section-pad" id="realisations">
     <div class="wrap">
@@ -432,6 +485,7 @@
             <div class="footer-col">
                 <h4>Navigation</h4>
                 <a href="#prestations">Prestations</a>
+                <a href="animations.html">Animations</a>
                 <a href="catalogue.html">Catalogue</a>
                 <a href="#realisations">Réalisations</a>
                 <a href="#apropos">À propos</a>

@@ -283,6 +283,9 @@ IA_PROMO_CARD = """
             <button type="button" class="add-cart" data-id="option-photobooth-ia" data-type="presta" data-nom="Option Photobooth IA" data-kind="fixe" data-max="1" data-unite="unité" data-prix="100">+ Ajouter au devis</button>
         </article>"""
 
+# Encart sous les formules Mariage : renvoie vers la page des animations.
+ANIM_MARIAGE_ENCART = '<a class="anim-encart" href="animations.html"><span class="ae-badge">Nouveautés</span><span class="ae-txt"><b>Ajoutez une animation à votre mariage</b>Le Jeu des 12 mois, le Jeu des binômes, Bingo Disco… des jeux interactifs préparés à votre image.</span><span class="ae-go">Découvrir →</span></a>'
+
 TEMPLATES_PROMO_CARD = """
         <article class="card ia-promo templates-promo">
             <a href="templates-photobooth.html">
@@ -518,7 +521,8 @@ def build_html(equipements, prestations, packs) -> str:
         if not cards:
             continue
         gid = ' id="photobooth"' if cat == "photobooth" else ''
-        packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div></div>'
+        extra = ANIM_MARIAGE_ENCART if cat == "mariage" else ''
+        packs_html += f'<div class="cat-group"{gid}><h3 class="cat-title">{escape(label)}</h3><div class="card-grid">{cards}</div>{extra}</div>'
 
     # --- Section PRESTATIONS (vitrine seulement), avec prix > 0 ou sur devis ---
     presta_html = ""
@@ -652,6 +656,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     .cat-group {{ margin-bottom: 50px; scroll-margin-top: 120px; }}
     .cat-title {{ font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--or-clair); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }}
 
+    .anim-encart {{ display: flex; align-items: center; gap: 22px; margin-top: 22px; padding: 22px 26px; border: 1px solid var(--or-sombre); border-radius: 6px; text-decoration: none; color: var(--creme); background: radial-gradient(ellipse 60% 120% at 0% 50%, rgba(201,165,92,0.12), transparent 70%), var(--noir-3); transition: border-color .3s, transform .3s; }}
+    .anim-encart:hover {{ border-color: var(--or); transform: translateY(-2px); }}
+    .anim-encart .ae-badge {{ flex: none; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 5px 12px; border-radius: 99px; font-weight: 500; }}
+    .anim-encart .ae-txt {{ flex: 1; color: var(--gris-clair); font-size: 0.94rem; }}
+    .anim-encart .ae-txt b {{ display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 500; color: var(--creme); }}
+    .anim-encart .ae-go {{ flex: none; font-size: 0.76rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--or); }}
+    @media (max-width: 700px) {{ .anim-encart {{ flex-direction: column; align-items: flex-start; gap: 12px; }} }}
     .card-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }}
     /* Filtres par type (chips) de la section Location */
     .loc-filters {{ position: sticky; top: 110px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 14px; margin-bottom: 24px; background: rgba(10,10,12,0.92); backdrop-filter: blur(10px); }}
@@ -725,6 +736,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
         <div class="nav-links">
             <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html">Animations</a>
             <a href="catalogue.html">Catalogue</a>
             <a href="index.html#realisations">Réalisations</a>
             <a href="index.html#contact">Contact</a>

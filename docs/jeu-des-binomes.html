@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Jeu des binômes — animation brise-glace pour mariage et réception (81) — Alexis Événementiel</title>
+<meta name="description" content="Le Jeu des binômes : chaque invité reçoit une carte personnage et doit retrouver son ou ses partenaires. Une animation brise-glace idéale à l'apéritif de votre mariage, de 20 à 250 invités. DJ Alexis à Albi, Castres, Toulouse et dans le Tarn.">
+<meta name="keywords" content="animation mariage Tarn, animation apéritif mariage, jeu brise-glace mariage, jeu interactif mariage, animation originale soirée de mariage, DJ mariage Albi, DJ mariage Castres, DJ mariage Toulouse">
+<link rel="canonical" href="https://alexisevenementiel.fr/jeu-des-binomes.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Le Jeu des binômes — l'animation qui fait se rencontrer vos invités">
+<meta property="og:description" content="Astérix cherche Obélix, Marty cherche Doc : en quelques minutes, tous vos invités se parlent.">
+<meta property="og:url" content="https://alexisevenementiel.fr/jeu-des-binomes.html">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Le Jeu des binômes",
+  "serviceType": "Animation de mariage et de réception",
+  "description": "Animation brise-glace : chaque invité reçoit une carte personnage et retrouve dans la salle le ou les partenaires de son groupe, avant une photo de groupe.",
+  "url": "https://alexisevenementiel.fr/jeu-des-binomes.html",
+  "areaServed": [
+    {"@type": "AdministrativeArea", "name": "Tarn (81)"},
+    {"@type": "City", "name": "Albi"},
+    {"@type": "City", "name": "Castres"},
+    {"@type": "City", "name": "Toulouse"}
+  ],
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "Alexis Événementiel",
+    "url": "https://alexisevenementiel.fr/",
+    "telephone": "+33618855892",
+    "email": "contact@alexisevenementiel.fr",
+    "address": {"@type": "PostalAddress", "addressLocality": "Albi", "addressRegion": "Tarn", "addressCountry": "FR"}
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Poppins:ital,wght@0,400;0,700;1,700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+        /* Couleurs des univers, identiques aux cartes imprimées */
+        --bd: #f28c1a; --cine: #cc2633; --da: #2699d9; --hist: #735940; --humo: #edb30d; --jv: #7333bf;
+        --litt: #338059; --musi: #e64d99; --myth: #4d4d99; --poli: #666; --serie: #1a738c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.1; text-wrap: balance; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .italic { font-style: italic; color: var(--or-clair); }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.on { color: var(--or-clair); }
+
+    .btn { display:inline-flex; align-items:center; gap:10px; padding:16px 34px; font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all .35s ease; cursor:pointer; border:none; }
+    .btn-gold { background:var(--or); color:var(--noir); }
+    .btn-gold:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.25); }
+    .btn-ghost { border:1px solid var(--or); color:var(--or); }
+    .btn-ghost:hover { background:var(--or); color:var(--noir); }
+    .actions { display:flex; gap:16px; flex-wrap:wrap; }
+
+    /* Carte du jeu (reprend la mise en page imprimée) */
+    .cj { width: 270px; aspect-ratio: 3 / 2; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.5); display: grid; grid-template-rows: 23% 1fr; font-family: 'Poppins', sans-serif; color: #1a1a1a; line-height: 1.3; }
+    .cj .band { background: var(--c); color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 12px; font: 700 .82rem 'Poppins', sans-serif; text-transform: uppercase; }
+    .cj .badge-e { background: #fff; color: var(--c); border-radius: 5px; padding: 2px 7px; font-size: .6rem; }
+    .cj .corps { display: grid; align-content: center; justify-items: center; text-align: center; padding: 4px 10px 6px; gap: 1px; position: relative; }
+    .cj .tues { font-size: .6rem; color: #595959; }
+    .cj .nom { font: 700 1.5rem/1.05 'Poppins', sans-serif; }
+    .cj .oeuvre { font: italic 700 .72rem 'Poppins', sans-serif; color: var(--c); }
+    .cj .trait { width: 80%; height: 1px; background: #bfbfbf; margin: 5px 0 2px; }
+    .cj .retr { font-size: .56rem; color: #595959; }
+    .cj .part { font: 700 .72rem 'Poppins', sans-serif; }
+    .cj .num { position: absolute; right: 9px; bottom: 4px; font: 700 .5rem 'Poppins', sans-serif; color: #595959; }
+
+    /* Ouverture */
+    header.hero { padding: 150px 0 80px; overflow: hidden;
+        background: radial-gradient(ellipse 60% 70% at 78% 40%, rgba(201,165,92,0.14), transparent 60%), linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%); }
+    .hero-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; }
+    .badge { display:inline-block; margin-bottom:22px; font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--noir); background:var(--or); padding:6px 16px; border-radius:99px; font-weight:500; }
+    .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.8rem, 6.4vw, 5rem); margin-bottom: 24px; }
+    .hero .accroche { color: var(--gris-clair); max-width: 520px; font-size: 1.12rem; margin-bottom: 28px; }
+    .pastilles { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:34px; }
+    .pastilles span { border:1px solid rgba(201,165,92,.45); color:var(--or-clair); border-radius:99px; padding:6px 16px; font-size:.88rem; }
+    .duo { position: relative; height: 380px; max-width: 440px; width: 100%; justify-self: center; }
+    .duo .cj { position: absolute; }
+    .duo .a { left: 0; top: 20px; transform: rotate(-8deg); }
+    .duo .b { right: 0; top: 190px; transform: rotate(6deg); }
+    .duo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    section { padding: 90px 0; }
+    .alt { background: var(--noir-2); }
+    .head { margin-bottom: 48px; max-width: 680px; }
+    .head .num { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; }
+    .head h2 { font-size: clamp(2rem, 4vw, 3rem); margin-top:8px; }
+    .head p { color:var(--gris-clair); margin-top:14px; font-size:1.04rem; }
+
+    .principe { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .principe div { border-top:1px solid var(--or); padding-top:20px; }
+    .principe b { display:block; font:400 2.6rem/1 'Cormorant Garamond',serif; color:var(--or); margin-bottom:10px; }
+    .principe h3 { font-size:1.5rem; margin-bottom:8px; }
+    .principe p { color:var(--gris-clair); }
+
+    .chiffres { display:flex; gap:56px; flex-wrap:wrap; margin-bottom:44px; }
+    .chiffres b { display:block; font:400 3.4rem/1 'Cormorant Garamond',serif; color:var(--or-clair); }
+    .chiffres span { color:var(--gris-clair); font-size:.92rem; }
+    .atouts { display:grid; grid-template-columns:repeat(4,1fr); gap:28px; }
+    .atouts div { border-top:1px solid var(--line); padding-top:18px; }
+    .atouts h3 { font-size:1.35rem; color:var(--or-clair); margin-bottom:6px; }
+    .atouts p { color:var(--gris-clair); font-size:.95rem; }
+
+    .univers { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px; }
+    .univers div { background:var(--noir-3); border:1px solid var(--line); border-left:5px solid var(--c); border-radius:4px; padding:16px 18px; }
+    .univers h3 { font:400 1.02rem 'Jost',sans-serif; color:var(--creme); }
+    .univers p { color:var(--gris-clair); font-size:.9rem; line-height:1.45; }
+
+    .perso { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .carte { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:26px 24px; transition:transform .3s, border-color .3s; }
+    .carte:hover { transform:translateY(-4px); border-color:var(--or-sombre); }
+    .carte h3 { font-size:1.4rem; margin-bottom:8px; }
+    .carte p { color:var(--gris-clair); font-size:.96rem; }
+    .carte .exemple { font:italic 400 1.08rem/1.4 'Cormorant Garamond',serif; color:var(--creme); border-left:2px solid var(--or); padding-left:12px; margin-top:12px; }
+    .carte a { color:var(--or-clair); text-decoration:none; border-bottom:1px solid var(--line); }
+
+    .relance { padding:56px 0; text-align:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+        background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(201,165,92,0.10), transparent 70%), var(--noir); }
+    .relance h2 { font-size:clamp(1.7rem,3.4vw,2.4rem); margin-bottom:22px; }
+    .relance .actions { justify-content:center; }
+
+    .cartons { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+    .pile { position:relative; height:420px; }
+    .pile .cj { position:absolute; }
+    .p1 { left:0; top:10px; transform:rotate(-6deg); }
+    .p2 { right:0; top:120px; transform:rotate(4deg); z-index:1; }
+    .p3 { left:4%; top:250px; transform:rotate(-3deg); z-index:2; }
+    .coches { list-style:none; margin-top:24px; display:grid; gap:12px; }
+    .coches li { padding-left:30px; position:relative; color:var(--gris-clair); }
+    .coches li::before { content:""; position:absolute; left:2px; top:.45em; width:14px; height:8px; border-left:2px solid var(--or); border-bottom:2px solid var(--or); transform:rotate(-45deg); }
+
+    .deux-col { display:grid; grid-template-columns:.9fr 1.1fr; gap:56px; align-items:start; }
+    .vous { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:30px; }
+    .vous h3 { font-size:1.6rem; margin-bottom:14px; }
+    .vous ul { list-style:none; display:grid; gap:12px; }
+    .vous li { padding-left:24px; position:relative; color:var(--gris-clair); }
+    .vous li::before { content:""; position:absolute; left:0; top:.8em; width:12px; height:1px; background:var(--or); }
+    .vous li b { color:var(--creme); font-weight:400; }
+    .calendrier { list-style:none; }
+    .calendrier li { display:grid; grid-template-columns:90px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); }
+    .calendrier li:first-child { border-top:1px solid var(--line); }
+    .calendrier .quand { font:400 1.6rem/1 'Cormorant Garamond',serif; color:var(--or); }
+    .calendrier h3 { font:400 1.05rem 'Jost',sans-serif; color:var(--creme); margin-bottom:2px; }
+    .calendrier p { color:var(--gris-clair); font-size:.95rem; }
+
+    .etapes { list-style:none; display:grid; grid-template-columns:repeat(4,1fr); counter-reset:e; }
+    .etapes li { position:relative; padding-right:16px; }
+    .etapes li::before { counter-increment:e; content:counter(e); display:grid; place-items:center; width:46px; height:46px; border-radius:50%; border:1px solid var(--or); color:var(--or); font:400 1.25rem 'Cormorant Garamond',serif; background:var(--noir-2); position:relative; z-index:1; }
+    .etapes li::after { content:""; position:absolute; top:23px; left:46px; right:0; height:1px; background:var(--line); }
+    .etapes li:last-child::after { display:none; }
+    .etapes h3 { font-size:1.35rem; margin:12px 0 4px; }
+    .etapes p { color:var(--gris-clair); font-size:.95rem; }
+    .duree { margin-top:36px; color:var(--gris-clair); }
+    .duree b { color:var(--or-clair); font-weight:400; }
+
+    .cta { text-align: center; padding: 100px 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.12), transparent 60%), var(--noir); }
+    .cta .surt { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; margin-bottom:14px; }
+    .cta h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 22px; }
+    .cta p { color: var(--gris-clair); max-width: 540px; margin: 0 auto 34px; }
+    .cta .actions { justify-content:center; }
+    .autres { margin-top:30px; font-size:.92rem; color:var(--gris); }
+    .autres a { color:var(--or-clair); text-decoration:none; border-bottom:1px solid var(--line); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+
+    @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .hero-grid, .deux-col, .cartons { grid-template-columns:1fr; }
+        .principe, .perso { grid-template-columns:1fr; }
+        .atouts { grid-template-columns:1fr 1fr; }
+        .etapes { grid-template-columns:1fr; gap:20px; }
+        .etapes li { display:grid; grid-template-columns:46px 1fr; column-gap:16px; padding-right:0; }
+        .etapes li h3, .etapes li p { grid-column:2; }
+        .etapes li h3 { margin-top:8px; }
+        .etapes li::after { display:none; }
+        .pile { max-width:420px; }
+        section { padding:70px 0; }
+    }
+    @media (max-width: 520px) {
+        .wrap { padding: 0 18px; }
+        header.hero { padding-top: 120px; }
+        .atouts { grid-template-columns:1fr; }
+        .cj { width: 220px; }
+        .cj .nom { font-size: 1.25rem; }
+        .duo { height: 330px; }
+        .duo .b { top: 165px; }
+        .pile { height: 380px; }
+        .p2 { top: 110px; }
+        .p3 { top: 220px; }
+        .chiffres { gap:30px; }
+        .btn { padding:14px 24px; }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html" class="on">Animations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="galerie.html">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <div class="badge">Nouveauté</div>
+            <div class="eyebrow">Une animation pour briser la glace</div>
+            <h1>Le Jeu des <span class="italic">binômes</span></h1>
+            <p class="accroche">Chaque invité reçoit une carte avec un personnage. Sa mission : retrouver dans la salle celui ou ceux qui vont avec. Astérix cherche Obélix, Marty cherche Doc, et en quelques minutes tout le monde se parle.</p>
+            <div class="pastilles"><span>De 20 à 250 invités</span><span>15 à 20 minutes</span><span>Idéal à l'apéritif</span></div>
+            <div class="actions">
+                <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+                <a href="#principe" class="btn btn-ghost">Découvrir le jeu</a>
+            </div>
+        </div>
+        <div class="duo" aria-hidden="true">
+            <svg viewBox="0 0 440 380" preserveAspectRatio="none">
+                <path d="M150 190 C 210 150, 240 260, 300 215" fill="none" stroke="#c9a55c" stroke-width="1.5" stroke-dasharray="5 6"/>
+                <circle cx="150" cy="190" r="4" fill="#c9a55c"/><circle cx="300" cy="215" r="4" fill="#c9a55c"/>
+            </svg>
+            <div class="cj a" style="--c: var(--cine)">
+                <div class="band">Cinéma</div>
+                <div class="corps"><span class="tues">Tu es</span><span class="nom">Marty McFly</span><span class="oeuvre">Retour vers le futur</span>
+                    <span class="trait"></span><span class="retr">Retrouve ton binôme :</span><span class="part">Doc Brown</span><span class="num">Groupe 16</span></div>
+            </div>
+            <div class="cj b" style="--c: var(--cine)">
+                <div class="band">Cinéma</div>
+                <div class="corps"><span class="tues">Tu es</span><span class="nom">Doc Brown</span><span class="oeuvre">Retour vers le futur</span>
+                    <span class="trait"></span><span class="retr">Retrouve ton binôme :</span><span class="part">Marty McFly</span><span class="num">Groupe 16</span></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="principe">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le principe</div>
+            <h2>Une carte, un personnage, <span class="italic">une rencontre</span></h2>
+        </div>
+        <div class="principe">
+            <div><b>01</b><h3>Une carte par invité</h3><p>À l'accueil, chacun reçoit sa carte : le personnage qu'il incarne, l'œuvre d'où il vient et les partenaires à retrouver.</p></div>
+            <div><b>02</b><h3>Chacun part à la recherche</h3><p>Du duo au groupe de huit : Laurel cherche Hardy, les quatre Beatles se reforment, Blanche-Neige rassemble ses sept nains.</p></div>
+            <div><b>03</b><h3>La photo de groupe</h3><p>Une fois au complet, le groupe se prend en photo et rend ses cartes. Un souvenir drôle, et des invités qui ont fait connaissance.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Pourquoi ça marche</div>
+            <h2>Les familles <span class="italic">se mélangent</span> toutes seules</h2>
+            <p>Au début d'une réception, on reste souvent entre gens qui se connaissent. Le jeu donne une excellente raison d'aller parler à tout le monde.</p>
+        </div>
+        <div class="chiffres">
+            <div><b>112</b><span>groupes au catalogue</span></div>
+            <div><b>330+</b><span>personnages</span></div>
+            <div><b>11</b><span>univers</span></div>
+            <div><b>2 à 8</b><span>joueurs par groupe</span></div>
+        </div>
+        <div class="atouts">
+            <div><h3>Brise-glace immédiat</h3><p>« Tu es Obélix ? » : la première phrase est toute trouvée, même entre inconnus.</p></div>
+            <div><h3>Pour tous les âges</h3><p>Les enfants ont leurs propres groupes, avec des héros qu'ils connaissent : ils jouent entre eux, sans être perdus.</p></div>
+            <div><h3>Personne n'est oublié</h3><p>Le nombre de cartes correspond pile au nombre d'invités : chacun trouve forcément son groupe.</p></div>
+            <div><h3>Des photos en souvenir</h3><p>Chaque groupe réuni pose ensemble : des clichés spontanés et des rencontres inattendues.</p></div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Onze univers</div>
+            <h2>De Tintin à <span class="italic">Starsky et Hutch</span></h2>
+            <p>Chaque univers a sa couleur sur les cartes, pour repérer d'un coup d'œil les personnes de la même famille.</p>
+        </div>
+        <div class="univers">
+            <div style="--c: var(--bd)"><h3>Bande dessinée</h3><p>Astérix et Obélix, Tintin et Milou, les Dalton</p></div>
+            <div style="--c: var(--cine)"><h3>Cinéma</h3><p>Titanic, Les Bronzés, Retour vers le futur</p></div>
+            <div style="--c: var(--da)"><h3>Dessin animé</h3><p>Toy Story, Les Simpson, Tom et Jerry</p></div>
+            <div style="--c: var(--musi)"><h3>Musique</h3><p>Les Beatles, Stone et Charden, Daft Punk</p></div>
+            <div style="--c: var(--serie)"><h3>Série TV</h3><p>Friends, Kaamelott, X-Files</p></div>
+            <div style="--c: var(--humo)"><h3>Humoristes</h3><p>Les Inconnus, Kad et Olivier, Les Nuls</p></div>
+            <div style="--c: var(--jv)"><h3>Jeux vidéo</h3><p>Mario et Luigi, Pokémon, Zelda</p></div>
+            <div style="--c: var(--litt)"><h3>Littérature</h3><p>Les Trois Mousquetaires, Roméo et Juliette</p></div>
+            <div style="--c: var(--hist)"><h3>Histoire</h3><p>Apollo 11, les Pères fondateurs</p></div>
+            <div style="--c: var(--myth)"><h3>Mythologie</h3><p>Zeus, Poséidon et Hadès, les Trois Grâces</p></div>
+            <div style="--c: var(--poli)"><h3>Politique</h3><p>César, Pompée et Crassus</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Adapté à vos invités</div>
+            <h2>Un jeu calé <span class="italic">sur votre salle</span></h2>
+            <p>La sélection se construit à partir de votre liste d'invités : nombre d'adultes, nombre d'enfants, générations présentes.</p>
+        </div>
+        <div class="perso">
+            <div class="carte"><h3>Groupes enfants</h3><p>Les plus jeunes reçoivent des cartes marquées « Enfant », avec des héros de leur âge.</p><p class="exemple">Woody et Buzz, Mario et Luigi, les Minions</p></div>
+            <div class="carte"><h3>Le compte est bon</h3><p>Autant de cartes que de joueurs, ni plus ni moins, côté enfants comme côté adultes.</p><p class="exemple">14 enfants, 49 adultes : 63 cartes</p></div>
+            <div class="carte"><h3>Toutes les générations</h3><p>Des références qui parlent aux grands-parents comme aux ados.</p><p class="exemple">Laurel et Hardy à côté de Stranger Things</p></div>
+            <div class="carte"><h3>Vos univers favoris</h3><p>Un thème pour votre réception ? On privilégie un univers, ou on ajoute vos propres duos.</p><p class="exemple">Une soirée cinéma, rien que des duos du grand écran</p></div>
+            <div class="carte"><h3>Sans doublon</h3><p>Aucun personnage n'apparaît deux fois dans la même partie : pas de confusion possible.</p></div>
+            <div class="carte"><h3>Seul ou avec le Jeu des 12 mois</h3><p>Le jeu se suffit à lui-même à l'apéritif, ou ouvre la soirée avant <a href="jeu-des-12-mois.html">le Jeu des 12 mois</a>.</p></div>
+        </div>
+    </div>
+</section>
+
+<div class="relance">
+    <div class="wrap">
+        <h2>Envie de l'ajouter à <span class="italic">votre réception</span> ?</h2>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="wrap cartons">
+        <div class="pile" aria-hidden="true">
+            <div class="cj p1" style="--c: var(--bd)">
+                <div class="band">Bande dessinée <span class="badge-e">ENFANT</span></div>
+                <div class="corps"><span class="tues">Tu es</span><span class="nom">Astérix</span><span class="oeuvre">Astérix et Obélix</span>
+                    <span class="trait"></span><span class="retr">Retrouve ton binôme :</span><span class="part">Obélix</span><span class="num">Groupe 1</span></div>
+            </div>
+            <div class="cj p2" style="--c: var(--musi)">
+                <div class="band">Musique</div>
+                <div class="corps"><span class="tues">Tu es</span><span class="nom">Freddie Mercury</span><span class="oeuvre">Queen</span>
+                    <span class="trait"></span><span class="retr">Retrouve tes 3 partenaires :</span><span class="part">Brian May • Roger Taylor • John Deacon</span><span class="num">Groupe 67</span></div>
+            </div>
+            <div class="cj p3" style="--c: var(--serie)">
+                <div class="band">Série TV</div>
+                <div class="corps"><span class="tues">Tu es</span><span class="nom">Dana Scully</span><span class="oeuvre">X-Files</span>
+                    <span class="trait"></span><span class="retr">Retrouve ton binôme :</span><span class="part">Fox Mulder</span><span class="num">Groupe 98</span></div>
+            </div>
+        </div>
+        <div>
+            <div class="head" style="margin-bottom:0">
+                <div class="num">Les cartes</div>
+                <h2>Des cartes <span class="italic">lisibles et solides</span></h2>
+                <p>Imprimées en qualité photo au format 10 x 15, pensées pour passer de main en main toute la soirée.</p>
+            </div>
+            <ul class="coches">
+                <li>Le personnage en gros caractères, lisible à bout de bras</li>
+                <li>L'œuvre et les noms des partenaires écrits sur la carte : on apprend en jouant</li>
+                <li>Une couleur par univers et un badge pour les cartes enfants</li>
+                <li>Imprimées par mes soins, rien à préparer de votre côté</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap deux-col">
+        <div>
+            <div class="head" style="margin-bottom:30px">
+                <div class="num">Gain de temps</div>
+                <h2>Vous comptez, <span class="italic">je prépare tout</span></h2>
+                <p>Il me suffit du nombre d'adultes et d'enfants qui joueront. La sélection et les cartes, c'est mon affaire.</p>
+            </div>
+            <div class="vous">
+                <h3>Ce que vous faites</h3>
+                <ul>
+                    <li><b>Me donner le nombre de joueurs</b> : adultes, enfants, et l'ambiance souhaitée.</li>
+                    <li><b>Jeter un œil à la sélection</b> si vous le souhaitez, ou me faire confiance.</li>
+                    <li><b>Profiter</b> : le soir J, vos invités jouent et se rencontrent.</li>
+                </ul>
+            </div>
+        </div>
+        <ol class="calendrier">
+            <li><span class="quand">J-30</span><div><h3>On en parle</h3><p>Le moment idéal dans votre soirée, et les univers qui vous ressemblent.</p></div></li>
+            <li><span class="quand">J-10</span><div><h3>Le compte des joueurs</h3><p>Adultes et enfants confirmés : je compose la sélection au nombre exact.</p></div></li>
+            <li><span class="quand">J-7</span><div><h3>Aperçu de la sélection</h3><p>La liste des groupes retenus, à valider ou à retoucher.</p></div></li>
+            <li><span class="quand">J-3</span><div><h3>Cartes prêtes</h3><p>Une carte par invité, rangées par groupe.</p></div></li>
+            <li><span class="quand">Jour J</span><div><h3>Je m'occupe de tout</h3><p>Distribution, lancement du jeu et ambiance musicale.</p></div></li>
+        </ol>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le soir J</div>
+            <h2>Quatre temps, <span class="italic">zéro contrainte</span></h2>
+        </div>
+        <ol class="etapes">
+            <li><h3>Distribution</h3><p>Une carte remise à chaque invité, à l'accueil ou à table. Les enfants reçoivent les leurs.</p></li>
+            <li><h3>Top départ</h3><p>J'annonce le jeu au micro, la musique monte, la salle se met en mouvement.</p></li>
+            <li><h3>Retrouvailles</h3><p>Les groupes se reforment dans les rires, les plus rapides se font remarquer.</p></li>
+            <li><h3>Photo et retour des cartes</h3><p>Chaque groupe complet pose pour la photo, puis dépose ses cartes dans la boîte.</p></li>
+        </ol>
+        <p class="duree">Comptez <b>15 à 20 minutes</b> selon le nombre d'invités. Le jeu se lance pendant l'apéritif, sans interrompre le service.</p>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="wrap">
+        <div class="surt">On en parle ?</div>
+        <h2>Que vos invités repartent <span class="italic">en se connaissant tous</span></h2>
+        <p>Racontez-moi votre réception : je vous prépare une proposition sur mesure, partout dans le Tarn, à Albi, Castres, Toulouse et jusqu'à 200 km.</p>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+        <p class="autres">Découvrez aussi <a href="animations.html">toutes mes animations</a>.</p>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi &amp; Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
+        <p><a href="https://www.facebook.com/alexis.evenementiel/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/alexis_evenementiel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
+        <script>
+        (function(){
+            fetch('https://abacus.jasoncameron.dev/hit/alexis-evenementiel/visites-site')
+                .then(function(r){ return r.json(); })
+                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.value === 'number') { el.textContent = d.value.toLocaleString('fr-FR'); } })
+                .catch(function(){ var p = document.querySelector('.visit-counter'); if (p) { p.style.display = 'none'; } });
+        })();
+        </script>
+    </div>
+</footer>
+</body>
+</html>
