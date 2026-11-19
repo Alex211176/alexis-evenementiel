@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo Disco — bingo musical, blind test et karaoké pour mariage et soirée (81) — Alexis Événementiel</title>
+<meta name="description" content="Bingo Disco : le bingo musical sur smartphone, sans appli. Un tube démarre, chacun coche sa grille, et au premier carton toute la salle crie « Bingo ! ». Blind test, karaoké, jukebox… Animation de mariage et de soirée par DJ Alexis à Albi, Castres, Toulouse et dans le Tarn.">
+<meta name="keywords" content="bingo musical mariage, Bingo Disco, blind test mariage, karaoké mariage, animation mariage Tarn, animation mariage 81, DJ mariage Albi, DJ mariage Castres, DJ mariage Toulouse, jeu interactif mariage, animation originale soirée de mariage">
+<link rel="canonical" href="https://alexisevenementiel.fr/bingo-disco.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bingo Disco — le jeu musical de votre soirée">
+<meta property="og:description" content="Un tube démarre, chacun coche sur son téléphone, et au premier carton complet toute la salle crie « Bingo ! ».">
+<meta property="og:url" content="https://alexisevenementiel.fr/bingo-disco.html">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Bingo Disco",
+  "serviceType": "Animation musicale de mariage et de soirée",
+  "description": "Bingo musical sur smartphone sans application, avec blind test, karaoké, jeux de paroles, jukebox et loto géant, projeté sur grand écran et piloté par le DJ.",
+  "url": "https://alexisevenementiel.fr/bingo-disco.html",
+  "areaServed": [
+    {"@type": "AdministrativeArea", "name": "Tarn (81)"},
+    {"@type": "City", "name": "Albi"},
+    {"@type": "City", "name": "Castres"},
+    {"@type": "City", "name": "Toulouse"}
+  ],
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "Alexis Événementiel",
+    "url": "https://alexisevenementiel.fr/",
+    "telephone": "+33618855892",
+    "email": "contact@alexisevenementiel.fr",
+    "address": {"@type": "PostalAddress", "addressLocality": "Albi", "addressRegion": "Tarn", "addressCountry": "FR"}
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --noir: #0a0a0c; --noir-2: #121116; --noir-3: #1a1820;
+        --or: #c9a55c; --or-clair: #e6c986; --or-sombre: #8a7138;
+        --creme: #f4efe6; --gris: #8b8794; --gris-clair: #b8b4bf;
+        --line: rgba(201,165,92,0.18);
+        /* Une couleur par format de jeu, comme dans l'application */
+        --f-bingo: #e05a8a; --f-blind: #2699d9; --f-kara: #7333bf;
+        --f-lyr: #338059; --f-juke: #f28c1a; --f-loto: #cc2633;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Jost', sans-serif; background: var(--noir); color: var(--creme); line-height: 1.7; font-weight: 300; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.1; text-wrap: balance; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .italic { font-style: italic; color: var(--or-clair); }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10,10,12,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--creme); text-decoration: none; }
+    .logo span { color: var(--or); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.on { color: var(--or-clair); }
+
+    .btn { display:inline-flex; align-items:center; gap:10px; padding:16px 34px; font-family:'Jost',sans-serif; font-size:0.82rem; letter-spacing:0.16em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all .35s ease; cursor:pointer; border:none; }
+    .btn-gold { background:var(--or); color:var(--noir); }
+    .btn-gold:hover { background:var(--or-clair); transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,165,92,0.25); }
+    .btn-ghost { border:1px solid var(--or); color:var(--or); }
+    .btn-ghost:hover { background:var(--or); color:var(--noir); }
+    .actions { display:flex; gap:16px; flex-wrap:wrap; }
+
+    /* Ouverture */
+    header.hero { padding: 150px 0 80px; overflow: hidden;
+        background: radial-gradient(ellipse 50% 60% at 75% 45%, rgba(224,90,138,0.13), transparent 60%), radial-gradient(ellipse 60% 70% at 78% 40%, rgba(201,165,92,0.10), transparent 60%), linear-gradient(180deg, var(--noir) 0%, var(--noir-2) 100%); }
+    .hero-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; }
+    .eyebrow { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--or); margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.8rem, 6.4vw, 5rem); margin-bottom: 24px; }
+    .hero .accroche { color: var(--gris-clair); max-width: 520px; font-size: 1.12rem; margin-bottom: 28px; }
+    .pastilles { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:34px; }
+    .pastilles span { border:1px solid rgba(201,165,92,.45); color:var(--or-clair); border-radius:99px; padding:6px 16px; font-size:.88rem; }
+
+    /* Visuel : téléphone + grille de bingo */
+    .scene { position: relative; height: 420px; max-width: 440px; width: 100%; justify-self: center; }
+    .phone { position: absolute; left: 14%; top: 8px; width: 215px; background: #050507; border: 1px solid var(--line); border-radius: 30px; padding: 10px; box-shadow: 0 28px 64px rgba(0,0,0,.55); transform: rotate(-6deg); }
+    .phone-int { background: #111015; border-radius: 22px; padding: 12px 11px 14px; display: grid; gap: 9px; }
+    .phone-top { display: flex; justify-content: space-between; align-items: center; color: var(--or); font: 500 .54rem 'Jost',sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+    .phone-top b { font: 700 .62rem 'Poppins',sans-serif; color: #fff; letter-spacing: .02em; text-transform: none; }
+    .grille { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    .case { aspect-ratio: 1; background: var(--noir-3); border-radius: 7px; display: grid; place-items: center; text-align: center; padding: 2px; font: 600 .42rem/1.05 'Poppins',sans-serif; color: var(--gris-clair); position: relative; overflow: hidden; }
+    .case.ok { background: linear-gradient(140deg, #2a1f2e, #46213a); color: #fff; }
+    .case.ok::after { content: "✓"; position: absolute; right: 3px; top: 1px; font-size: .6rem; color: var(--or); }
+    .phone-pied { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+    .ligne-tag { background: var(--or); color: var(--noir); border-radius: 999px; padding: 3px 10px; font: 700 .58rem 'Poppins',sans-serif; }
+    .phone-pied span { color: var(--gris); font-size: .55rem; }
+    .revele { position: absolute; right: 2%; bottom: 20px; width: 190px; background: #fff; color: #1a1a1a; border-radius: 10px; padding: 12px 14px; box-shadow: 0 20px 44px rgba(0,0,0,.5); transform: rotate(5deg); display: grid; gap: 3px; border-top: 4px solid var(--f-bingo); line-height: 1.3; }
+    .revele small { font: 500 .56rem 'Jost',sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--f-bingo); }
+    .revele .t { font: 700 1.1rem/1.05 'Poppins',sans-serif; }
+    .revele .a { color: #666; font: italic 500 .9rem 'Cormorant Garamond',serif; }
+    .revele .win { margin-top: 5px; font: 700 .64rem 'Poppins',sans-serif; color: var(--noir); }
+
+    section { padding: 90px 0; }
+    .alt { background: var(--noir-2); }
+    .head { margin-bottom: 48px; max-width: 680px; }
+    .head .num { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; }
+    .head h2 { font-size: clamp(2rem, 4vw, 3rem); margin-top:8px; }
+    .head p { color:var(--gris-clair); margin-top:14px; font-size:1.04rem; }
+
+    .principe { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .principe div { border-top:1px solid var(--or); padding-top:20px; }
+    .principe b { display:block; font:400 2.6rem/1 'Cormorant Garamond',serif; color:var(--or); margin-bottom:10px; }
+    .principe h3 { font-size:1.5rem; margin-bottom:8px; }
+    .principe p { color:var(--gris-clair); }
+
+    .etapes { list-style:none; display:grid; grid-template-columns:repeat(5,1fr); counter-reset:e; }
+    .etapes li { position:relative; padding-right:16px; }
+    .etapes li::before { counter-increment:e; content:counter(e); display:grid; place-items:center; width:46px; height:46px; border-radius:50%; border:1px solid var(--or); color:var(--or); font:400 1.25rem 'Cormorant Garamond',serif; background:var(--noir-2); position:relative; z-index:1; }
+    .etapes li::after { content:""; position:absolute; top:23px; left:46px; right:0; height:1px; background:var(--line); }
+    .etapes li:last-child::after { display:none; }
+    .etapes h3 { font-size:1.35rem; margin:12px 0 4px; }
+    .etapes p { color:var(--gris-clair); font-size:.95rem; }
+    .duree { margin-top:36px; color:var(--gris-clair); }
+    .duree b { color:var(--or-clair); font-weight:400; }
+
+    .maquettes { display:grid; grid-template-columns:1.6fr .6fr; gap:40px; align-items:end; margin-top:56px; }
+    .ecran { background:#050507; border:1px solid var(--line); border-radius:12px; padding:12px; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+    .ecran-int { aspect-ratio:16/9; border-radius:6px; background:radial-gradient(90% 90% at 50% 30%, #24202c, #0d0c10); display:grid; place-items:center; text-align:center; padding:6%; position:relative; overflow:hidden; }
+    .ecran-int::before { content:""; position:absolute; inset:4%; border:1px solid rgba(201,165,92,.4); border-radius:4px; }
+    .ecran-int small { font:500 clamp(.55rem,1.2vw,.78rem) 'Jost',sans-serif; letter-spacing:.3em; color:var(--or); text-transform:uppercase; }
+    .ecran-int .pochette { width:clamp(42px,8vw,76px); aspect-ratio:1; border-radius:6px; margin:10px auto 6px; background:linear-gradient(140deg, var(--f-bingo), var(--f-kara)); display:grid; place-items:center; color:#fff; font-size:clamp(1.1rem,3vw,2rem); }
+    .ecran-int .objet { font:500 clamp(1.4rem,4.2vw,2.9rem)/1.1 'Cormorant Garamond',serif; }
+    .ecran-int .artiste { font:italic 400 clamp(.85rem,2.2vw,1.4rem) 'Cormorant Garamond',serif; color:var(--or-clair); }
+    .ecran-int .gagnant { margin-top:10px; font:400 clamp(.6rem,1.5vw,.95rem) 'Jost',sans-serif; color:#fff; }
+    figcaption { margin-top:12px; color:var(--gris); font-size:.9rem; }
+    .tel { background:#050507; border:1px solid var(--line); border-radius:30px; padding:10px; box-shadow:0 24px 60px rgba(0,0,0,.5); max-width:200px; width:100%; margin:0 auto; }
+    .tel-int { aspect-ratio:9/18.5; border-radius:22px; background:#111015; padding:14px 10px; display:grid; grid-template-rows:auto auto 1fr auto auto; gap:8px; }
+    .tel-int .info { background:var(--noir-3); border-radius:10px; padding:8px; font-size:.64rem; color:var(--gris-clair); line-height:1.35; }
+    .tel-int .info b { display:block; color:var(--creme); font-size:.74rem; font-weight:500; }
+    .tel-int .reveler { background:var(--f-bingo); color:#fff; border-radius:14px; display:grid; place-items:center; font:500 .95rem 'Jost',sans-serif; padding:10px 0; }
+    .tel-int .suivant { background:var(--or); color:var(--noir); border-radius:14px; display:grid; place-items:center; font:500 1rem 'Jost',sans-serif; }
+    .tel-int .rang { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .tel-int .rang span { background:var(--noir-3); border-radius:9px; padding:7px 0; text-align:center; font-size:.62rem; color:var(--creme); }
+
+    .formats { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:14px; }
+    .formats div { background:var(--noir-3); border:1px solid var(--line); border-left:5px solid var(--c); border-radius:4px; padding:18px 20px; }
+    .formats h3 { font:400 1.05rem 'Jost',sans-serif; color:var(--creme); margin-bottom:2px; }
+    .formats p { color:var(--gris-clair); font-size:.92rem; line-height:1.45; }
+
+    .chiffres { display:flex; gap:56px; flex-wrap:wrap; margin-bottom:44px; }
+    .chiffres b { display:block; font:400 3.4rem/1 'Cormorant Garamond',serif; color:var(--or-clair); }
+    .chiffres span { color:var(--gris-clair); font-size:.92rem; }
+    .perso { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .carte { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:26px 24px; transition:transform .3s, border-color .3s; }
+    .carte:hover { transform:translateY(-4px); border-color:var(--or-sombre); }
+    .carte h3 { font-size:1.4rem; margin-bottom:8px; }
+    .carte p { color:var(--gris-clair); font-size:.96rem; }
+    .carte .exemple { font:italic 400 1.08rem/1.4 'Cormorant Garamond',serif; color:var(--creme); border-left:2px solid var(--or); padding-left:12px; margin-top:12px; }
+
+    .relance { padding:56px 0; text-align:center; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+        background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(201,165,92,0.10), transparent 70%), var(--noir); }
+    .relance h2 { font-size:clamp(1.7rem,3.4vw,2.4rem); margin-bottom:22px; }
+    .relance .actions { justify-content:center; }
+
+    .cartons { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+    .pile { position:relative; height:340px; }
+    .carton { position:absolute; width:230px; height:310px; background:#fffdf8; border-radius:3px; box-shadow:0 18px 40px rgba(0,0,0,.45); padding:22px 18px; display:grid; grid-template-rows:auto 1fr auto; gap:8px; text-align:center; color:#1a1820; }
+    .carton::before { content:""; position:absolute; inset:8px; border:1px solid var(--or); pointer-events:none; }
+    .carton small { font:500 .58rem 'Jost',sans-serif; letter-spacing:.22em; color:var(--or-sombre); text-transform:uppercase; }
+    .carton .mini { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; align-self:center; }
+    .carton .mini span { aspect-ratio:1; border:1px solid #d8cfb4; border-radius:4px; display:grid; place-items:center; font:600 .42rem/1 'Poppins',sans-serif; color:#6b6456; padding:2px; }
+    .carton .mini span.x { background:var(--or); border-color:var(--or); color:#fff; }
+    .carton .pied { font-size:.62rem; color:#6d6875; letter-spacing:.06em; }
+    .c1 { left:4%; top:18px; transform:rotate(-7deg); }
+    .c2 { left:24%; top:6px; transform:rotate(2deg); }
+    .c3 { left:44%; top:22px; transform:rotate(9deg); background:var(--noir-3); color:var(--creme); }
+    .c3 small { color:var(--or); }
+    .c3 .mini span { border-color:#3a3442; color:var(--gris-clair); }
+    .c3 .pied { color:var(--gris); }
+    .exemple-note { margin-top:10px; color:var(--gris); font-size:.82rem; font-style:italic; }
+    .coches { list-style:none; margin-top:24px; display:grid; gap:12px; }
+    .coches li { padding-left:30px; position:relative; color:var(--gris-clair); }
+    .coches li::before { content:""; position:absolute; left:2px; top:.45em; width:14px; height:8px; border-left:2px solid var(--or); border-bottom:2px solid var(--or); transform:rotate(-45deg); }
+
+    .deux-col { display:grid; grid-template-columns:.9fr 1.1fr; gap:56px; align-items:start; }
+    .vous { background:var(--noir-3); border:1px solid var(--line); border-radius:6px; padding:30px; }
+    .vous h3 { font-size:1.6rem; margin-bottom:14px; }
+    .vous ul { list-style:none; display:grid; gap:12px; }
+    .vous li { padding-left:24px; position:relative; color:var(--gris-clair); }
+    .vous li::before { content:""; position:absolute; left:0; top:.8em; width:12px; height:1px; background:var(--or); }
+    .vous li b { color:var(--creme); font-weight:400; }
+    .calendrier { list-style:none; }
+    .calendrier li { display:grid; grid-template-columns:90px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); }
+    .calendrier li:first-child { border-top:1px solid var(--line); }
+    .calendrier .quand { font:400 1.6rem/1 'Cormorant Garamond',serif; color:var(--or); }
+    .calendrier h3 { font:400 1.05rem 'Jost',sans-serif; color:var(--creme); margin-bottom:2px; }
+    .calendrier p { color:var(--gris-clair); font-size:.95rem; }
+
+    .jourj { display:grid; grid-template-columns:repeat(4,1fr); gap:28px; }
+    .jourj div { border-top:1px solid var(--line); padding-top:18px; }
+    .jourj h3 { font-size:1.35rem; color:var(--or-clair); margin-bottom:6px; }
+    .jourj p { color:var(--gris-clair); font-size:.95rem; }
+
+    .cta { text-align: center; padding: 100px 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,165,92,0.12), transparent 60%), var(--noir); }
+    .cta .surt { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--or); letter-spacing:0.3em; font-style:italic; margin-bottom:14px; }
+    .cta h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 22px; }
+    .cta p { color: var(--gris-clair); max-width: 540px; margin: 0 auto 34px; }
+    .cta .actions { justify-content:center; }
+    .autres { margin-top:30px; font-size:.92rem; color:var(--gris); }
+    .autres a { color:var(--or-clair); text-decoration:none; border-bottom:1px solid var(--line); }
+
+    footer { background: var(--noir); border-top: 1px solid var(--line); padding: 60px 0 36px; text-align: center; }
+    footer .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--creme); margin-bottom: 10px; }
+    footer .brand span { color: var(--or); }
+    footer p { color: var(--gris); font-size: 0.9rem; margin-bottom: 6px; }
+    footer a { color: var(--or-clair); text-decoration: none; }
+
+    @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .hero-grid, .deux-col, .cartons, .maquettes { grid-template-columns:1fr; }
+        .principe, .perso { grid-template-columns:1fr; }
+        .jourj { grid-template-columns:1fr 1fr; }
+        .etapes { grid-template-columns:1fr; gap:20px; }
+        .etapes li { display:grid; grid-template-columns:46px 1fr; column-gap:16px; padding-right:0; }
+        .etapes li h3, .etapes li p { grid-column:2; }
+        .etapes li h3 { margin-top:8px; }
+        .etapes li::after { display:none; }
+        .pile { max-width:420px; height:360px; }
+        .scene { height:380px; }
+        section { padding:70px 0; }
+    }
+    @media (max-width: 520px) {
+        .wrap { padding: 0 18px; }
+        header.hero { padding-top: 120px; }
+        .jourj { grid-template-columns:1fr; }
+        .carton { width:180px; height:250px; padding:18px 12px; }
+        .phone { left:4%; }
+        .revele { width:160px; }
+        .chiffres { gap:30px; }
+        .btn { padding:14px 24px; }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="wrap">
+        <a href="index.html" class="logo">Alexis <span>Événementiel</span></a>
+        <div class="nav-links">
+            <a href="index.html#prestations">Prestations</a>
+            <a href="animations.html" class="on">Animations</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="galerie.html">Réalisations</a>
+            <a href="index.html#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <div class="eyebrow">Le jeu musical de votre soirée</div>
+            <h1>Le Bingo <span class="italic">Disco</span></h1>
+            <p class="accroche">Un tube démarre, chacun coche sur son téléphone, et au premier carton complet toute la salle crie « Bingo ! ». Du blind test au karaoké, une animation musicale clés en main, à vos couleurs, sans rien installer.</p>
+            <div class="pastilles"><span>De 50 à 2 800 joueurs</span><span>Sur smartphone, sans appli</span><span>Écran géant et musique</span></div>
+            <div class="actions">
+                <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+                <a href="#principe" class="btn btn-ghost">Découvrir le jeu</a>
+            </div>
+        </div>
+        <div class="scene" aria-hidden="true">
+            <div class="phone">
+                <div class="phone-int">
+                    <div class="phone-top"><span>Bingo Disco</span><b>Ta grille</b></div>
+                    <div class="grille">
+                        <div class="case ok">Dancing Queen</div><div class="case">Billie Jean</div><div class="case ok">I Will Survive</div><div class="case">Mamma Mia</div>
+                        <div class="case">Y.M.C.A.</div><div class="case ok">Freed from Desire</div><div class="case ok">Gloria</div><div class="case">Macarena</div>
+                        <div class="case ok">Stayin' Alive</div><div class="case">Voyage Voyage</div><div class="case ok">Last Dance</div><div class="case">Wannabe</div>
+                        <div class="case">Joe le taxi</div><div class="case ok">September</div><div class="case">Flashdance</div><div class="case">Daniela</div>
+                    </div>
+                    <div class="phone-pied"><span class="ligne-tag">1 ligne !</span><span>7 / 16 cochées</span></div>
+                </div>
+            </div>
+            <div class="revele">
+                <small>Révélé à l'écran</small>
+                <div class="t">Dancing Queen</div>
+                <div class="a">ABBA · 1976</div>
+                <div class="win">🏆 Premier carton : table des mariés</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="principe">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le principe</div>
+            <h2>Simple à rejoindre, <span class="italic">irrésistible</span> à jouer</h2>
+        </div>
+        <div class="principe">
+            <div><b>01</b><h3>Un QR code, une grille</h3><p>Chaque invité scanne le QR code affiché à l'écran et reçoit sa grille de bingo musical sur son téléphone. Aucune application à installer.</p></div>
+            <div><b>02</b><h3>La musique lance la partie</h3><p>Un extrait démarre, chacun reconnaît le titre et coche sa case. Première ligne, puis carton plein, sur une playlist qui fait danser.</p></div>
+            <div><b>03</b><h3>« Bingo ! »</h3><p>Dès qu'un carton est complet, la salle le voit à l'écran : le titre et la pochette sont révélés, on applaudit le gagnant.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Une partie, cinq temps</div>
+            <h2>Un rythme <span class="italic">sans temps mort</span></h2>
+            <p>Je pilote tout depuis mon téléphone : l'écran géant et la musique suivent chaque étape au même instant.</p>
+        </div>
+        <ol class="etapes">
+            <li><h3>Connexion</h3><p>Le QR code s'affiche en grand, les invités rejoignent la partie et reçoivent leur grille.</p></li>
+            <li><h3>Écoute</h3><p>L'extrait démarre, la salle cherche le titre, chacun coche sur son écran.</p></li>
+            <li><h3>Propositions</h3><p>En blind test, quatre réponses s'affichent sur le téléphone : à vous de trancher.</p></li>
+            <li><h3>Bingo et révélation</h3><p>Titre, artiste et pochette à l'écran, prénom du gagnant si vous le souhaitez.</p></li>
+            <li><h3>Classement</h3><p>Le podium s'affiche, puis le titre suivant. À la fin, le grand gagnant et son cadeau.</p></li>
+        </ol>
+        <p class="duree">Comptez <b>20 à 40 minutes</b> par partie selon la playlist, avec <b>plusieurs formats</b> possibles dans la soirée. Tout est sauvegardé : le jeu reprend là où il en était.</p>
+
+        <div class="maquettes">
+            <figure>
+                <div class="ecran"><div class="ecran-int"><div>
+                    <small>8e titre · Révélation</small>
+                    <div class="pochette">♪</div>
+                    <div class="objet">Dancing Queen</div>
+                    <div class="artiste">ABBA · 1976</div>
+                    <div class="gagnant">🏆 Carton plein : table des mariés</div>
+                </div></div></div>
+                <figcaption>Ce que voient vos invités : le jeu projeté sur grand écran, à vos couleurs.</figcaption>
+            </figure>
+            <figure>
+                <div class="tel"><div class="tel-int">
+                    <div class="info"><b>Titre 8 · En écoute</b>Dancing Queen — ABBA</div>
+                    <div class="reveler">Révéler ✦</div>
+                    <div class="suivant">Suivant ▶</div>
+                    <div class="rang"><span>↩ Retour</span><span>⏸ Pause</span></div>
+                    <div class="rang"><span>🎤 Parole</span><span>🔇 Couper</span></div>
+                </div></div>
+                <figcaption style="text-align:center">Ce que je tiens en main.</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<section id="formats">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Six formats, un seul jeu</div>
+            <h2>Bien plus qu'un <span class="italic">bingo</span></h2>
+            <p>Chaque format a sa couleur et son énergie. On les enchaîne dans la soirée, ou on en choisit un seul, selon votre public.</p>
+        </div>
+        <div class="formats">
+            <div style="--c: var(--f-bingo)"><h3>Bingo musical</h3><p>La grille se coche au fil des titres. Une ligne, puis le carton plein.</p></div>
+            <div style="--c: var(--f-blind)"><h3>Blind test</h3><p>Quatre propositions sur le téléphone, et des points selon la rapidité de réponse.</p></div>
+            <div style="--c: var(--f-kara)"><h3>Karaoké</h3><p>Les paroles s'affichent à l'écran en rythme, vos invités prennent le micro.</p></div>
+            <div style="--c: var(--f-lyr)"><h3>Jeux de paroles</h3><p>Des mini-jeux rythmés sur les paroles : on complète, on attrape, on devine.</p></div>
+            <div style="--c: var(--f-juke)"><h3>Jukebox</h3><p>Les invités proposent leurs titres, je valide, et l'écran affiche les prochains morceaux.</p></div>
+            <div style="--c: var(--f-loto)"><h3>Loto géant</h3><p>Le même jeu en très grand : jusqu'à 2 800 joueurs sur un seul écran.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Entièrement personnalisable</div>
+            <h2>Votre soirée, <span class="italic">votre playlist</span></h2>
+            <p>Le jeu se construit à partir de ma discothèque, puis s'ajuste à vos invités, à votre thème et à vos coups de cœur.</p>
+        </div>
+        <div class="chiffres">
+            <div><b>0</b><span>appli à installer</span></div>
+            <div><b>2 800</b><span>joueurs maximum</span></div>
+            <div><b>100 %</b><span>sur mesure</span></div>
+        </div>
+        <div class="perso">
+            <div class="carte"><h3>Vos playlists</h3><p>Années 80, 90, 2000, variété française, rock, dancefloor… ou un mélange taillé pour vos invités.</p><p class="exemple">Une manche « spéciale années 80 » pour les parents</p></div>
+            <div class="carte"><h3>Vos titres fétiches</h3><p>La chanson de votre rencontre, votre générique préféré : je les glisse dans le jeu.</p><p class="exemple">Votre première danse cachée dans une grille</p></div>
+            <div class="carte"><h3>À vos couleurs</h3><p>L'écran reprend votre thème : doré et chic, champêtre, bohème, néon…</p></div>
+            <div class="carte"><h3>Le bon niveau</h3><p>Intro facile ou extrait court et piégeux : je règle la difficulté selon l'ambiance.</p><p class="exemple">Démarrage au refrain pour chauffer la salle</p></div>
+            <div class="carte"><h3>Grilles nominatives</h3><p>Un prénom pré-imprimé sur chaque carton : idéal pour un plan de table ou un cadeau d'invité.</p></div>
+            <div class="carte"><h3>Le gagnant à l'honneur</h3><p>Prénom à l'écran, podium et cadeau de votre choix pour clore chaque partie en beauté.</p></div>
+        </div>
+    </div>
+</section>
+
+<div class="relance">
+    <div class="wrap">
+        <h2>Envie d'un Bingo Disco à <span class="italic">votre soirée</span> ?</h2>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="wrap cartons">
+        <div>
+            <div class="pile" aria-hidden="true">
+                <div class="carton c1"><small>Bingo Disco</small>
+                    <div class="mini"><span class="x">Gloria</span><span>Mamma Mia</span><span class="x">Y.M.C.A.</span><span>Macarena</span><span class="x">Last Dance</span><span>Wannabe</span><span>September</span><span class="x">Gimme!</span><span>Daniela</span></div>
+                    <div class="pied">Camille &amp; Julien · #0427</div></div>
+                <div class="carton c2"><small>Bingo Disco</small>
+                    <div class="mini"><span>Billie Jean</span><span class="x">I Will Survive</span><span>Flashdance</span><span class="x">Stayin'</span><span>Voyage</span><span class="x">Freed</span><span>Joe le taxi</span><span>Daft Punk</span><span class="x">Gloria</span></div>
+                    <div class="pied">Camille &amp; Julien · #0427</div></div>
+                <div class="carton c3"><small>Bingo Disco</small>
+                    <div class="mini"><span class="x">Dancing</span><span>Macarena</span><span>Mamma</span><span>Wannabe</span><span class="x">September</span><span class="x">Gloria</span><span>Billie</span><span class="x">Y.M.C.A.</span><span>Last Dance</span></div>
+                    <div class="pied">Camille &amp; Julien · #0427</div></div>
+            </div>
+            <p class="exemple-note">Exemple de cartons, avec des prénoms fictifs.</p>
+        </div>
+        <div>
+            <div class="head" style="margin-bottom:0">
+                <div class="num">Numérique ou papier</div>
+                <h2>Sur l'écran… <span class="italic">ou sur carton</span></h2>
+                <p>Chaque invité joue sur son téléphone ou sur un carton imprimé, au choix. Les cartons papier sont générés automatiquement, à vos couleurs.</p>
+            </div>
+            <ul class="coches">
+                <li>Une grille sur smartphone, sans rien installer</li>
+                <li>Ou un carton papier prêt à imprimer, avec vos prénoms et la date</li>
+                <li>Un code unique par carton, pour relier papier et écran et éviter la triche</li>
+                <li>Impression possible par mes soins, en option</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="alt">
+    <div class="wrap deux-col">
+        <div>
+            <div class="head" style="margin-bottom:30px">
+                <div class="num">Gain de temps</div>
+                <h2>Vous choisissez, <span class="italic">je prépare tout</span></h2>
+                <p>Un échange de vingt minutes suffit. Vous n'avez rien à fabriquer, rien à installer.</p>
+            </div>
+            <div class="vous">
+                <h3>Ce que vous faites</h3>
+                <ul>
+                    <li><b>Me donner vos envies</b> : ambiance, époques, thème, nombre d'invités.</li>
+                    <li><b>Valider la playlist</b> et les formats que je vous propose.</li>
+                    <li><b>Profiter</b> : le soir J, vos invités jouent, vous dansez.</li>
+                </ul>
+            </div>
+        </div>
+        <ol class="calendrier">
+            <li><span class="quand">J-30</span><div><h3>On en parle</h3><p>Je vous présente le jeu et sa place dans votre soirée.</p></div></li>
+            <li><span class="quand">J-15</span><div><h3>Vos envies</h3><p>Un court échange : époques, thème, couleurs, titres fétiches, public.</p></div></li>
+            <li><span class="quand">J-7</span><div><h3>Aperçu à valider</h3><p>Les playlists et les formats retenus, à valider ou à retoucher.</p></div></li>
+            <li><span class="quand">J-3</span><div><h3>Tout est prêt</h3><p>Grilles numériques et cartons papier générés, QR code d'accès en main.</p></div></li>
+            <li><span class="quand">Jour J</span><div><h3>Je m'occupe de tout</h3><p>Écran, son, animation : le jeu tourne, vous vous amusez.</p></div></li>
+        </ol>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="head">
+            <div class="num">Le soir J</div>
+            <h2>Une technique <span class="italic">discrète et fiable</span></h2>
+        </div>
+        <div class="jourj">
+            <div><h3>Écran géant</h3><p>Projection grand format : le titre, la pochette et les cartons gagnants visibles même au fond de la salle.</p></div>
+            <div><h3>Son maîtrisé</h3><p>Extraits prêts à l'avance, enchaînements fluides, volume qui baisse dès que je prends la parole.</p></div>
+            <div><h3>Aucun temps mort</h3><p>Je pilote tout depuis mon téléphone : aucune recherche de musique, aucune attente.</p></div>
+            <div><h3>Sans appli, sans coupure</h3><p>Vos invités jouent avec un simple QR code. Tout est sauvegardé : le jeu reprend là où il s'était arrêté.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="wrap">
+        <div class="surt">On en parle ?</div>
+        <h2>Faisons de votre soirée <span class="italic">un moment dont on se souvient</span></h2>
+        <p>Racontez-moi votre projet : je vous prépare une proposition sur mesure, partout dans le Tarn, à Albi, Castres, Toulouse et jusqu'à 200 km.</p>
+        <div class="actions">
+            <a href="catalogue.html#devis" class="btn btn-gold">Demander un devis</a>
+            <a href="tel:0618855892" class="btn btn-ghost">06 18 85 58 92</a>
+        </div>
+        <p class="autres">Le site dédié : <a href="https://bingodisco.fr" target="_blank" rel="noopener">bingodisco.fr</a> · Découvrez aussi <a href="animations.html">toutes mes animations</a>.</p>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <div class="brand">Alexis<span>.</span> Événementiel</div>
+        <p>Albi &amp; Tarn (81) — déplacements jusqu'à 200 km</p>
+        <p><a href="tel:0618855892">06 18 85 58 92</a> · <a href="mailto:contact@alexisevenementiel.fr">contact@alexisevenementiel.fr</a></p>
+        <p><a href="https://www.facebook.com/alexis.evenementiel/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/alexis_evenementiel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p class="visit-counter" style="margin-top:10px; font-size:0.76rem; color:var(--gris); letter-spacing:0.05em;"><span id="vc-val">…</span> visites depuis juin 2026</p>
+        <script>
+        (function(){
+            fetch('https://abacus.jasoncameron.dev/hit/alexis-evenementiel/visites-site')
+                .then(function(r){ return r.json(); })
+                .then(function(d){ var el = document.getElementById('vc-val'); if (el && d && typeof d.value === 'number') { el.textContent = d.value.toLocaleString('fr-FR'); } })
+                .catch(function(){ var p = document.querySelector('.visit-counter'); if (p) { p.style.display = 'none'; } });
+        })();
+        </script>
+    </div>
+</footer>
+</body>
+</html>
